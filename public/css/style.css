@@ -1,0 +1,472 @@
+/* Custom styles for NMH Shop */
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+/* Jumbotron styling for Bootstrap 5 */
+.jumbotron {
+    padding: 2rem 1rem;
+    margin-bottom: 2rem;
+    border-radius: 0.5rem;
+}
+
+/* Card hover effects */
+.card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Custom button styles */
+.btn {
+    border-radius: 0.5rem;
+    font-weight: 500;
+}
+
+/* Form styling */
+.form-control:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+/* Alert styling */
+.alert {
+    border-radius: 0.5rem;
+    border: none;
+}
+
+/* Navbar brand styling */
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+/* Footer styling */
+footer {
+    margin-top: auto;
+}
+
+/* Loading spinner */
+.spinner-border-sm {
+    width: 1rem;
+    height: 1rem;
+}
+
+/* Custom utilities */
+.text-shadow {
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+}
+
+.bg-gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .jumbotron {
+        padding: 1.5rem 1rem;
+    }
+    
+    .display-5 {
+        font-size: 2rem;
+    }
+} 
+
+/* ===== NEW COLOR SCHEME OVERRIDES ===== */
+:root {
+  --primary: #38B6FF;
+  --secondary: #2493D4;
+  --accent: #353535;
+  --post: #94B4D3;
+  
+  /* Theme scale */
+  --theme-50: #e6f7ff;
+  --theme-100: #b3e9ff;
+  --theme-200: #80dbff;
+  --theme-300: #4dcdff;
+  --theme-400: #38B6FF;
+  --theme-500: #2493D4;
+  --theme-600: #1f7db8;
+  --theme-700: #1a679c;
+  --theme-800: #155180;
+  --theme-900: #353535;
+  --theme-950: #2a2a2a;
+}
+
+/* Global theme color replacements */
+.theme-400 { color: var(--theme-400) !important; }
+.bg-theme-400 { background-color: var(--theme-400) !important; }
+.border-theme-400 { border-color: var(--theme-400) !important; }
+.text-theme-300 { color: var(--theme-300) !important; }
+.text-theme-400 { color: var(--theme-400) !important; }
+.text-theme-500 { color: var(--theme-500) !important; }
+.text-theme-600 { color: var(--theme-600) !important; }
+
+/* Background gradients */
+.bg-gradient-to-br.from-theme-900 { 
+  background: linear-gradient(to bottom right, var(--theme-900), var(--theme-800)) !important; 
+}
+.bg-gradient-to-r.from-theme-400 { 
+  background: linear-gradient(to right, var(--theme-400), var(--theme-300)) !important; 
+}
+.bg-ml-gradient {
+  background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent)) !important;
+}
+
+/* Button overrides */
+.btn-primary {
+  background: var(--primary) !important;
+  border-color: var(--primary) !important;
+}
+.btn-primary:hover {
+  background: var(--secondary) !important;
+  border-color: var(--secondary) !important;
+}
+
+/* Navigation overrides */
+.nav-brand {
+  color: var(--primary) !important;
+}
+
+/* Form elements */
+.form-control:focus {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 0.2rem rgba(56, 182, 255, 0.25) !important;
+}
+
+/* Links */
+a.text-theme-300:hover {
+  color: var(--primary) !important;
+}
+
+/* Package cards */
+.package-card {
+  transition: all 0.3s ease !important;
+}
+.package-card:hover {
+  transform: scale(1.02) !important;
+  box-shadow: 0 10px 25px rgba(56, 182, 255, 0.2) !important;
+}
+
+/* Glow effects */
+.animate-glow-pulse {
+  animation: glow-pulse 2s ease-in-out infinite alternate !important;
+}
+
+@keyframes glow-pulse {
+  from {
+    box-shadow: 0 0 20px rgba(56, 182, 255, 0.3);
+  }
+  to {
+    box-shadow: 0 0 30px rgba(56, 182, 255, 0.6);
+  }
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+}
+
+/* Override any hardcoded old colors */
+.bg-theme-400\/20 { background-color: rgba(56, 182, 255, 0.2) !important; }
+.bg-theme-400\/30 { background-color: rgba(56, 182, 255, 0.3) !important; }
+.border-theme-400\/30 { border-color: rgba(56, 182, 255, 0.3) !important; }
+.border-theme-400\/50 { border-color: rgba(56, 182, 255, 0.5) !important; }
+
+/* Post default color */
+.text-post { color: var(--post) !important; }
+.bg-post { background-color: var(--post) !important; }
+.border-post { border-color: var(--post) !important; }
+
+/* Logo styling */
+.logo {
+  color: var(--primary) !important;
+  text-shadow: 0 0 10px rgba(56, 182, 255, 0.3);
+}
+
+/* Hero section updates */
+.hero-gradient {
+  background: linear-gradient(135deg, 
+    rgba(56, 182, 255, 0.9) 0%, 
+    rgba(36, 147, 212, 0.8) 50%, 
+    rgba(53, 53, 53, 0.9) 100%) !important;
+}
+
+/* Card hover effects */
+.card-hover:hover {
+  border-color: var(--primary) !important;
+  box-shadow: 0 10px 25px rgba(56, 182, 255, 0.15) !important;
+}
+
+/* Button gradient */
+.btn-gradient {
+  background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
+  border: none !important;
+  color: white !important;
+}
+.btn-gradient:hover {
+  background: linear-gradient(135deg, var(--secondary), var(--primary)) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Spinner/loading with new colors */
+.spinner {
+  border-color: rgba(56, 182, 255, 0.1) !important;
+  border-top-color: var(--primary) !important;
+}
+
+/* Toast notifications */
+.toast-success {
+  background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .gradient-text {
+    font-size: 2.5rem !important;
+  }
+}
+
+/* ===== 3D LOGO EFFECTS ===== */
+
+/* 3D Logo Container */
+.logo-3d-container {
+  transform-style: preserve-3d;
+}
+
+/* 3D Transform Utilities */
+.transform-gpu {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+/* Custom 3D Shadows */
+.shadow-3d-sm {
+  box-shadow: 
+    0 4px 8px rgba(56, 182, 255, 0.4),
+    0 2px 4px rgba(36, 147, 212, 0.25),
+    inset 0 1px 2px rgba(255, 255, 255, 0.15),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.shadow-3d-lg {
+  box-shadow: 
+    0 8px 16px rgba(56, 182, 255, 0.4),
+    0 4px 8px rgba(36, 147, 212, 0.25),
+    0 2px 4px rgba(0, 0, 0, 0.1),
+    inset 0 2px 4px rgba(255, 255, 255, 0.15),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.shadow-3d-hover:hover {
+  box-shadow: 
+    0 12px 24px rgba(56, 182, 255, 0.5),
+    0 6px 12px rgba(36, 147, 212, 0.35),
+    0 3px 6px rgba(0, 0, 0, 0.15),
+    inset 0 3px 6px rgba(255, 255, 255, 0.2),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* 3D Hover Transforms */
+.group:hover .group-hover\:rotateX-\[5deg\] {
+  --tw-rotate-x: 5deg;
+  transform: perspective(1000px) rotateX(var(--tw-rotate-x)) rotateY(var(--tw-rotate-y, 0)) rotateZ(var(--tw-rotate-z, 0)) translateX(var(--tw-translate-x, 0)) translateY(var(--tw-translate-y, 0)) translateZ(var(--tw-translate-z, 0)) scale3d(var(--tw-scale-x, 1), var(--tw-scale-y, 1), var(--tw-scale-z, 1));
+}
+
+.group:hover .group-hover\:rotateY-\[5deg\] {
+  --tw-rotate-y: 5deg;
+  transform: perspective(1000px) rotateX(var(--tw-rotate-x, 0)) rotateY(var(--tw-rotate-y)) rotateZ(var(--tw-rotate-z, 0)) translateX(var(--tw-translate-x, 0)) translateY(var(--tw-translate-y, 0)) translateZ(var(--tw-translate-z, 0)) scale3d(var(--tw-scale-x, 1), var(--tw-scale-y, 1), var(--tw-scale-z, 1));
+}
+
+.group:hover .group-hover\:rotateX-\[2deg\] {
+  --tw-rotate-x: 2deg;
+  transform: perspective(600px) rotateX(var(--tw-rotate-x)) rotateY(var(--tw-rotate-y, 0)) scale(var(--tw-scale-x, 1));
+}
+
+.group:hover .group-hover\:rotateY-\[2deg\] {
+  --tw-rotate-y: 2deg;
+  transform: perspective(600px) rotateX(var(--tw-rotate-x, 0)) rotateY(var(--tw-rotate-y)) scale(var(--tw-scale-x, 1));
+}
+
+/* 3D Floating Animation */
+@keyframes logo-float-3d {
+  0%, 100% {
+    transform: translateY(0px) rotateX(0deg) rotateY(0deg);
+  }
+  25% {
+    transform: translateY(-2px) rotateX(1deg) rotateY(1deg);
+  }
+  50% {
+    transform: translateY(-4px) rotateX(2deg) rotateY(-1deg);
+  }
+  75% {
+    transform: translateY(-2px) rotateX(-1deg) rotateY(2deg);
+  }
+}
+
+.animate-logo-float-3d {
+  animation: logo-float-3d 6s ease-in-out infinite;
+}
+
+/* Beveled Edge Effect */
+.bevel-3d {
+  position: relative;
+}
+
+.bevel-3d::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(145deg, 
+    rgba(255,255,255,0.15) 0%, 
+    transparent 50%, 
+    rgba(0,0,0,0.1) 100%);
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+/* Reflection Highlight */
+.reflection-3d {
+  position: relative;
+  overflow: hidden;
+}
+
+.reflection-3d::after {
+  content: '';
+  position: absolute;
+  top: 10%;
+  left: 10%;
+  width: 30%;
+  height: 30%;
+  background: radial-gradient(ellipse, rgba(255,255,255,0.3) 0%, transparent 70%);
+  border-radius: 50%;
+  opacity: 0.6;
+  transition: opacity 0.3s ease;
+}
+
+.reflection-3d:hover::after {
+  opacity: 0.8;
+}
+
+/* Perspective Utilities */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.perspective-600 {
+  perspective: 600px;
+}
+
+.perspective-800 {
+  perspective: 800px;
+}
+
+/* Glass Effect Enhancement */
+.glass-hover:hover {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+} 
+
+/* ===== PROMOTIONAL BANNER STYLES ===== */
+
+.promo-banner {
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(56, 182, 255, 0.3);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.promo-banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+.countdown-timer {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.countdown-timer small {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.75rem;
+}
+
+.countdown-timer span {
+  color: #fff;
+  font-size: 1.1rem;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+/* Mobile responsive adjustments for promo banner */
+@media (max-width: 768px) {
+  .promo-banner {
+    padding: 1rem 0 !important;
+  }
+  
+  .promo-banner .fs-5 {
+    font-size: 1rem !important;
+  }
+  
+  .promo-banner .fs-6 {
+    font-size: 0.875rem !important;
+  }
+  
+  .countdown-timer {
+    padding: 0.25rem 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .countdown-timer span {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .promo-banner .d-flex {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .promo-banner .countdown-timer {
+    margin: 0.5rem 0;
+  }
+} 

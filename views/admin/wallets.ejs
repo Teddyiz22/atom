@@ -1,0 +1,381 @@
+<%- contentFor('body') %>
+
+  <div class="container-fluid">
+
+    <style>
+      /* Fix DataTables length menu visibility */
+      .dataTables_length select {
+        background-color: #fff !important;
+        color: #6e707e !important;
+        border: 1px solid #d1d3e2 !important;
+        border-radius: 0.35rem;
+        padding: 0.375rem 1.75rem 0.375rem 0.75rem;
+        display: inline-block;
+        width: auto;
+
+      }
+      .dataTables_length select {
+      width: 6rem !important;          
+      min-width: 6rem !important;      
+      padding: 0.375rem 0.75rem !important; 
+      border-radius: 0.35rem !important;    
+      border: 1px solid #d1d3e2 !important; 
+      background-color: #fff !important;   
+      color: #6e707e !important;          
+      display: inline-block !important;
+    }
+    </style>
+
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+      <h1 class="h3 mb-0 text-gray-800">Wallet Management</h1>
+      <div class="d-none d-lg-inline-block">
+        <button class="btn btn-success btn-sm" onclick="refreshWallets()">
+          <i class="fas fa-sync fa-sm"></i> Refresh
+        </button>
+      </div>
+    </div>
+
+    <!-- Wallet Statistics Cards -->
+    <div class="row mb-4">
+      <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+          <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Users</div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalUsers">
+                  <%= stats.totalUsers %>
+                </div>
+              </div>
+              <div class="col-auto">
+                <i class="fas fa-users fa-2x text-gray-300"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+          <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Total MMK</div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalMMK">
+                  <%= parseFloat(stats.totalMMK || 0).toLocaleString() %> MMK
+                </div>
+              </div>
+              <div class="col-auto">
+                <i class="fas fa-money-bill-wave fa-2x text-gray-300"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+          <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Total THB</div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalTHB">
+                  <%= parseFloat(stats.totalTHB || 0).toLocaleString() %> THB
+                </div>
+              </div>
+              <div class="col-auto">
+                <i class="fas fa-coins fa-2x text-gray-300"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+          <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Active Users</div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800" id="activeWallets">
+                  <%= stats.activeUsers %>
+                </div>
+              </div>
+              <div class="col-auto">
+                <i class="fas fa-wallet fa-2x text-gray-300"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Wallets Table -->
+    <div class="card shadow mb-4">
+      <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">User Wallets</h6>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-bordered" id="walletTable" width="100%" cellspacing="0">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>MMK Balance</th>
+                <th>THB Balance</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Data will be loaded via AJAX -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Wallet Modal -->
+  <div class="modal fade" id="editWalletModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">
+            <i class="fas fa-wallet text-primary"></i> Update Wallet Balance
+          </h5>
+          <button type="button" class="close" data-dismiss="modal">
+            <span>&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form id="editWalletForm">
+            <input type="hidden" id="editUserId">
+
+            <!-- User Info -->
+            <div class="alert alert-info">
+              <h6 class="mb-1">
+                <i class="fas fa-user"></i> <span id="editUserName"></span>
+              </h6>
+              <small>Enter the new balance amounts you want to set for this user</small>
+            </div>
+
+            <!-- Current vs New Balance Display -->
+            <div class="row">
+              <div class="col-md-6">
+                <div class="card border-success">
+                  <div class="card-header bg-success text-white">
+                    <h6 class="mb-0"><i class="fas fa-money-bill-wave"></i> Myanmar Kyat (MMK)</h6>
+                  </div>
+                  <div class="card-body">
+                    <div class="form-group">
+                      <label class="small text-muted">Current Balance:</label>
+                      <div class="h5 text-success mb-2">
+                        <span id="currentMMK">0</span> MMK
+                      </div>
+                      <label for="newMMK">New Balance:</label>
+                      <input type="number" class="form-control form-control-lg" id="newMMK" min="0" step="0.01"
+                        placeholder="Enter new MMK balance">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="card border-info">
+                  <div class="card-header bg-info text-white">
+                    <h6 class="mb-0"><i class="fas fa-coins"></i> Thai Baht (THB)</h6>
+                  </div>
+                  <div class="card-body">
+                    <div class="form-group">
+                      <label class="small text-muted">Current Balance:</label>
+                      <div class="h5 text-info mb-2">
+                        <span id="currentTHB">0</span> THB
+                      </div>
+                      <label for="newTHB">New Balance:</label>
+                      <input type="number" class="form-control form-control-lg" id="newTHB" min="0" step="0.01"
+                        placeholder="Enter new THB balance">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Reason -->
+            <div class="form-group mt-3">
+              <label for="reason">
+                <i class="fas fa-comment"></i> Reason for Balance Update <span class="text-danger">*</span>
+              </label>
+              <textarea class="form-control" id="reason" rows="3" required
+                placeholder="Please provide a reason for this balance update..."></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">
+            <i class="fas fa-times"></i> Cancel
+          </button>
+          <button type="button" class="btn btn-primary" onclick="confirmUpdate()">
+            <i class="fas fa-save"></i> Update Balances
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentWalletId = null;
+
+    // Wait for jQuery to be loaded
+    document.addEventListener('DOMContentLoaded', function () {
+      // Check if jQuery is loaded, if not wait for it
+      function initializeDataTable() {
+        if (typeof $ !== 'undefined' && typeof $.fn.DataTable !== 'undefined') {
+          console.log('🚀 Initializing wallets DataTable...');
+          // Initialize DataTables with server-side processing
+          $('#walletTable').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "ajax": {
+              "url": "/admin/wallets/data",
+              "type": "GET",
+              "error": function (xhr, error, code) {
+                console.error('DataTables AJAX error:', error);
+                console.error('Response:', xhr.responseText);
+                console.error('Status:', xhr.status);
+                showErrorToast('Error loading wallet data: ' + (xhr.responseJSON?.error || error));
+              }
+            },
+            "columns": [
+              { "data": 0, "name": "name" },
+              { "data": 1, "name": "email" },
+              { "data": 2, "name": "role", "orderable": false },
+              { "data": 3, "name": "status", "orderable": false },
+              { "data": 4, "name": "balance_mmk" },
+              { "data": 5, "name": "balance_thb" },
+              { "data": 6, "name": "actions", "orderable": false, "searchable": false }
+            ],
+            "order": [[0, "asc"]], // Sort by name ascending
+            "pageLength": 25,
+            "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+            "language": {
+              "search": "Search wallets:",
+              "lengthMenu": "Show _MENU_ wallets per page",
+              "info": "Showing _START_ to _END_ of _TOTAL_ wallets",
+              "infoFiltered": "(filtered from _MAX_ total wallets)",
+              "emptyTable": "No wallets found",
+              "zeroRecords": "No matching wallets found",
+              "processing": "Loading wallets..."
+            },
+            "responsive": true
+          });
+        } else {
+          // jQuery or DataTables not loaded yet, wait and try again
+          setTimeout(initializeDataTable, 100);
+        }
+      }
+
+      // Start initialization
+      initializeDataTable();
+    });
+
+    function editWallet(userId, userName, currentMMKBalance, currentTHBBalance) {
+      currentWalletId = userId;
+      document.getElementById('editUserId').value = userId;
+      document.getElementById('editUserName').textContent = userName;
+
+      // Display current balances
+      document.getElementById('currentMMK').textContent = parseFloat(currentMMKBalance).toLocaleString();
+      document.getElementById('currentTHB').textContent = parseFloat(currentTHBBalance).toLocaleString();
+
+      // Pre-fill with current balances
+      document.getElementById('newMMK').value = currentMMKBalance;
+      document.getElementById('newTHB').value = currentTHBBalance;
+
+      // Clear reason
+      document.getElementById('reason').value = '';
+
+      $('#editWalletModal').modal('show');
+    }
+
+    function confirmUpdate() {
+      const userId = document.getElementById('editUserId').value;
+      const newMMK = document.getElementById('newMMK').value;
+      const newTHB = document.getElementById('newTHB').value;
+      const reason = document.getElementById('reason').value.trim();
+
+      // Validation
+      if (!reason) {
+        showErrorToast('Please provide a reason for the balance update');
+        document.getElementById('reason').focus();
+        return;
+      }
+
+      if (newMMK === '' && newTHB === '') {
+        showErrorToast('Please enter at least one balance amount');
+        return;
+      }
+
+      if ((newMMK !== '' && parseFloat(newMMK) < 0) || (newTHB !== '' && parseFloat(newTHB) < 0)) {
+        showErrorToast('Balance amounts cannot be negative');
+        return;
+      }
+
+      // Prepare update data
+      const updateData = { reason };
+
+      if (newMMK !== '') {
+        updateData.newMMK = parseFloat(newMMK);
+      }
+
+      if (newTHB !== '') {
+        updateData.newTHB = parseFloat(newTHB);
+      }
+
+      // Show loading state
+      const updateBtn = document.querySelector('#editWalletModal .btn-primary');
+      const originalText = updateBtn.innerHTML;
+      updateBtn.disabled = true;
+      updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+
+      fetch(`/admin/wallets/${userId}/update-balance`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updateData)
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            if (data.changes && data.changes.length > 0) {
+              showSuccessToast(`✅ Wallet balances updated successfully!\nChanges: ${data.changes.join(', ')}`);
+            } else {
+              showInfoToast('ℹ️ No changes were needed - wallet balances are already set to the specified values');
+            }
+            $('#editWalletModal').modal('hide');
+            // Reload the DataTable to reflect changes
+            $('#walletTable').DataTable().ajax.reload(null, false);
+          } else {
+            showErrorToast('❌ Error: ' + data.message);
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          showErrorToast('❌ Failed to update wallet balances. Please try again.');
+        })
+        .finally(() => {
+          // Restore button state
+          updateBtn.disabled = false;
+          updateBtn.innerHTML = originalText;
+        });
+    }
+
+    function refreshWallets() {
+      // Reload the DataTable
+      $('#walletTable').DataTable().ajax.reload(null, false);
+    }
+  </script>

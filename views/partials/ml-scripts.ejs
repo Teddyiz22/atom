@@ -1,0 +1,499 @@
+<!-- JavaScript -->
+<!-- Toastify JS -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+<script src="/js/ml-script.js"></script>
+
+<!-- Enhanced Animations Script -->
+<script>
+(function () {
+  if (window.__mlEnhancedScriptsLoaded) {
+    return;
+  }
+  window.__mlEnhancedScriptsLoaded = true;
+
+  // Scroll reveal animation
+  function scrollReveal() {
+    const reveals = document.querySelectorAll('.scroll-reveal');
+
+    reveals.forEach(element => {
+      const elementTop = element.getBoundingClientRect().top;
+      const elementVisible = 150;
+
+      if (elementTop < window.innerHeight - elementVisible) {
+        element.classList.add('revealed');
+      }
+    });
+  }
+
+  // Counter animation
+  function animateCounters() {
+    const counters = document.querySelectorAll('.counter');
+
+    counters.forEach(counter => {
+      const target = parseInt(counter.getAttribute('data-target'));
+      const count = parseInt(counter.innerText);
+
+      const increment = target / 200;
+
+      if (count < target) {
+        counter.innerText = Math.ceil(count + increment);
+        setTimeout(() => animateCounters(), 10);
+      } else {
+        counter.innerText = target;
+      }
+    });
+  }
+
+  // Parallax effect for background elements
+  function parallaxEffect() {
+    const scrolled = window.pageYOffset;
+    const parallaxElements = document.querySelectorAll('.parallax');
+
+    parallaxElements.forEach(element => {
+      const rate = scrolled * -0.5;
+      element.style.transform = `translateY(${rate}px)`;
+    });
+  }
+
+  // Mouse follow effect for particles
+  function mouseFollowEffect(e) {
+    const particles = document.querySelectorAll('.particle');
+
+    particles.forEach((particle, index) => {
+      const speed = (index + 1) * 0.02;
+      const x = (e.clientX * speed) / 100;
+      const y = (e.clientY * speed) / 100;
+
+      particle.style.transform = `translate(${x}px, ${y}px)`;
+    });
+  }
+
+  // Typing effect for hero text
+  function typeWriter(element, text, speed = 100) {
+    let i = 0;
+    element.innerHTML = '';
+
+    function type() {
+      if (i < text.length) {
+        element.innerHTML += text.charAt(i);
+        i++;
+        setTimeout(type, speed);
+      }
+    }
+
+    type();
+  }
+
+  // 3D tilt effect for cards
+  function tiltEffect() {
+    const cards = document.querySelectorAll('.glass-hover');
+
+    cards.forEach(card => {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+
+        const rotateX = (y - centerY) / 10;
+        const rotateY = (centerX - x) / 10;
+
+        card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-5px)`;
+      });
+
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)';
+      });
+    });
+  }
+
+  // Smooth scrolling for navigation links
+  function smoothScrolling() {
+    const links = document.querySelectorAll('a[href^="#"]');
+
+    links.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+
+        const targetId = link.getAttribute('href');
+        const targetSection = document.querySelector(targetId);
+
+        if (targetSection) {
+          targetSection.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+  }
+
+  // Particle collision detection
+  function particleCollision() {
+    const particles = document.querySelectorAll('.particle');
+
+    particles.forEach((particle, index) => {
+      particle.addEventListener('mouseenter', () => {
+        particle.style.transform = 'scale(2)';
+        particle.style.opacity = '1';
+      });
+
+      particle.addEventListener('mouseleave', () => {
+        particle.style.transform = 'scale(1)';
+        particle.style.opacity = '0.6';
+      });
+    });
+  }
+
+  // Loading animation
+  function loadingAnimation() {
+    const loadingBar = document.querySelector('.loading-bar');
+
+    if (loadingBar) {
+      setTimeout(() => {
+        loadingBar.style.opacity = '0';
+      }, 2000);
+    }
+  }
+
+  // Initialize all animations
+  function initAnimations() {
+    scrollReveal();
+    tiltEffect();
+    smoothScrolling();
+    particleCollision();
+    loadingAnimation();
+
+    // Event listeners
+    window.addEventListener('scroll', () => {
+      scrollReveal();
+      parallaxEffect();
+    });
+
+    window.addEventListener('mousemove', mouseFollowEffect);
+
+    // Mobile touch events
+    window.addEventListener('touchmove', (e) => {
+      mouseFollowEffect(e.touches[0]);
+    });
+  }
+
+  // Start animations when DOM is loaded
+  document.addEventListener('DOMContentLoaded', initAnimations);
+
+  // Performance optimization - wrapped in scope to avoid conflicts
+  (function () {
+    let ticking = false;
+
+    function requestTick() {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }
+
+    // Make requestTick available globally if needed
+    window.requestTick = requestTick;
+  })();
+
+  // Add reveal animations to elements as they scroll into view
+  const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('revealed');
+      }
+    });
+  }, observerOptions);
+
+  // Observe all scroll-reveal elements
+  document.addEventListener('DOMContentLoaded', () => {
+    const scrollElements = document.querySelectorAll('.scroll-reveal');
+    scrollElements.forEach(el => observer.observe(el));
+  });
+
+  // Add sparkle effect on button hover
+  function addSparkleEffect() {
+    const buttons = document.querySelectorAll('.group');
+
+    buttons.forEach(button => {
+      button.addEventListener('mouseenter', () => {
+        createSparkles(button);
+      });
+    });
+  }
+
+  function createSparkles(element) {
+    for (let i = 0; i < 6; i++) {
+      const sparkle = document.createElement('div');
+      sparkle.className = 'sparkle';
+      sparkle.style.cssText = `
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        background: #94b4d3;
+        border-radius: 50%;
+        pointer-events: none;
+        animation: sparkleAnimation 0.6s ease-out forwards;
+        left: ${Math.random() * 100}%;
+        top: ${Math.random() * 100}%;
+      `;
+
+      element.style.position = 'relative';
+      element.appendChild(sparkle);
+
+      setTimeout(() => sparkle.remove(), 600);
+    }
+  }
+
+  // Add sparkle keyframes
+  const sparkleCSS = `
+    @keyframes sparkleAnimation {
+      0% {
+        opacity: 1;
+        transform: scale(0) rotate(0deg);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(1) rotate(180deg);
+      }
+    }
+  `;
+
+  const styleSheet = document.createElement('style');
+  styleSheet.textContent = sparkleCSS;
+  document.head.appendChild(styleSheet);
+
+  // Initialize sparkle effect
+  document.addEventListener('DOMContentLoaded', addSparkleEffect);
+
+  // Language switching functions - FIXED VERSION
+  let languageDropdownOpen = false;
+
+  function toggleLanguageDropdown(event) {
+    // Prevent event bubbling and default behavior
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+    }
+
+    const dropdown = document.getElementById('language-dropdown');
+    const dropdownGuest = document.getElementById('language-dropdown-guest');
+
+    // Toggle the appropriate dropdown
+    if (dropdown) {
+      if (dropdown.classList.contains('hidden')) {
+        closeAllDropdowns();
+        dropdown.classList.remove('hidden');
+        languageDropdownOpen = true;
+      } else {
+        dropdown.classList.add('hidden');
+        languageDropdownOpen = false;
+      }
+    }
+
+    if (dropdownGuest) {
+      if (dropdownGuest.classList.contains('hidden')) {
+        closeAllDropdowns();
+        dropdownGuest.classList.remove('hidden');
+        languageDropdownOpen = true;
+      } else {
+        dropdownGuest.classList.add('hidden');
+        languageDropdownOpen = false;
+      }
+    }
+  }
+
+  function closeAllDropdowns() {
+    const dropdown = document.getElementById('language-dropdown');
+    const dropdownGuest = document.getElementById('language-dropdown-guest');
+
+    if (dropdown) {
+      dropdown.classList.add('hidden');
+    }
+    if (dropdownGuest) {
+      dropdownGuest.classList.add('hidden');
+    }
+    languageDropdownOpen = false;
+  }
+
+  function changeLanguage(lang, event) {
+    // Prevent default link behavior and event bubbling
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+    }
+
+    // Close dropdown immediately
+    closeAllDropdowns();
+
+    // Show loading state
+    showToast('Changing language...', 'info', 2000);
+
+    // Make AJAX request to change language
+    fetch(`/language/change/${lang}`, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
+      }
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          // Reload the page to apply new language
+          window.location.reload();
+        } else {
+          showErrorToast('Failed to change language');
+        }
+      })
+      .catch(error => {
+        console.error('Language change error:', error);
+        // Fallback to normal page redirect
+        window.location.href = `/language/change/${lang}`;
+      });
+  }
+
+  // Improved click outside handler with better targeting
+  document.addEventListener('click', function (event) {
+    // Only handle if dropdown is actually open
+    if (!languageDropdownOpen) return;
+
+    const dropdown = document.getElementById('language-dropdown');
+    const dropdownGuest = document.getElementById('language-dropdown-guest');
+
+    // Check if click is specifically on language elements
+    const isLanguageButton = event.target.closest('[onclick*="toggleLanguageDropdown"]');
+    const isDropdownContent = event.target.closest('#language-dropdown, #language-dropdown-guest');
+
+    // If click is outside language elements, close dropdowns
+    if (!isLanguageButton && !isDropdownContent) {
+      closeAllDropdowns();
+    }
+  }, true); // Use capture phase to handle before other events
+
+  // Prevent dropdown links from causing conflicts
+  document.addEventListener('DOMContentLoaded', function () {
+    // Add event listeners to language links with proper event handling
+    const languageLinks = document.querySelectorAll('#language-dropdown a, #language-dropdown-guest a');
+
+    languageLinks.forEach(link => {
+      // Remove any existing onclick handlers to prevent conflicts
+      link.removeAttribute('onclick');
+
+      link.addEventListener('click', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+
+        // Extract language from href
+        const href = this.getAttribute('href');
+        const lang = href.split('/').pop();
+
+        changeLanguage(lang, event);
+      }, true); // Use capture phase
+    });
+
+    // Add event listeners to language buttons with proper event handling
+    const languageButtons = document.querySelectorAll('[onclick*="toggleLanguageDropdown"]');
+
+    languageButtons.forEach(button => {
+      // Remove onclick attribute to prevent conflicts
+      const onclickHandler = button.getAttribute('onclick');
+      if (onclickHandler) {
+        button.removeAttribute('onclick');
+
+        button.addEventListener('click', function (event) {
+          // Only handle if this is specifically a language button
+          if (this.textContent.includes('Language') || this.textContent.includes('🌐')) {
+            toggleLanguageDropdown(event);
+          }
+        }, true); // Use capture phase
+      }
+    });
+  });
+
+  // Mobile menu toggle function
+  function toggleMobileMenu() {
+    const mobileMenu = document.getElementById('mobile-menu');
+    if (mobileMenu) {
+      mobileMenu.classList.toggle('hidden');
+    }
+  }
+
+  // Keyboard navigation for dropdown
+  document.addEventListener('keydown', function (event) {
+    if (languageDropdownOpen && event.key === 'Escape') {
+      closeAllDropdowns();
+    }
+  });
+
+  // Promotional Banner Functions
+  function initializePromoBanner() {
+    const countdownElement = document.getElementById('countdown');
+    if (!countdownElement) return;
+
+    // Set end time (24 hours from now)
+    const endTime = new Date().getTime() + (24 * 60 * 60 * 1000);
+
+    function updateCountdown() {
+      const now = new Date().getTime();
+      const distance = endTime - now;
+
+      if (distance < 0) {
+        countdownElement.innerHTML = "OFFER EXPIRED";
+        return;
+      }
+
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      countdownElement.innerHTML =
+        `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    // Update countdown every second
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+  }
+
+  // Scroll to shop function for ML layout
+  function scrollToShop() {
+    // Scroll to the shop section or main content
+    const shopSection = document.querySelector('#shop') || document.querySelector('main');
+    if (shopSection) {
+      shopSection.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+
+    // Show toast notification
+    setTimeout(() => {
+      showToast('Check out our special Diamond Package offer! 💎', 'success', 3000);
+    }, 1000);
+  }
+
+  // Initialize promo banner when DOM is loaded
+  document.addEventListener('DOMContentLoaded', function () {
+    initializePromoBanner();
+  });
+
+  window.toggleLanguageDropdown = toggleLanguageDropdown;
+  window.changeLanguage = changeLanguage;
+  window.toggleMobileMenu = toggleMobileMenu;
+  window.scrollToShop = scrollToShop;
+})();
+</script>

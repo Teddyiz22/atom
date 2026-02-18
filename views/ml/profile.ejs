@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <%- include('../partials/ml-head', { title: 'Profile - ATOM Game Shop' ,
+    description: 'View your ATOM Game Shop profile and transaction history.' }) %>
+</head>
+
+<body class="bg-gray-50 font-sans overflow-x-hidden">
+  <%- include('../partials/ml-nav') %>
+
+  <!-- Profile Section -->
+  <section class="relative min-h-screen pt-20 pb-16">
+    <!-- Modern Gradient Background -->
+    <div class="absolute inset-0 bg-gradient-to-br from-theme-900 via-theme-800 to-theme-950"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(148,180,211,0.3),rgba(255,255,255,0))]">
+    </div>
+    <div class="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]">
+    </div>
+
+    <!-- Content -->
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Header -->
+      <div class="text-center mb-8 animate-fade-in">
+        <h1 class="text-3xl md:text-5xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent mb-4">
+          User Profile
+        </h1>
+        <p class="text-lg text-gray-300 max-w-2xl mx-auto">
+          Manage your account and view your transaction history
+        </p>
+      </div>
+
+      <!-- User Information Card -->
+      <div class="bg-white/10 backdrop-blur-md rounded-2xl p-6 md:p-8 mb-8 border border-white/20 animate-slide-up">
+        <div class="flex flex-col md:flex-row  md:items-start space-y-1 md:space-y-0 md:space-x-8 py-0">
+
+          <div class="info-header flex flex-row items-center space-x-3 md:hidden mb-3">
+            <!-- Avatar -->
+            <div class="relative flex-shrink-0">
+              <div class="w-12 h-12 md:w-12 md:h-12
+      bg-gradient-to-br from-theme-400 to-theme-600
+      rounded-full flex items-center justify-center
+      text-white text-sm md:text-base font-semibold">
+                <% if (user && user.name) { %>
+                <%= user.name.split(' ').map(n => n[0]).join('').toUpperCase() %>
+                <% } else { %>
+                U
+                <% } %>
+              </div>
+
+              <!-- Status Badge -->
+              <div class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border border-white/30 flex items-center justify-center">
+                <svg class="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                </svg>
+              </div>
+            </div>
+
+            <!-- User Details -->
+            <div class="user-information flex-1">
+              <h2 class="text-2xl md:text-2xl font-bold text-white mb-1">
+                <% if (user && user.name) { %>
+                <%= user.name.toUpperCase() %>
+                <% } else { %>
+                USER NAME
+                <% } %>
+              </h2>
+              <p class="text-gray-300 text-sm mb-0">
+                <% if (user && user.email) { %>
+                <%= user.email %>
+                <% } else { %>
+                user@example.com
+                <% } %>
+              </p>
+            </div>
+          </div>
+
+
+          <!-- Profile Avatar -->
+          <div class="relative hidden md:flex">
+            <!-- Avatar -->
+            <div class="w-12 h-12 md:w-12 md:h-12
+              bg-gradient-to-br from-theme-400 to-theme-600
+              rounded-full flex items-center justify-center
+              text-white text-sm md:text-base font-semibold">
+              <% if (user && user.name) { %>
+              <%= user.name.split(' ').map(n => n[0]).join('').toUpperCase() %>
+              <% } else { %>
+              U
+              <% } %>
+            </div>
+
+            <!-- Status Badge -->
+            <div class="absolute -bottom-0.5 -right-0.5
+              w-3 h-3 bg-green-500 rounded-full
+              border border-white/30 flex items-center justify-center">
+              <svg class="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+              </svg>
+            </div>
+          </div>
+          <!-- User Details -->
+          <div class="flex-1 text-center md:text-left">
+            <h2 class="text-2xl md:text-2xl font-bold text-white mb-2 hidden md:flex">
+              <% if (user && user.name) { %>
+              <%= user.name.toUpperCase() %>
+              <% } else { %>
+              USER NAME
+              <% } %>
+            </h2>
+            <p class="text-gray-300 mb-4 hidden md:flex">
+              <% if (user && user.email) { %>
+              <%= user.email %>
+              <% } else { %>
+              user@example.com
+              <% } %>
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              <!-- <div class="bg-white/5 rounded-lg p-4 border border-white/10">
+                <p class="text-gray-400 text-sm">Account Status</p>
+                <div class="flex items-center mt-1">
+                  <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                  <span class="text-green-300 font-medium">
+                    <% if (user && user.status === ' active') { %>
+                    Verified
+                    <% } else { %>
+                    Active
+                    <% } %>
+                  </span>
+                </div>
+              </div> -->
+              <div class="bg-white/5 rounded-lg p-4 border border-white/10">
+                <p class="text-gray-400 text-sm">Total Orders</p>
+                <p class="text-white font-bold text-lg">
+                  <%= userStats.totalOrders %>
+                </p>
+              </div>
+              <div class="bg-white/5 rounded-lg p-4 border border-white/10">
+                <p class="text-gray-400 text-sm">Total Spent</p>
+                <div class="text-theme-300 font-bold text-lg">
+                  <% if (userStats.totalSpentMMK> 0 && userStats.totalSpentTHB > 0) { %>
+                  <!-- Both currencies -->
+                  <div>
+                    <%= Math.round(userStats.totalSpentMMK).toLocaleString() %> MMK
+                  </div>
+                  <div class="text-sm">
+                    <%= Math.round(userStats.totalSpentTHB).toLocaleString() %> THB
+                  </div>
+                  <% } else if (userStats.totalSpentMMK> 0) { %>
+                  <!-- Only MMK -->
+                  <%= Math.round(userStats.totalSpentMMK).toLocaleString() %> MMK
+                  <% } else if (userStats.totalSpentTHB> 0) { %>
+                  <!-- Only THB -->
+                  <%= Math.round(userStats.totalSpentTHB).toLocaleString() %> THB
+                  <% } else { %>
+                  <!-- No purchases -->
+                  0 MMK
+                  <% } %>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-3">
+              <button onclick="editProfile()" class="bg-gradient-to-r from-theme-500 to-theme-600 text-white px-6 py-2 rounded-lg font-medium hover:from-theme-600 hover:to-theme-700 transition-all duration-300 transform hover:scale-105">
+                Edit Profile
+              </button>
+              <button onclick="changePassword()" class="bg-white/10 border border-white/30 text-white px-6 py-2 rounded-lg font-medium hover:bg-white/20 transition-all duration-300">
+                Change Password
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white/10 backdrop-blur-md rounded-2xl p-6 md:p-8 border border-white/20 animate-slide-up">
+        <!-- Header -->
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 my-2">
+
+          <!-- Title -->
+          <h2 class="flex items-center gap-3 text-xl md:text-2xl font-bold text-white">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" class="w-6 h-6 md:w-7 md:h-7" fill="currentColor">
+              <path d="M320 128C426 128 512 214 512 320C512 426 426 512 320 512C254.8 512 197.1 479.5 162.4 429.7C152.3 415.2 132.3 411.7 117.8 421.8C103.3 431.9 99.8 451.9 109.9 466.4C156.1 532.6 233 576 320 576C461.4 576 576 461.4 576 320C576 178.6 461.4 64 320 64C234.3 64 158.5 106.1 112 170.7L112 144C112 126.3 97.7 112 80 112C62.3 112 48 126.3 48 144L48 256C48 273.7 62.3 288 80 288L104.6 288C105.1 288 105.6 288 106.1 288L192.1 288C209.8 288 224.1 273.7 224.1 256C224.1 238.3 209.8 224 192.1 224L153.8 224C186.9 166.6 249 128 320 128zM344 216C344 202.7 333.3 192 320 192C306.7 192 296 202.7 296 216L296 320C296 326.4 298.5 332.5 303 337L375 409C384.4 418.4 399.6 418.4 408.9 409C418.2 399.6 418.3 384.4 408.9 375.1L343.9 310.1L343.9 216z" />
+            </svg>
+
+            Transactions History
+          </h2>
+
+          <!-- Controls -->
+          <div class="flex gap-3">
+            <button id="btnTopUp" class="px-5 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition">
+              Top-Up
+            </button>
+
+            <button id="btnPurchase" class="px-5 py-2 rounded-lg bg-white/10 text-white text-sm font-medium border border-white/20 hover:bg-white/20 transition">
+              Purchase
+            </button>
+          </div>
+
+        </div>
+        <!-- Content Body  -->
+        <!-- Transactions Section -->
+        <div id="topupSection" class="bg-white/10 backdrop-blur-md rounded-2xl p-6 md:p-8 border border-white/20 animate-slide-up my-4">
+          <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+            <h2 class="text-xl md:text-2xl font-bold text-white mb-4 md:mb-0">Your Transactions</h2>
+
+            <!-- Table Controls -->
+            <div class="flex flex-col sm:flex-row gap-4">
+              <div class="flex items-center space-x-2">
+                <label class="text-gray-300 text-sm">Show</label>
+                <select class="bg-white/10 border border-white/30 rounded-lg px-3 py-1 text-white text-sm focus:outline-none focus:ring-2 focus:ring-theme-400">
+                  <option value="10">10</option>
+                  <option value="25">25</option>
+                  <option value="50">50</option>
+                </select>
+                <label class="text-gray-300 text-sm">entries</label>
+              </div>
+
+              <div class="flex items-center space-x-2">
+                <label class="text-gray-300 text-sm">Search:</label>
+                <input type="text" placeholder="Search..." class="bg-white/10 border border-white/30 rounded-lg px-3 py-1 text-white placeholder-white/60 text-sm focus:outline-none focus:ring-2 focus:ring-theme-400 w-full sm:w-40">
+              </div>
+            </div>
+          </div>
+
+          <!-- Desktop Table -->
+          <div class="hidden md:block overflow-x-auto">
+            <table class="w-full">
+              <thead>
+                <tr class="border-b border-white/20">
+                  <th class="text-left py-3 px-4 text-gray-300 font-medium">Type</th>
+                  <th class="text-left py-3 px-4 text-gray-300 font-medium">Account Name</th>
+                  <th class="text-left py-3 px-4 text-gray-300 font-medium">Account Number</th>
+                  <th class="text-left py-3 px-4 text-gray-300 font-medium">Amount</th>
+                  <th class="text-left py-3 px-4 text-gray-300 font-medium">Status</th>
+                  <th class="text-left py-3 px-4 text-gray-300 font-medium">Date</th>
+                </tr>
+              </thead>
+              <tbody id="transactionTable">
+                <!-- Transactions will be loaded here -->
+                <tr>
+                  <td colspan="6" class="text-center py-8 text-gray-400">
+                    <div class="flex flex-col items-center">
+                      <svg class="w-12 h-12 mb-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                        </path>
+                      </svg>
+                      <p>Loading transactions...</p>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Mobile Card View -->
+          <div class="md:hidden space-y-4" id="mobileTransactions">
+            <div class="text-center py-8 text-gray-400">
+              <div class="flex flex-col items-center">
+                <svg class="w-12 h-12 mb-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                  </path>
+                </svg>
+                <p>Loading transactions...</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pagination -->
+          <div class="flex flex-col sm:flex-row justify-between items-center mt-6 space-y-4 sm:space-y-0" id="pagination" style="display: none;">
+            <p class="text-gray-300 text-sm" id="paginationInfo">Showing 0 to 0 of 0 entries</p>
+            <div class="flex space-x-2" id="paginationButtons">
+              <!-- Pagination buttons will be generated here -->
+            </div>
+          </div>
+        </div>
+        <!-- Your Purchases Section -->
+        <div id="purchaseSection" class="bg-white/10 backdrop-blur-md rounded-2xl p-6 md:p-8 border border-white/20 animate-slide-up my-4 hidden">
+          <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+            <h2 class="text-xl md:text-2xl font-bold text-white mb-4 md:mb-0">Your Purchases</h2>
+
+            <!-- Purchases Stats -->
+            <div class="flex flex-col sm:flex-row gap-4 text-sm">
+              <div class="bg-white/5 rounded-lg px-4 py-2 border border-white/10">
+                <span class="text-gray-400">Total Orders:</span>
+                <span class="text-theme-300 font-bold ml-2">
+                  <%= userStats.totalOrders %>
+                </span>
+              </div>
+              <div class="bg-white/5 rounded-lg px-4 py-2 border border-white/10">
+                <span class="text-gray-400">Total Spent:</span>
+                <span class="text-theme-300 font-bold ml-2">
+                  <% if (userStats.totalSpentMMK> 0 && userStats.totalSpentTHB > 0) { %>
+                  <%= Math.round(userStats.totalSpentMMK).toLocaleString() %> MMK + <%=
+                      Math.round(userStats.totalSpentTHB).toLocaleString() %> THB
+                  <% } else if (userStats.totalSpentMMK> 0) { %>
+                  <%= Math.round(userStats.totalSpentMMK).toLocaleString() %> MMK
+                  <% } else if (userStats.totalSpentTHB> 0) { %>
+                  <%= Math.round(userStats.totalSpentTHB).toLocaleString() %> THB
+                  <% } else { %>
+                  0 MMK
+                  <% } %>
+                </span>
+              </div>
+            </div>
+          </div>
+
+
+          <% if (purchases && purchases.length> 0) { %>
+          <!-- Desktop Table -->
+          <div class="hidden md:block overflow-x-auto">
+            <table class="w-full">
+              <thead>
+                <tr class="border-b border-white/20">
+                  <th class="text-left py-3 px-4 text-gray-300 font-medium">Product</th>
+                  <th class="text-left py-3 px-4 text-gray-300 font-medium">Game Account</th>
+                  <th class="text-left py-3 px-4 text-gray-300 font-medium">Game Name</th>
+                  <th class="text-left py-3 px-4 text-gray-300 font-medium">Amount</th>
+                  <th class="text-left py-3 px-4 text-gray-300 font-medium">Status</th>
+                  <th class="text-left py-3 px-4 text-gray-300 font-medium">Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% purchases.forEach(purchase=> { %>
+                <tr class="border-b border-white/20 hover:bg-white/5 transition-colors">
+                  <td class="py-3 px-4">
+                    <div>
+                      <p class="text-white font-medium">
+                        <%= purchase.product_name %>
+                      </p>
+                      <% if (purchase.category) { %>
+                      <p class="text-gray-400 text-sm">
+                        <%= purchase.category %>
+                      </p>
+                      <% } %>
+                    </div>
+                  </td>
+                  <td class="py-3 px-4">
+                    <div>
+                      <p class="text-white font-mono text-sm">
+                        <%= purchase.ml_userid %>(<%= purchase.ml_zoneid %>)
+                      </p>
+                      <% if (purchase.ml_username) { %>
+                      <p class="text-gray-300 text-sm">
+                        <%= purchase.ml_username %>
+                      </p>
+                      <% } %>
+                    </div>
+                  </td>
+                  <td class="py-3 px-4">
+                    <span class="text-white font-semibold">
+                      <%= purchase.product_type_code ||  'Unknown' %>
+
+                    </span>
+                  </td>
+
+                  <td class="py-3 px-4">
+                    <span class="text-white font-semibold">
+                      <%= Math.round(parseFloat(purchase.amount)).toLocaleString() %>
+                      <%= purchase.currency %>
+                    </span>
+                  </td>
+                  <td class="py-3 px-4">
+                    <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold
+                    <% if (purchase.status === 'completed') { %>
+                      bg-green-500/20 text-green-300 border border-green-500/30
+                    <% } else if (purchase.status === 'pending') { %>
+                      bg-yellow-500/20 text-yellow-300 border border-yellow-500/30
+                    <% } else if (purchase.status === 'processing') { %>
+                      bg-blue-500/20 text-blue-300 border border-blue-500/30
+                    <% } else if (purchase.status === 'failed' || purchase.status === 'fail') { %>
+                      bg-red-500/20 text-red-300 border border-red-500/30
+                    <% } else { %>
+                      bg-gray-500/20 text-gray-300 border border-gray-500/30
+                    <% } %>
+                    ">
+                      <% if (purchase.status === 'completed') { %>
+                        ✅ Completed
+                      <% } else if (purchase.status === 'pending') { %>
+                        ⏳ Pending
+                      <% } else if (purchase.status === 'processing') { %>
+                        🔄 Processing
+                      <% } else if (purchase.status === 'failed' || purchase.status === 'fail') { %>
+                        ❌ Failed
+                      <% } else { %>
+                        <%= purchase.status %>
+                      <% } %>
+                    </span>
+                  </td>
+
+                  <td class="py-3 px-4 text-sm text-gray-300">
+                    <%= new Date(purchase.created_at).toLocaleDateString('en-US', { year: 'numeric' , month: 'short' ,
+                        day: 'numeric' , hour: '2-digit' , minute: '2-digit' }) %>
+                  </td>
+                  
+                </tr>
+                <% }); %>
+              </tbody>
+            </table>
+          </div>
+          
+          
+
+         
+          <!-- Mobile Card View -->
+         <div class="md:hidden space-y-4">
+          
+            <% purchases.forEach(purchase => { %>
+            <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+
+              <div class="flex justify-between items-start mb-3">
+                <div>
+                  <p class="text-white font-medium"><%= purchase.product_name %></p>
+                  <% if (purchase.category) { %>
+                  <p class="text-gray-400 text-sm"><%= purchase.category %></p>
+                  <% } %>
+                </div>
+
+                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium
+                <% if (purchase.status === 'completed') { %>
+                  bg-green-500/20 text-green-300 border border-green-500/30
+                <% } else if (purchase.status === 'pending') { %>
+                  bg-yellow-500/20 text-yellow-300 border border-yellow-500/30
+                <% } else if (purchase.status === 'processing') { %>
+                  bg-blue-500/20 text-blue-300 border border-blue-500/30
+                <% } else if (purchase.status === 'failed' || purchase.status === 'fail') { %>
+                  bg-red-500/20 text-red-300 border border-red-500/30
+                <% } else { %>
+                  bg-gray-500/20 text-gray-300 border border-gray-500/30
+                <% } %>">
+
+                  <% if (purchase.status === 'completed') { %>
+                    ✅ Completed
+                  <% } else if (purchase.status === 'pending') { %>
+                    ⏳ Pending
+                  <% } else if (purchase.status === 'processing') { %>
+                    🔄 Processing
+                  <% } else if (purchase.status === 'failed' || purchase.status === 'fail') { %>
+                    ❌ Failed
+                  <% } else { %>
+                    <%= purchase.status %>
+                  <% } %>
+                </span>
+              </div>
+
+              <div class="mb-2">
+                <p class="text-gray-400 text-sm">Game</p>
+                <p class="text-white font-semibold">
+                  <span>
+                  🎮 <%= purchase.product_type_code ||  'Unknown' %>
+                 </span>
+                </p>
+              </div>
+
+              <div class="mb-2">
+                <p class="text-gray-400 text-sm">Account</p>
+                <p class="text-white font-mono">
+                  <%= purchase.ml_userid %>(<%= purchase.ml_zoneid %>)
+                </p>
+                <% if (purchase.ml_username) { %>
+                <p class="text-gray-300 text-xs"><%= purchase.ml_username %></p>
+                <% } %>
+              </div>
+
+              <div class="mb-2">
+                <p class="text-gray-400 text-sm">Amount</p>
+                <p class="text-white font-semibold">
+                  <%= Math.round(parseFloat(purchase.amount)).toLocaleString() %> <%= purchase.currency %>
+                </p>
+              </div>
+
+              <div>
+                <p class="text-gray-400 text-sm">Date</p>
+                <p class="text-gray-300">
+                  <%= new Date(purchase.created_at).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  }) %>
+                </p>
+              </div>
+
+            </div>
+            <% }); %>
+          </div>
+
+
+          <% } else { %>
+          <!-- Empty State -->
+          <div class="text-center py-12 text-gray-400">
+            <div class="flex flex-col items-center">
+              <svg class="w-16 h-16 mb-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+              </svg>
+              <h3 class="text-lg font-medium text-white mb-2">No Purchases Yet</h3>
+              <p class="mb-6">Start shopping for ML diamonds to see your purchase history here!</p>
+              <a href="/shop" class="bg-gradient-to-r from-theme-500 to-theme-600 text-white px-6 py-3 rounded-lg font-medium hover:from-theme-600 hover:to-theme-700 transition-all duration-300 transform hover:scale-105">
+                🛒 Shop Now
+              </a>
+            </div>
+          </div>
+          <% } %>
+        </div>
+      </div>
+
+      <script>
+        // Get buttons & sections
+        const btnTopUp = document.getElementById('btnTopUp');
+        const btnPurchase = document.getElementById('btnPurchase');
+        const topupSection = document.getElementById('topupSection');
+        const purchaseSection = document.getElementById('purchaseSection');
+
+        // Show Top-Up by default
+        topupSection.classList.remove('hidden');
+        purchaseSection.classList.add('hidden');
+
+        btnTopUp.addEventListener('click', () => {
+          topupSection.classList.remove('hidden');
+          purchaseSection.classList.add('hidden');
+
+          // Update button styles
+          btnTopUp.classList.replace('bg-white/10', 'bg-blue-600');
+          btnTopUp.classList.replace('text-white', 'text-white'); // keep text
+          btnPurchase.classList.replace('bg-blue-600', 'bg-white/10');
+        });
+
+        btnPurchase.addEventListener('click', () => {
+          purchaseSection.classList.remove('hidden');
+          topupSection.classList.add('hidden');
+
+          // Update button styles
+          btnPurchase.classList.replace('bg-white/10', 'bg-blue-600');
+          btnTopUp.classList.replace('bg-blue-600', 'bg-white/10');
+        });
+      </script>
+
+
+
+    </div>
+
+  </section>
+
+  <%- include('../partials/ml-scripts') %>
+
+  <script>
+    // Beautiful modal functions
+    function editProfile() {
+      showEditProfileModal();
+    }
+
+    function changePassword() {
+      showChangePasswordModal();
+    }
+
+    // Edit Profile Modal
+    function showEditProfileModal() {
+      const modalBackdrop = document.createElement('div');
+      modalBackdrop.className = 'fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4';
+      modalBackdrop.id = 'edit-profile-modal';
+
+      modalBackdrop.innerHTML = `
+            <div class="bg-white/10 backdrop-blur-md rounded-2xl p-6 max-w-md w-full border border-white/20 shadow-2xl animate-scale-in">
+              <!-- Header -->
+              <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-gradient-to-br from-theme-400 to-theme-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                  </svg>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-2">Edit Profile</h3>
+                <p class="text-white/80 text-sm">Update your account information</p>
+              </div>
+
+              <!-- Form -->
+              <form id="editProfileForm" class="space-y-4">
+                <!-- Name -->
+                <div>
+                  <label class="block text-white/90 text-sm font-medium mb-2">Full Name</label>
+                  <input type="text" id="editName" name="name" value="<%= user.name %>"
+                    class="w-full px-4 py-3 bg-white/10 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-theme-400 focus:border-transparent transition-all duration-300">
+                  <div id="nameError" class="text-red-300 text-sm mt-1 hidden"></div>
+                </div>
+
+                <!-- Email (read-only) -->
+                <div>
+                  <label class="block text-white/90 text-sm font-medium mb-2">Email Address</label>
+                  <input type="email" value="<%= user.email %>" readonly
+                    class="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white/60 cursor-not-allowed">
+                  <p class="text-white/60 text-xs mt-1">Email cannot be changed</p>
+                </div>
+
+                <!-- Phone -->
+                <div>
+                  <label class="block text-white/90 text-sm font-medium mb-2">Phone Number</label>
+                  <input type="tel" id="editPhone" name="phone" value="<%= user.phone_number || '' %>"
+                    class="w-full px-4 py-3 bg-white/10 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-theme-400 focus:border-transparent transition-all duration-300"
+                    placeholder="Enter your phone number">
+                  <div id="phoneError" class="text-red-300 text-sm mt-1 hidden"></div>
+                </div>
+              </form>
+
+              <!-- Action buttons -->
+              <div class="flex space-x-3 mt-6">
+                <button onclick="closeEditProfileModal()" 
+                  class="flex-1 bg-white/10 border border-white/30 text-white py-3 px-4 rounded-lg hover:bg-white/20 transition-all duration-300 font-medium">
+                  Cancel
+                </button>
+                <button onclick="saveProfile()" 
+                  class="flex-1 bg-gradient-to-r from-theme-500 to-theme-600 text-white py-3 px-4 rounded-lg hover:from-theme-600 hover:to-theme-700 transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:scale-105" 
+                  id="save-profile-btn">
+                  Save Changes
+                </button>
+              </div>
+            </div>
+          `;
+
+      document.body.appendChild(modalBackdrop);
+
+      // Add click outside to close
+      modalBackdrop.addEventListener('click', function(e) {
+        if (e.target === modalBackdrop) {
+          closeEditProfileModal();
+        }
+      });
+
+      // Handle Enter key
+      modalBackdrop.querySelector('#editProfileForm').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          saveProfile();
+        }
+      });
+    }
+
+    // Change Password Modal
+    function showChangePasswordModal() {
+      const modalBackdrop = document.createElement('div');
+      modalBackdrop.className = 'fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4';
+      modalBackdrop.id = 'change-password-modal';
+
+      modalBackdrop.innerHTML = `
+            <div class="bg-white/10 backdrop-blur-md rounded-2xl p-6 max-w-md w-full border border-white/20 shadow-2xl animate-scale-in">
+              <!-- Header -->
+              <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                  </svg>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-2">Change Password</h3>
+                <p class="text-white/80 text-sm">Update your account password</p>
+              </div>
+
+              <!-- Form -->
+              <form id="changePasswordForm" class="space-y-4">
+                <!-- Current Password -->
+                <div>
+                  <label class="block text-white/90 text-sm font-medium mb-2">Current Password</label>
+                  <input type="password" id="currentPassword" name="currentPassword" required
+                    class="w-full px-4 py-3 bg-white/10 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-all duration-300"
+                    placeholder="Enter your current password">
+                  <div id="currentPasswordError" class="text-red-300 text-sm mt-1 hidden"></div>
+                </div>
+
+                <!-- New Password -->
+                <div>
+                  <label class="block text-white/90 text-sm font-medium mb-2">New Password</label>
+                  <input type="password" id="newPassword" name="newPassword" required
+                    class="w-full px-4 py-3 bg-white/10 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-all duration-300"
+                    placeholder="Enter your new password">
+                  <div id="newPasswordError" class="text-red-300 text-sm mt-1 hidden"></div>
+                  <p class="text-white/60 text-xs mt-1">Password must be at least 6 characters long</p>
+                </div>
+
+                <!-- Confirm New Password -->
+                <div>
+                  <label class="block text-white/90 text-sm font-medium mb-2">Confirm New Password</label>
+                  <input type="password" id="confirmNewPassword" name="confirmNewPassword" required
+                    class="w-full px-4 py-3 bg-white/10 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-all duration-300"
+                    placeholder="Confirm your new password">
+                  <div id="confirmNewPasswordError" class="text-red-300 text-sm mt-1 hidden"></div>
+                </div>
+              </form>
+
+              <!-- Action buttons -->
+              <div class="flex space-x-3 mt-6">
+                <button onclick="closeChangePasswordModal()" 
+                  class="flex-1 bg-white/10 border border-white/30 text-white py-3 px-4 rounded-lg hover:bg-white/20 transition-all duration-300 font-medium">
+                  Cancel
+                </button>
+                <button onclick="savePassword()" 
+                  class="flex-1 bg-gradient-to-r from-orange-500 to-orange-600 text-white py-3 px-4 rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:scale-105" 
+                  id="save-password-btn">
+                  Change Password
+                </button>
+              </div>
+            </div>
+          `;
+
+      document.body.appendChild(modalBackdrop);
+
+      // Add click outside to close
+      modalBackdrop.addEventListener('click', function(e) {
+        if (e.target === modalBackdrop) {
+          closeChangePasswordModal();
+        }
+      });
+
+      // Handle Enter key
+      modalBackdrop.querySelector('#changePasswordForm').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          savePassword();
+        }
+      });
+    }
+
+    // Close modals
+    function closeEditProfileModal() {
+      const modal = document.getElementById('edit-profile-modal');
+      if (modal) {
+        modal.style.opacity = '0';
+        modal.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+          modal.remove();
+        }, 200);
+      }
+    }
+
+    function closeChangePasswordModal() {
+      const modal = document.getElementById('change-password-modal');
+      if (modal) {
+        modal.style.opacity = '0';
+        modal.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+          modal.remove();
+        }, 200);
+      }
+    }
+
+    // Save profile function
+    async function saveProfile() {
+      const saveBtn = document.getElementById('save-profile-btn');
+      const nameInput = document.getElementById('editName');
+      const phoneInput = document.getElementById('editPhone');
+      const nameError = document.getElementById('nameError');
+      const phoneError = document.getElementById('phoneError');
+
+      // Clear previous errors
+      nameError.classList.add('hidden');
+      phoneError.classList.add('hidden');
+      nameInput.classList.remove('border-red-500');
+      phoneInput.classList.remove('border-red-500');
+
+      // Validate
+      let hasError = false;
+      if (!nameInput.value.trim()) {
+        nameError.textContent = 'Name is required';
+        nameError.classList.remove('hidden');
+        nameInput.classList.add('border-red-500');
+        hasError = true;
+      }
+
+      if (hasError) return;
+
+      // Show loading
+      const originalText = saveBtn.textContent;
+      saveBtn.textContent = 'Saving...';
+      saveBtn.disabled = true;
+
+      try {
+        const response = await fetch('/users/update-profile', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            name: nameInput.value.trim(),
+            phone: phoneInput.value.trim()
+          })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          showSuccessToast(result.message || 'Profile updated successfully!');
+          closeEditProfileModal();
+          // Refresh the page to show updated data
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
+        } else {
+          showErrorToast(result.message || 'Failed to update profile');
+        }
+      } catch (error) {
+        console.error('Profile update error:', error);
+        showErrorToast('Network error. Please try again.');
+      } finally {
+        saveBtn.textContent = originalText;
+        saveBtn.disabled = false;
+      }
+    }
+
+    // Save password function
+    async function savePassword() {
+      const saveBtn = document.getElementById('save-password-btn');
+      const currentPasswordInput = document.getElementById('currentPassword');
+      const newPasswordInput = document.getElementById('newPassword');
+      const confirmNewPasswordInput = document.getElementById('confirmNewPassword');
+      const currentPasswordError = document.getElementById('currentPasswordError');
+      const newPasswordError = document.getElementById('newPasswordError');
+      const confirmNewPasswordError = document.getElementById('confirmNewPasswordError');
+
+      // Clear previous errors
+      [currentPasswordError, newPasswordError, confirmNewPasswordError].forEach(el => el.classList.add('hidden'));
+      [currentPasswordInput, newPasswordInput, confirmNewPasswordInput].forEach(el => el.classList.remove('border-red-500'));
+
+      // Validate
+      let hasError = false;
+
+      if (!currentPasswordInput.value) {
+        currentPasswordError.textContent = 'Current password is required';
+        currentPasswordError.classList.remove('hidden');
+        currentPasswordInput.classList.add('border-red-500');
+        hasError = true;
+      }
+
+      if (!newPasswordInput.value) {
+        newPasswordError.textContent = 'New password is required';
+        newPasswordError.classList.remove('hidden');
+        newPasswordInput.classList.add('border-red-500');
+        hasError = true;
+      } else if (newPasswordInput.value.length < 6) {
+        newPasswordError.textContent = 'Password must be at least 6 characters long';
+        newPasswordError.classList.remove('hidden');
+        newPasswordInput.classList.add('border-red-500');
+        hasError = true;
+      }
+
+      if (!confirmNewPasswordInput.value) {
+        confirmNewPasswordError.textContent = 'Please confirm your new password';
+        confirmNewPasswordError.classList.remove('hidden');
+        confirmNewPasswordInput.classList.add('border-red-500');
+        hasError = true;
+      } else if (newPasswordInput.value !== confirmNewPasswordInput.value) {
+        confirmNewPasswordError.textContent = 'Passwords do not match';
+        confirmNewPasswordError.classList.remove('hidden');
+        confirmNewPasswordInput.classList.add('border-red-500');
+        hasError = true;
+      }
+
+      if (hasError) return;
+
+      // Show loading
+      const originalText = saveBtn.textContent;
+      saveBtn.textContent = 'Changing...';
+      saveBtn.disabled = true;
+
+      try {
+        const response = await fetch('/users/change-password', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            currentPassword: currentPasswordInput.value,
+            newPassword: newPasswordInput.value,
+            confirmNewPassword: confirmNewPasswordInput.value
+          })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          showSuccessToast(result.message || 'Password changed successfully!');
+          closeChangePasswordModal();
+        } else {
+          if (result.field === 'currentPassword') {
+            currentPasswordError.textContent = result.message;
+            currentPasswordError.classList.remove('hidden');
+            currentPasswordInput.classList.add('border-red-500');
+          } else {
+            showErrorToast(result.message || 'Failed to change password');
+          }
+        }
+      } catch (error) {
+        console.error('Password change error:', error);
+        showErrorToast('Network error. Please try again.');
+      } finally {
+        saveBtn.textContent = originalText;
+        saveBtn.disabled = false;
+      }
+    }
+
+    // Load user transactions
+    async function loadTransactions() {
+      try {
+        console.log('🔄 Loading transactions...');
+        const response = await fetch('/api/user/transactions');
+        console.log('📡 API Response status:', response.status);
+
+        if (!response.ok) {
+          console.error('❌ API Response not OK:', response.status, response.statusText);
+          const errorText = await response.text();
+          console.error('Error details:', errorText);
+          showErrorToast('Failed to load transaction data - Authentication error');
+          return;
+        }
+
+        const data = await response.json();
+        console.log('📊 API Response data:', data);
+
+        if (data.success) {
+          console.log('✅ Data loaded successfully');
+          // Update statistics
+          updateStatistics(data.stats);
+
+          // Update transactions table
+          updateTransactionsTable(data.transactions);
+        } else {
+          console.error('❌ API returned error:', data.error);
+          showErrorToast('Failed to load transaction data: ' + data.error);
+        }
+      } catch (error) {
+        console.error('❌ JavaScript error loading transactions:', error);
+        showErrorToast('Failed to load transaction data: ' + error.message);
+      }
+    }
+
+    function updateStatistics(stats) {
+      // Statistics are now rendered on the server side
+      // This function is kept for wallet transaction stats only
+      console.log('✅ Wallet transaction stats loaded:', stats);
+    }
+
+    function updateTransactionsTable(transactions) {
+      const tableBody = document.querySelector('#transactionTable');
+      const mobileContainer = document.querySelector('#mobileTransactions');
+
+      if (transactions.length === 0) {
+        // Show empty state for desktop
+        tableBody.innerHTML = `
+                <tr>
+                  <td colspan="6" class="text-center py-8 text-gray-400">
+                    <div class="flex flex-col items-center">
+                      <svg class="w-12 h-12 mb-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                      </svg>
+                      <p>No transactions found</p>
+                      <p class="text-sm mt-2">Start ordering to see your transaction history here!</p>
+                    </div>
+                  </td>
+                </tr>
+              `;
+
+        // Show empty state for mobile
+        mobileContainer.innerHTML = `
+                <div class="text-center py-8 text-gray-400">
+                  <div class="flex flex-col items-center">
+                    <svg class="w-12 h-12 mb-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <p>No transactions found</p>
+                    <p class="text-sm mt-2">Start ordering to see your transaction history here!</p>
+                  </div>
+                </div>
+              `;
+        return;
+      }
+
+      // Build table rows for desktop
+      const rows = transactions.map(transaction => {
+        const statusClass = getStatusClass(transaction.status);
+        const statusText = getStatusText(transaction.status);
+
+        return `
+                <tr class="border-b border-white/20 hover:bg-white/5 transition-colors">
+                  <td class="py-3 px-4 text-sm text-white">${transaction.type}</td>
+                  <td class="py-3 px-4 text-sm text-white">${transaction.accountName}</td>
+                  <td class="py-3 px-4 text-sm font-mono text-white">${transaction.accountNumber}</td>
+                  <td class="py-3 px-4 text-sm font-semibold text-white">${transaction.amount.toLocaleString()} ${transaction.currency}</td>
+                  <td class="py-3 px-4">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusClass}">
+                      ${statusText}
+                    </span>
+                    ${transaction.reason ? `<div class="text-xs text-red-300 mt-1">${transaction.reason}</div>` : ''}
+                  </td>
+                  <td class="py-3 px-4 text-sm text-gray-300">${transaction.date}</td>
+                </tr>
+              `;
+      }).join('');
+
+      tableBody.innerHTML = rows;
+
+      // Build mobile cards
+      const mobileCards = transactions.map(transaction => {
+        const statusClass = getStatusClass(transaction.status);
+        const statusText = getStatusText(transaction.status);
+
+        return `
+                <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+                  <div class="flex justify-between items-start mb-3">
+                    <div>
+                      <p class="text-white font-medium">${transaction.type}</p>
+                      <p class="text-gray-300 text-sm">${transaction.accountName}</p>
+                    </div>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusClass}">
+                      ${statusText}
+                    </span>
+                  </div>
+                  <div class="grid grid-cols-2 gap-3 text-sm">
+                    <div>
+                      <p class="text-gray-400">Account Number</p>
+                      <p class="text-white font-mono">${transaction.accountNumber}</p>
+                    </div>
+                    <div>
+                      <p class="text-gray-400">Amount</p>
+                      <p class="text-white font-semibold">${transaction.amount.toLocaleString()} ${transaction.currency}</p>
+                    </div>
+                    <div>
+                      <p class="text-gray-400">Date</p>
+                      <p class="text-gray-300">${transaction.date}</p>
+                    </div>
+                    ${transaction.reason ? `
+                    <div class="col-span-2">
+                      <p class="text-gray-400">Reason</p>
+                      <p class="text-red-300 text-sm">${transaction.reason}</p>
+                    </div>
+                    ` : ''}
+                  </div>
+                </div>
+              `;
+      }).join('');
+
+      mobileContainer.innerHTML = mobileCards;
+    }
+
+    function getStatusClass(status) {
+      switch (status) {
+        case 'approved':
+          return 'bg-green-100 text-green-800';
+        case 'rejected':
+          return 'bg-red-100 text-red-800';
+        case 'pending':
+          return 'bg-yellow-100 text-yellow-800';
+        default:
+          return 'bg-gray-100 text-gray-800';
+      }
+    }
+
+    function getStatusText(status) {
+      switch (status) {
+        case 'approved':
+          return '✅ Approved';
+        case 'rejected':
+          return '❌ Rejected';
+        case 'pending':
+          return '⏳ Pending';
+        default:
+          return status;
+      }
+    }
+
+    // Toast functions (if not already defined)
+    function showErrorToast(message) {
+      if (typeof Toastify !== 'undefined') {
+        Toastify({
+          text: message,
+          duration: 5000,
+          gravity: "top",
+          position: "right",
+          style: {
+            background: "linear-gradient(to right, #ff5f6d, #ffc371)",
+          }
+        }).showToast();
+      }
+    }
+
+    function showSuccessToast(message) {
+      if (typeof Toastify !== 'undefined') {
+        Toastify({
+          text: message,
+          duration: 5000,
+          gravity: "top",
+          position: "right",
+          style: {
+            background: "linear-gradient(to right, #00b09b, #96c93d)",
+          }
+        }).showToast();
+      }
+    }
+
+    // Add CSS for modal animations
+    if (!document.querySelector('#modal-styles')) {
+      const style = document.createElement('style');
+      style.id = 'modal-styles';
+      style.textContent = `
+            @keyframes scale-in {
+              0% { transform: scale(0.9); opacity: 0; }
+              100% { transform: scale(1); opacity: 1; }
+            }
+            .animate-scale-in {
+              animation: scale-in 0.3s ease-out;
+            }
+          `;
+      document.head.appendChild(style);
+    }
+
+    // Load transactions when page loads
+    document.addEventListener('DOMContentLoaded', loadTransactions);
+  </script>
+  <%- include('../partials/ml-footer') %>
+  <%- include('../partials/ml-scripts') %>
+</body>
+
+</html>

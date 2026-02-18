@@ -1,0 +1,114 @@
+<%
+  const providerLabel = provider === 'g2bulk' ? 'G2Bulk' : (provider === 'smile' ? 'Smile' : provider);
+%>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="flex items-start justify-between gap-4 border-b border-white/10 pb-5 mb-8">
+    <div>
+      <h1 class="text-3xl font-extrabold text-white tracking-tight">
+        <span class="<%= provider === 'smile' ? 'text-indigo-300' : 'text-teal-300' %>"><%= providerLabel %></span> Product Types
+      </h1>
+      <p class="text-sm text-gray-300 mt-2">Choose a type to manage products under this provider.</p>
+    </div>
+    <div class="flex items-center gap-2">
+      <a href="javascript:history.back()" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-sm font-semibold text-gray-100 transition-colors">
+        <svg class="h-4 w-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        Back
+      </a>
+      <a href="/admin/product-types" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-500 text-sm font-semibold text-white transition-colors">
+        <i class="fas fa-tags"></i>
+        Manage Product Types
+      </a>
+    </div>
+  </div>
+
+  <% if (typeof success !== 'undefined' && success) { %>
+    <div class="mb-6 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-emerald-200">
+      Saved.
+    </div>
+  <% } %>
+
+  <% if (typeof error !== 'undefined' && error) { %>
+    <div class="mb-6 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-red-200">
+      <%= error %>
+    </div>
+  <% } %>
+
+  <% if (!productTypes || productTypes.length === 0) { %>
+    <div class="rounded-2xl border border-white/10 bg-white/5 p-8 text-center text-gray-300">
+      No product types yet.
+    </div>
+  <% } else { %>
+    <% if (provider === 'g2bulk') { %>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        <% productTypes.forEach(pt => { %>
+          <a href="/admin/product-management/<%= provider %>/<%= pt.typeCode %>" class="group block rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 transition p-4">
+            <div class="flex items-start justify-between gap-3">
+              <div class="min-w-0">
+                <div class="text-sm font-bold text-white leading-snug truncate"><%= pt.name %></div>
+              </div>
+              <span class="mt-1 h-2 w-2 rounded-full <%= pt.status === 'active' ? 'bg-emerald-400' : 'bg-red-400' %>"></span>
+            </div>
+
+            <div class="mt-3 space-y-1 text-xs">
+              <div class="flex items-center justify-between gap-4 text-gray-400">
+                <span>Code:</span>
+                <span class="font-mono text-gray-200 truncate"><%= pt.typeCode %></span>
+              </div>
+              <div class="flex items-center justify-between gap-4 text-gray-400">
+                <span>Provider:</span>
+                <span class="text-gray-200"><%= provider %></span>
+              </div>
+              <div class="flex items-center justify-between gap-4 text-gray-400">
+                <span>Type:</span>
+                <span class="text-gray-200"><%= pt.type %></span>
+              </div>
+            </div>
+
+            <div class="mt-4">
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase <%= pt.status === 'active' ? 'bg-emerald-500/15 text-emerald-200 border border-emerald-400/20' : 'bg-red-500/15 text-red-200 border border-red-400/20' %>">
+                <%= pt.status %>
+              </span>
+            </div>
+          </a>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl">
+        <% productTypes.forEach(pt => { %>
+          <div class="group rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 transition p-5">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <div class="text-lg font-bold text-white leading-snug"><%= pt.name %></div>
+                <div class="mt-2 text-sm text-gray-300">
+                  Code: <span class="font-mono text-gray-200"><%= pt.typeCode %></span>
+                </div>
+                <div class="mt-1 text-sm text-gray-400">
+                  Type: <span class="text-gray-200"><%= pt.type %></span>
+                </div>
+              </div>
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase <%= pt.status === 'active' ? 'bg-emerald-500/15 text-emerald-200 border border-emerald-400/20' : 'bg-white/10 text-gray-200 border border-white/10' %>">
+                <%= pt.status %>
+              </span>
+            </div>
+
+            <div class="mt-5 flex flex-wrap gap-2">
+              <a class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-sm font-semibold text-gray-100 transition-colors" href="/admin/product-management/<%= provider %>/<%= pt.typeCode %>">
+                Open
+                <svg class="h-4 w-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              </a>
+              <a class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-sm font-semibold text-white transition-colors" href="/admin/product-management/<%= provider %>/<%= pt.typeCode %>/new">
+                Add Product
+                <i class="fas fa-plus text-xs"></i>
+              </a>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  <% } %>
+</div>

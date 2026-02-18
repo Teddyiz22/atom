@@ -1,0 +1,130 @@
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+  <div>
+    <h1 class="h3 mb-0 text-gray-800">
+      <i class="fas fa-money-check-alt text-primary mr-2"></i>
+      Payment Methods
+    </h1>
+    <p class="text-muted mb-0">Manage bank / wallet accounts shown to customers</p>
+  </div>
+  <a href="/admin" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+    <i class="fas fa-arrow-left fa-sm text-white-50"></i> Back to Dashboard
+  </a>
+</div>
+
+<% if (typeof success !== 'undefined' && success) { %>
+  <div class="alert alert-success">
+    <i class="fas fa-check-circle mr-2"></i>
+    Saved.
+  </div>
+<% } %>
+
+<% if (typeof error !== 'undefined' && error) { %>
+  <div class="alert alert-danger">
+    <i class="fas fa-exclamation-triangle mr-2"></i>
+    <%= error %>
+  </div>
+<% } %>
+
+<div class="row">
+  <div class="col-lg-5">
+    <div class="card shadow mb-4">
+      <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Add / Update</h6>
+      </div>
+      <div class="card-body">
+        <form method="POST" action="/admin/payment-methods/save">
+          <input type="hidden" name="id" value="<%= form?.id || '' %>">
+
+          <div class="form-group">
+            <label for="payment_type">Payment Type</label>
+            <input type="text" class="form-control" id="payment_type" name="payment_type" required value="<%= form?.payment_type || '' %>">
+          </div>
+
+          <div class="form-group">
+            <label for="account_name">Account Name</label>
+            <input type="text" class="form-control" id="account_name" name="account_name" required value="<%= form?.account_name || '' %>">
+          </div>
+
+          <div class="form-group">
+            <label for="account_number">Account Number</label>
+            <input type="text" class="form-control" id="account_number" name="account_number" required value="<%= form?.account_number || '' %>">
+          </div>
+
+          <div class="form-group">
+            <label for="region">Region</label>
+            <select class="form-control" id="region" name="region" required>
+              <option value="Myanmar" <%= form?.region === 'Myanmar' ? 'selected' : '' %>>Myanmar</option>
+              <option value="Thailand" <%= form?.region === 'Thailand' ? 'selected' : '' %>>Thailand</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="is_active">Status</label>
+            <select class="form-control" id="is_active" name="is_active" required>
+              <option value="active" <%= (form?.is_active || 'active') === 'active' ? 'selected' : '' %>>active</option>
+              <option value="inactive" <%= form?.is_active === 'inactive' ? 'selected' : '' %>>inactive</option>
+            </select>
+          </div>
+
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-save mr-2"></i>
+            Save
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-7">
+    <div class="card shadow mb-4">
+      <div class="card-header py-3 d-flex align-items-center justify-content-between">
+        <h6 class="m-0 font-weight-bold text-primary">All Payment Methods</h6>
+        <span class="small text-muted"><%= paymentMethods?.length || 0 %> records</span>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover">
+            <thead class="thead-light">
+              <tr>
+                <th>ID</th>
+                <th>Region</th>
+                <th>Type</th>
+                <th>Account</th>
+                <th>Status</th>
+                <th style="width: 90px;"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (!paymentMethods || paymentMethods.length === 0) { %>
+                <tr>
+                  <td colspan="6" class="text-center text-muted">No payment methods yet.</td>
+                </tr>
+              <% } else { %>
+                <% paymentMethods.forEach(pm => { %>
+                  <tr>
+                    <td><%= pm.id %></td>
+                    <td><%= pm.region %></td>
+                    <td><%= pm.payment_type %></td>
+                    <td>
+                      <div class="font-weight-bold"><%= pm.account_name %></div>
+                      <div class="text-muted small"><%= pm.account_number %></div>
+                    </td>
+                    <td><%= pm.is_active %></td>
+                    <td class="text-center">
+                      <form method="POST" action="/admin/payment-methods/delete" class="m-0" onsubmit="return confirm('Delete this payment method?')">
+                        <input type="hidden" name="id" value="<%= pm.id %>">
+                        <button type="submit" class="btn btn-sm btn-danger">
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </form>
+                    </td>
+                  </tr>
+                <% }) %>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

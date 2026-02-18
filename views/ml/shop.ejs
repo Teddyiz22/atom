@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shop - ATOM Game Shop</title>
+  <meta name="description" content="Buy Mobile Legends diamonds instantly with MMK and THB currency. Fast, secure, and affordable diamond top-up service.">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#38B6FF',
+            secondary: '#2493D4',
+            accent: '#353535',
+            post: '#94B4D3',
+            mlblue: '#38B6FF',
+            mlgold: '#2493D4',
+            mlpurple: '#353535',
+            theme: {
+              50: '#e6f7ff',
+              100: '#b3e9ff',
+              200: '#80dbff',
+              300: '#4dcdff',
+              400: '#38B6FF',
+              500: '#2493D4',
+              600: '#1f7db8',
+              700: '#1a679c',
+              800: '#155180',
+              900: '#353535',
+              950: '#2a2a2a'
+            }
+          },
+          backgroundImage: {
+            'ml-gradient': 'linear-gradient(135deg, #38B6FF 0%, #2493D4 50%, #353535 100%)',
+            'hero-ml': 'linear-gradient(135deg, rgba(56, 182, 255, 0.9) 0%, rgba(36, 147, 212, 0.8) 50%, rgba(53, 53, 53, 0.9) 100%)',
+            'hero-pattern': "url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%23ffffff\" fill-opacity=\"0.1\"%3E%3Ccircle cx=\"30\" cy=\"30\" r=\"2\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')"
+          },
+          animation: {
+            'float': 'float 6s ease-in-out infinite',
+            'glow': 'glow 2s ease-in-out infinite alternate',
+            'bounce-slow': 'bounce 3s infinite',
+            'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'fade-in': 'fadeIn 0.8s ease-out',
+            'slide-up': 'slideUp 0.6s ease-out',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-gray-50 font-sans overflow-x-hidden">
+  <%- include('../partials/ml-nav') %>
+
+  <%
+    // UI-only display name helper
+    // For DOUBLE_DIAMOND packages, show 50/150/250/500 labels while keeping DB values intact
+    function displayName(product) {
+      if (product && product.category === 'DOUBLE_DIAMOND') {
+        const map = { 55: '50', 165: '150', 275: '250', 565: '500' };
+        const label = map[product.diamond_amount];
+        if (label) {
+          return label + ' Double Diamonds';
+        }
+      }
+      return product ? product.name : '';
+    }
+  %>
+
+  <!-- Shop Section -->
+  <section class="relative min-h-screen pt-20 pb-16">
+    <!-- Modern Gradient Background -->
+    <div class="absolute inset-0 bg-gradient-to-br from-theme-900 via-theme-800 to-theme-950"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(148,180,211,0.3),rgba(255,255,255,0))]">
+    </div>
+    <div class="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]">
+    </div>
+
+    <!-- Content -->
+    <div class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <% if (typeof mode !== 'undefined' && mode === 'types') { %>
+      <!-- Product Type Cards View -->
+      <div class="text-center mb-10 animate-fade-in">
+        <h1 class="text-3xl md:text-5xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent mb-4">
+          Choose Game Or Product Type
+        </h1>
+        <p class="text-lg text-gray-300 max-w-2xl mx-auto">
+          Select the game or product type you want to top up.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-6 justify-items-center">
+        <% if (productTypes && productTypes.length > 0) { %>
+        <%
+          const order = ['ml', 'mlphp', 'mlbb_special', 'mcgg', 'hok', 'pubgm'];
+
+          productTypes.sort((a, b) => {
+            const aIndex = order.indexOf(a.typeCode.toLowerCase());
+            const bIndex = order.indexOf(b.typeCode.toLowerCase());
+            return aIndex - bIndex;
+          });
+          %>
+
+
+        <% productTypes.forEach(function(type) { 
+          // Image mapping for specific games using typeCode
+          const imageMap = {
+            'hok': '/images/hok.png',
+            'pubgm': '/images/pubgm.png',
+            'mlphp': '/images/mlbb_special.png',
+            'ml': '/images/mlbb_special.png',
+            'mlbb_special': '/images/mlbb_special.png',
+            'mcgg': '/images/mcgg.png'
+          };
+          // Try to match by typeCode (case-insensitive)
+          const typeCode = (type.typeCode || '').toLowerCase();
+          const gameImage = imageMap[typeCode];
+        %>
+        <a href="/shop/<%= type.typeCode %>" class="group flex flex-col items-center hover:-translate-y-2 transition-all duration-300 w-full max-w-[120px]">
+          <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden shadow-lg mb-3 ring-1 ring-white/10 group-hover:ring-theme-400/70 group-hover:shadow-theme-400/20 transition-all bg-white/5 relative">
+            <% if (gameImage) { %>
+              <img src="<%= gameImage %>" alt="<%= type.name %>" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+            <% } else { %>
+              <div class="w-full h-full bg-ml-gradient flex items-center justify-center">
+                <span class="text-3xl filter drop-shadow-md">💎</span>
+              </div>
+            <% } %>
+            
+            <!-- Shine effect on hover -->
+            <div class="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/0 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          </div>
+          
+          <h2 class="text-sm font-bold text-white text-center leading-tight group-hover:text-theme-300 transition-colors px-1">
+            <%= type.name %>
+          </h2>
+        </a>
+        <% }) %>
+        <% } else { %>
+        <div class="col-span-full text-center text-gray-300">
+          No product types available yet.
+        </div>
+        <% } %>
+      </div>
+
+      <% } else { %>
+      <!-- Mobile Legends Product View -->
+      <!-- Header -->
+      <div class="text-center mb-8 animate-fade-in">
+        <h1 class="text-3xl md:text-5xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent mb-4">
+          Order Mobile Legends Diamonds
+        </h1>
+        <p class="text-lg text-gray-300 max-w-2xl mx-auto">
+          Enter your Mobile Legends ID and select your diamond package for instant delivery
+        </p>
+        <% if (user) { %>
+        <div class="mt-4 p-4 bg-green-500/20 border border-green-500/30 rounded-lg inline-block">
+          <p class="text-green-300">👋 Welcome back, <span class="font-bold text-white">
+              <%= user.name %>
+            </span>!</p>
+        </div>
+        <% } %>
+      </div>
+
+      <!-- Step 1: User ID Input -->
+      <div class="bg-white/10 backdrop-blur-md rounded-2xl p-6 mb-8 border border-white/20 animate-slide-up">
+        <h2 class="text-xl md:text-2xl font-bold text-white mb-6 flex items-center">
+          <span class="bg-gradient-to-r from-theme-400 to-theme-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3">1</span>
+          Enter Your Mobile Legends ID
+        </h2>
+
+        <form id="orderForm" method="POST" action="/ml/order">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label for="userId" class="block text-white/90 text-sm font-medium mb-2">User ID *</label>
+              <input type="text" id="userId" name="userId" required class="w-full px-4 py-3 bg-white/10 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-theme-400 focus:border-transparent transition-all duration-300" placeholder="Enter your User ID">
+            </div>
+            <div>
+              <label for="zoneId" class="block text-white/90 text-sm font-medium mb-2">Server ID *</label>
+              <input type="text" id="zoneId" name="zoneId" required class="w-full px-4 py-3 bg-white/10 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-theme-400 focus:border-transparent transition-all duration-300" placeholder="Enter your Server ID">
+            </div>
+          </div>
+
+          <!-- Auto-Verification Display -->
+          <div id="verificationStatus" class="mt-4">
+            <!-- Loading State -->
+            <div id="loadingState" class="hidden">
+              <div class="bg-blue-500/20 border border-blue-500/30 rounded-lg p-4">
+                <p class="text-blue-300 font-medium flex items-center">
+                  <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                    </path>
+                  </svg>
+                  Verifying user...
+                </p>
+              </div>
+            </div>
+
+            <!-- Success State -->
+            <div id="successState" class="hidden">
+              <div class="bg-green-500/20 border border-green-500/30 rounded-lg p-4">
+                <p class="text-green-300 font-medium">✓ User Found: <span id="username" class="text-white"></span></p>
+              </div>
+            </div>
+
+            <!-- Error State -->
+            <div id="errorState" class="hidden">
+              <div class="bg-red-500/20 border border-red-500/30 rounded-lg p-4">
+                <p class="text-red-300 font-medium">✗ <span id="errorMessage">User not found or invalid ID</span></p>
+              </div>
+            </div>
+
+            <!-- Info State -->
+            <div id="infoState" class="bg-gray-500/20 border border-gray-500/30 rounded-lg p-4">
+              <p class="text-gray-300 font-medium">💡 Enter your User ID and Server ID to verify your account</p>
+            </div>
+          </div>
+      </div>
+
+      <!-- Step 2: Package Selection -->
+      <div class="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 animate-slide-up">
+        <h2 class="text-xl md:text-2xl font-bold text-white mb-6 flex items-center">
+          <span class="bg-gradient-to-r from-theme-400 to-theme-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3">2</span>
+          Select Diamond Package
+        </h2>
+
+        <!-- Currency Selection -->
+        <div class="mb-6">
+          <label class="block text-white/90 text-sm font-medium mb-2">Currency</label>
+          <div class="flex space-x-4">
+            <label class="flex items-center">
+              <input type="radio" name="currency" value="MMK" checked class="mr-2 text-theme-400">
+              <span class="text-white">MMK (Myanmar Kyat)</span>
+            </label>
+            <label class="flex items-center">
+              <input type="radio" name="currency" value="THB" class="mr-2 text-theme-400">
+              <span class="text-white">THB (Thai Baht)</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Pass Packages Section -->
+        <div class="mb-8">
+          <h3 class="text-lg md:text-xl font-bold text-white mb-6 flex items-center">
+            <span class="text-2xl mr-2">🎫</span>
+            Pass Packages
+          </h3>
+
+          <!-- Side by Side Layout for Passes -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+            <!-- Weekly Pass -->
+            <div>
+              <h4 class="text-lg font-bold text-white mb-4 flex items-center">
+                <span class="text-xl mr-2">📅</span>
+                Weekly Diamond Pass
+              </h4>
+              <div class="grid grid-cols-1 gap-4">
+                <% products.filter(p=> p.category === 'WEEKLY_PASS').forEach(product => { %>
+                <div class="package-card relative bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border-2 border-cyan-500/50 rounded-xl p-4 cursor-pointer transition-all duration-300 hover:scale-105 <%= product.is_featured ? 'ring-2 ring-yellow-400 shadow-lg shadow-yellow-400/20' : '' %>" onclick="selectPackage(this, '<%= product.id %>', '<%= product.name %>', <%= product.price_mmk %>, <%= product.price_thb %>, <%= product.diamond_amount %>)">
+                  <% if (product.is_featured) { %>
+                  <div class="absolute top-2 left-2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-black text-xs px-2 py-1 rounded-full font-bold shadow-lg z-10">
+                    ⭐ FEATURED</div>
+                  <% } %>
+                  <div class="absolute top-2 right-2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white text-xs px-2 py-1 rounded-full font-bold">
+                    WEEKLY</div>
+                  <div class="flex justify-between items-center mb-2">
+                    <img src="/images/Weekly pass.webp" alt="weekly-pass-img" class="w-24 h-auto rounded-lg">
+                  </div>
+                  <p class="text-white font-semibold text-sm">
+                    <%= product.name %>
+                  </p>
+                  <p class="price-mmk text-cyan-300 text-lg font-bold">
+                    <%= new Intl.NumberFormat('en-US').format(product.price_mmk) %> MMK
+                  </p>
+                  <p class="price-thb text-cyan-300 text-lg font-bold hidden">฿<%= new
+                              Intl.NumberFormat('en-US').format(product.price_thb) %>
+                  </p>
+                  <% if (product.name==='2 Weekly Pass' ) { %>
+                  <p class="text-yellow-400 text-xs mt-1 font-medium">⚠️ WP over 62D don't buy</p>
+                  <% } else if (product.name==='3 Weekly Pass' ) { %>
+                  <p class="text-yellow-400 text-xs mt-1 font-medium">⚠️ WP over 55D don't buy</p>
+                  <% } else { %>
+                  <p class="text-gray-400 text-xs mt-1">7 days of rewards</p>
+                  <% } %>
+                </div>
+                <% }) %>
+              </div>
+            </div>
+
+            <!-- Twilight Pass -->
+            <div>
+              <h4 class="text-lg font-bold text-white mb-4 flex items-center">
+                <span class="text-xl mr-2">🌙</span>
+                Twilight Pass
+              </h4>
+              <div class="grid grid-cols-1 gap-4">
+                <% products.filter(p=> p.category === 'TWILIGHT_PASS').forEach(product => { %>
+                <div class="package-card relative bg-gradient-to-br from-indigo-500/20 to-purple-500/20 border-2 border-indigo-500/50 rounded-xl p-4 cursor-pointer transition-all duration-300 hover:scale-105 <%= product.is_featured ? 'ring-2 ring-yellow-400 shadow-lg shadow-yellow-400/20' : '' %>" onclick="selectPackage(this, '<%= product.id %>', '<%= product.name %>', <%= product.price_mmk %>, <%= product.price_thb %>, <%= product.diamond_amount %>)">
+                  <% if (product.is_featured) { %>
+                  <div class="absolute top-2 left-2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-black text-xs px-2 py-1 rounded-full font-bold shadow-lg z-10">
+                    ⭐ FEATURED</div>
+                  <% } %>
+                  <div class="absolute top-2 right-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-xs px-2 py-1 rounded-full font-bold">
+                    TWILIGHT</div>
+                  <div class="flex justify-between items-center mb-2">
+                    <img src="/images/twilight_pass.jpg" alt="twilight_pass_img" class="w-12 h-auto rounded-lg">
+                  </div>
+                  <p class="text-white font-semibold text-sm">
+                    <%= product.name %>
+                  </p>
+                  <p class="price-mmk text-indigo-300 text-lg font-bold">
+                    <%= new Intl.NumberFormat('en-US').format(product.price_mmk) %> MMK
+                  </p>
+                  <p class="price-thb text-indigo-300 text-lg font-bold hidden">฿<%= new
+                              Intl.NumberFormat('en-US').format(product.price_thb) %>
+                  </p>
+                  <p class="text-gray-400 text-xs mt-1">Special rewards</p>
+                </div>
+                <% }) %>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Regular Diamond Packages -->
+        <div class="mb-8">
+          <h3 class="text-lg md:text-xl font-bold text-white mb-4 flex items-center">
+            <span class="text-2xl mr-2">💎</span>
+            Diamond Packages
+          </h3>
+          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <% products.filter(p=> p.category === 'DIAMOND').forEach((product, index) => { %>
+            <div class="package-card relative bg-white/5 hover:bg-white/10 border border-white/20 rounded-xl p-4 cursor-pointer transition-all duration-300 hover:scale-105 hover:border-blue-500/50 <%= product.is_featured ? 'ring-2 ring-yellow-400 shadow-lg shadow-yellow-400/20' : '' %>" onclick="selectPackage(this, '<%= product.id %>', '<%= product.name %>', <%= product.price_mmk %>, <%= product.price_thb %>, <%= product.diamond_amount %>)">
+              <% if (product.is_featured) { %>
+              <div class="absolute top-2 left-2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-black text-xs px-2 py-1 rounded-full font-bold shadow-lg z-10">
+                ⭐ FEATURED</div>
+              <% } %>
+              <div class="flex justify-between items-center mb-2">
+                <img src="/images/mlbb_diamond.png" alt="twilight_pass_img" class="w-12 h-auto rounded-lg">
+              </div>
+              <p class="text-white font-semibold text-sm">
+                <%= product.name %>
+              </p>
+              <p class="price-mmk text-blue-400 text-lg font-bold">
+                <%= new Intl.NumberFormat('en-US').format(product.price_mmk) %> MMK
+              </p>
+              <p class="price-thb text-blue-400 text-lg font-bold hidden">฿<%= new
+                          Intl.NumberFormat('en-US').format(product.price_thb) %>
+              </p>
+            </div>
+            <% }) %>
+          </div>
+        </div>
+
+        <!-- First Time Purchase - Double Diamond Packages -->
+        <div class="mb-8">
+          <div class="bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-lg p-4 mb-4">
+            <h3 class="text-lg md:text-xl font-bold text-white mb-2 flex items-center">
+              <span class="text-2xl mr-2">🎉</span>
+              First Time Purchase Special!
+            </h3>
+            <p class="text-purple-300 text-sm">Double your diamonds with these exclusive packages - perfect for new
+              players!</p>
+          </div>
+
+          <h3 class="text-lg md:text-xl font-bold text-white mb-4 flex items-center">
+            <span class="text-2xl mr-2">💎💎</span>
+            Double Diamond Packages
+          </h3>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <% products.filter(p=> p.category === 'DOUBLE_DIAMOND').forEach((product, index) => { %>
+            <div class="package-card relative bg-gradient-to-br from-purple-500/20 to-pink-500/20 border-2 border-purple-500/50 rounded-xl p-4 cursor-pointer transition-all duration-300 hover:scale-105 <%= product.is_featured ? 'ring-2 ring-yellow-400 shadow-lg shadow-yellow-400/20' : '' %>" style="pointer-events: none; opacity: 0.5;" onclick="selectPackage(this, '<%= product.id %>', '<%= displayName(product) %>', <%= product.price_mmk %>, <%= product.price_thb %>, <%= product.diamond_amount %>)">
+              <% if (product.is_featured) { %>
+              <div class="absolute top-2 left-2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-black text-xs px-2 py-1 rounded-full font-bold shadow-lg z-10">
+                ⭐ FEATURED</div>
+              <% } %>
+              <% if (index===0) { %>
+              <div class="absolute top-2 right-2 bg-gradient-to-r from-yellow-500 to-orange-500 text-white text-xs px-2 py-1 rounded-full font-bold">
+                BEST VALUE</div>
+              <% } %>
+              <div class="flex justify-between items-center mb-2">
+                <img src="/images/double_diamond.png" alt="twilight_pass_img" class="w-20 h-auto rounded-lg">
+              </div>
+              <p class="text-white font-semibold text-sm">
+                <%= displayName(product) %>
+              </p>
+              <p class="price-mmk text-purple-300 text-lg font-bold">
+                <%= new Intl.NumberFormat('en-US').format(product.price_mmk) %> MMK
+              </p>
+              <p class="price-thb text-purple-300 text-lg font-bold hidden">฿<%= new
+                              Intl.NumberFormat('en-US').format(product.price_thb) %>
+              </p>
+            </div>
+            <% }) %>
+          </div>
+        </div>
+
+
+
+        <!-- Selected Package Display -->
+        <div id="selectedPackage" class="hidden bg-blue-500/20 border border-blue-500/30 rounded-lg p-4 mb-6">
+          <h3 class="text-blue-300 font-semibold mb-2">📦 Selected Package</h3>
+          <div class="flex justify-between items-center">
+            <span id="packageDetails" class="text-white"></span>
+            <span id="packagePrice" class="text-theme-400 font-bold text-lg"></span>
+          </div>
+          <input type="hidden" id="selectedProductId" name="product_id">
+          <input type="hidden" id="selectedCurrency" name="currency" value="MMK">
+        </div>
+
+        <!-- Order Button -->
+        <button type="submit" id="orderBtn" disabled class="w-full bg-gradient-to-r from-blue-800 to-purple-800 text-white font-bold py-4 px-6 rounded-lg hover:from-blue-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
+          <span class="flex items-center justify-center">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+            </svg>
+            <strong>Proceed to Payment</strong>
+          </span>
+        </button>
+        </form>
+      </div>
+      <% } %>
+    </div>
+  </section>
+
+
+
+  <!-- Shop-specific JavaScript -->
+  <script>
+    let selectedPackageData = null;
+    let verificationTimer = null;
+    let isVerifying = false;
+
+    // Auto-verification with debounce
+    function setupAutoVerification() {
+      const userIdInput = document.getElementById('userId');
+      const zoneIdInput = document.getElementById('zoneId');
+
+      if (userIdInput && zoneIdInput) {
+        [userIdInput, zoneIdInput].forEach(input => {
+          input.addEventListener('input', () => {
+            clearTimeout(verificationTimer);
+            verificationTimer = setTimeout(() => {
+              const userId = userIdInput.value.trim();
+              const zoneId = zoneIdInput.value.trim();
+
+              if (userId && zoneId) {
+                verifyUser(userId, zoneId);
+              } else {
+                showInfoState();
+              }
+            }, 800); // 800ms delay for debounce
+          });
+        });
+      }
+    }
+
+    // Verification state functions
+    function showLoadingState() {
+      hideAllStates();
+      document.getElementById('loadingState').classList.remove('hidden');
+    }
+
+    function showSuccessState(username) {
+      hideAllStates();
+      document.getElementById('username').textContent = username;
+      document.getElementById('successState').classList.remove('hidden');
+
+      // Enable package selection
+      document.querySelectorAll('.package-card').forEach(card => {
+        card.style.pointerEvents = 'auto';
+        card.style.opacity = '1';
+      });
+    }
+
+    function showErrorState(message = 'User not found or invalid ID') {
+      hideAllStates();
+      document.getElementById('errorMessage').textContent = message;
+      document.getElementById('errorState').classList.remove('hidden');
+
+      // Disable package selection
+      document.querySelectorAll('.package-card').forEach(card => {
+        card.style.pointerEvents = 'none';
+        card.style.opacity = '0.5';
+      });
+    }
+
+    function showInfoState() {
+      hideAllStates();
+      document.getElementById('infoState').classList.remove('hidden');
+
+      // Disable package selection
+      document.querySelectorAll('.package-card').forEach(card => {
+        card.style.pointerEvents = 'none';
+        card.style.opacity = '0.5';
+      });
+    }
+
+    function hideAllStates() {
+      ['loadingState', 'successState', 'errorState', 'infoState'].forEach(id => {
+        document.getElementById(id).classList.add('hidden');
+      });
+    }
+
+    // API verification function
+    function verifyUser(userId, zoneId) {
+      if (isVerifying) return;
+
+      isVerifying = true;
+      showLoadingState();
+
+      fetch('/api/verify-user', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            userid: userId,
+            zoneid: zoneId
+          })
+        })
+        .then(function(response) {
+          return response.json();
+        })
+        .then(function(result) {
+          if (result.status === 200 && result.username) {
+            showSuccessState(result.username);
+            showSuccessToast('✓ User verified successfully!');
+          } else {
+            showErrorState(result.message || 'User not found');
+            showErrorToast('✗ ' + (result.message || 'User not found'));
+          }
+        })
+        .catch(function(error) {
+          console.error('Verification error:', error);
+          showErrorState('Network error. Please try again.');
+          showErrorToast('Network error. Please try again.');
+        })
+        .finally(function() {
+          isVerifying = false;
+        });
+    }
+
+    // Initialize auto-verification when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      setupAutoVerification();
+      showInfoState(); // Show initial info state
+
+      // Auto-fill ML credentials if available
+      autoFillMLCredentials();
+    });
+
+    function selectPackage(element, productId, name, priceMMK, priceTHB, diamonds) {
+      // Remove previous selection
+      document.querySelectorAll('.package-card').forEach(card => {
+        card.classList.remove('ring-2', 'ring-yellow-400', 'bg-yellow-400/10');
+      });
+
+      // Add selection to current package
+      element.classList.add('ring-2', 'ring-yellow-400', 'bg-yellow-400/10');
+
+      // Store selected package data
+      selectedPackageData = {
+        productId,
+        name,
+        priceMMK,
+        priceTHB,
+        diamonds
+      };
+
+      // Get current currency
+      const currency = document.querySelector('input[name="currency"]:checked').value;
+      const price = currency === 'MMK' ? priceMMK : priceTHB;
+      const currencySymbol = currency === 'MMK' ? 'MMK' : '฿';
+
+      // Show selected package
+      const selectedDiv = document.getElementById('selectedPackage');
+      const detailsSpan = document.getElementById('packageDetails');
+      const priceSpan = document.getElementById('packagePrice');
+
+      detailsSpan.textContent = name;
+      priceSpan.textContent = new Intl.NumberFormat('en-US').format(price) + ' ' + currencySymbol;
+
+      // Set hidden form fields
+      document.getElementById('selectedProductId').value = productId;
+      document.getElementById('selectedCurrency').value = currency;
+
+      selectedDiv.classList.remove('hidden');
+
+      // Enable order button
+      document.getElementById('orderBtn').disabled = false;
+    }
+
+
+    // Currency change handler
+    document.querySelectorAll('input[name="currency"]').forEach(radio => {
+      radio.addEventListener('change', function() {
+        const currency = this.value;
+        document.getElementById('selectedCurrency').value = currency;
+
+        // Toggle price display
+        if (currency === 'MMK') {
+          document.querySelectorAll('.price-mmk').forEach(el => el.classList.remove('hidden'));
+          document.querySelectorAll('.price-thb').forEach(el => el.classList.add('hidden'));
+        } else {
+          document.querySelectorAll('.price-mmk').forEach(el => el.classList.add('hidden'));
+          document.querySelectorAll('.price-thb').forEach(el => el.classList.remove('hidden'));
+        }
+
+        // Update selected package price if any
+        if (selectedPackageData) {
+          const price = currency === 'MMK' ? selectedPackageData.priceMMK : selectedPackageData.priceTHB;
+          const currencySymbol = currency === 'MMK' ? 'MMK' : '฿';
+          document.getElementById('packagePrice').textContent = new Intl.NumberFormat('en-US').format(price) + ' ' + currencySymbol;
+        }
+      });
+    });
+
+    // LocalStorage functions for ML credentials
+    function saveMLCredentials(userId, zoneId) {
+      try {
+        const credentials = {
+          userId: userId,
+          zoneId: zoneId,
+          savedAt: new Date().toISOString()
+        };
+        localStorage.setItem('ml_credentials', JSON.stringify(credentials));
+        console.log('ML credentials saved to localStorage');
+      } catch (error) {
+        console.error('Failed to save ML credentials:', error);
+      }
+    }
+
+    function loadMLCredentials() {
+      try {
+        const saved = localStorage.getItem('ml_credentials');
+        if (saved) {
+          const credentials = JSON.parse(saved);
+          return credentials;
+        }
+      } catch (error) {
+        console.error('Failed to load ML credentials:', error);
+      }
+      return null;
+    }
+
+    function autoFillMLCredentials() {
+      const credentials = loadMLCredentials();
+      if (credentials && credentials.userId && credentials.zoneId) {
+        document.getElementById('userId').value = credentials.userId;
+        document.getElementById('zoneId').value = credentials.zoneId;
+
+        // Show a subtle notification that credentials were auto-filled
+        // showInfoToast('🎮 Your ML credentials have been auto-filled from your last successful purchase');
+
+        // Trigger verification automatically if both fields are filled
+        setTimeout(function() {
+          const userId = document.getElementById('userId').value;
+          const zoneId = document.getElementById('zoneId').value;
+          verifyUser(userId, zoneId);
+        }, 1000);
+      }
+    }
+
+    // Form submission handler with order processing
+    document.getElementById('orderForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const userId = document.getElementById('userId').value;
+      const zoneId = document.getElementById('zoneId').value;
+      const productId = document.getElementById('selectedProductId').value;
+      const currency = document.getElementById('selectedCurrency').value;
+
+      if (!userId || !zoneId) {
+        showErrorToast('Please verify your User ID first');
+        return;
+      }
+
+      if (!selectedPackageData || !productId) {
+        showErrorToast('Please select a diamond package');
+        return;
+      }
+
+      // Check if user is logged in
+      <% if (!user) { %>
+      showErrorToast('Please login to place an order');
+      setTimeout(function() {
+        window.location.href = '/users/login';
+      }, 2000);
+      return;
+      <% } %>
+
+      processOrder(userId, zoneId, productId, currency);
+
+
+    });
+
+    // Global variable to prevent multiple simultaneous orders
+    let isProcessingOrder = false;
+    let lastOrderTime = 0;
+    const ORDER_COOLDOWN = 5000; // 5 second cooldown between orders
+
+    function processOrder(userId, zoneId, productId, currency) {
+      // Prevent multiple simultaneous orders
+      if (isProcessingOrder) {
+        showErrorToast('⚠️ Order already in progress. Please wait...');
+        return;
+      }
+
+      // Implement cooldown to prevent rapid successive orders
+      const now = Date.now();
+      if (now - lastOrderTime < ORDER_COOLDOWN) {
+        const remainingTime = Math.ceil((ORDER_COOLDOWN - (now - lastOrderTime)) / 1000);
+        showErrorToast(`⏳ Please wait ${remainingTime} seconds before placing another order`);
+        return;
+      }
+
+      isProcessingOrder = true;
+      lastOrderTime = now;
+
+      showInfoToast('Processing your order...');
+
+      // Disable the order button and all package cards to prevent double submission
+      var orderBtn = document.getElementById('orderBtn');
+      orderBtn.disabled = true;
+      orderBtn.innerHTML = '<span class="flex items-center justify-center"><svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Processing Order...</span>';
+
+      // Disable all package cards during processing
+      document.querySelectorAll('.package-card').forEach(card => {
+        card.style.pointerEvents = 'none';
+        card.style.opacity = '0.6';
+      });
+
+      // Disable form inputs
+      document.getElementById('userId').disabled = true;
+      document.getElementById('zoneId').disabled = true;
+
+      fetch('/api/place-order', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-csrf-token': '<%= csrfToken %>'
+          },
+          body: JSON.stringify({
+            userid: userId,
+            zoneid: zoneId,
+            product_id: productId,
+            currency: currency
+          })
+        })
+        .then(function(response) {
+          return response.json();
+        })
+        .then(function(result) {
+          if (result.status === 200) {
+            showSuccessToast('✅ ' + result.message);
+
+            // Save ML credentials to localStorage on successful purchase
+            saveMLCredentials(userId, zoneId);
+
+            // Show order success details
+            setTimeout(function() {
+              showSuccessToast('🎮 Diamonds will be delivered to your account');
+            }, 2000);
+
+            // Reset form
+            document.getElementById('orderForm').reset();
+            document.getElementById('selectedPackage').classList.add('hidden');
+            selectedPackageData = null;
+            showInfoState();
+
+          } else {
+            showErrorToast('❌ ' + result.message);
+          }
+        })
+        .catch(function(error) {
+          console.error('Order error:', error);
+          showErrorToast('Network error. Please try again.');
+        })
+        .finally(function() {
+          // Reset processing state
+          isProcessingOrder = false;
+
+          // Re-enable the order button
+          orderBtn.disabled = false;
+          orderBtn.innerHTML = '<span class="flex items-center justify-center"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>Proceed to Payment</span>'
+
+          // Re-enable package cards
+          document.querySelectorAll('.package-card').forEach(card => {
+            card.style.pointerEvents = 'auto';
+            card.style.opacity = '1';
+          });
+
+          // Re-enable form inputs
+          document.getElementById('userId').disabled = false;
+          document.getElementById('zoneId').disabled = false;
+
+          // DOM RELOADED 
+          setTimeout(() => {
+            location.reload();
+          }, 3000);
+
+        });
+    }
+  </script>
+  <%- include('../partials/ml-footer') %>
+  <%- include('../partials/ml-scripts') %>
+</body>
+
+</html>

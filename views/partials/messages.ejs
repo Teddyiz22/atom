@@ -1,0 +1,31 @@
+<% if (typeof success !=='undefined' && success) { %>
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    <i class="bi bi-check-circle-fill"></i>
+    <%= success %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+  <% } %>
+
+    <% if (typeof error !=='undefined' && error) { %>
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <%= error %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+      <% } %>
+
+        <% if (typeof warning !=='undefined' && warning) { %>
+          <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <%= warning %>
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+          <% } %>
+
+            <% if (typeof info !=='undefined' && info) { %>
+              <div class="alert alert-info alert-dismissible fade show" role="alert">
+                <i class="bi bi-info-circle-fill"></i>
+                <%= info %>
+                  <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+              </div>
+              <% } %>

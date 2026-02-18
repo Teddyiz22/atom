@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <%- include('../partials/ml-head', { title: 'Email Verification - ATOM Game Shop' ,
+    description: 'Email verification result for ATOM Game Shop account.' }) %>
+</head>
+
+<body class="bg-gray-50 font-sans overflow-x-hidden">
+  <%- include('../partials/ml-nav') %>
+
+    <!-- Include Toast System -->
+    <%- include('../partials/toast') %>
+
+      <% if (success) { %>
+        <!-- SUCCESS PAGE -->
+        <!-- Hero Section with same design as main page -->
+        <section class="relative min-h-screen flex items-center justify-center overflow-hidden">
+          <!-- Modern Gradient Background - Same as main page -->
+          <div class="absolute inset-0 bg-gradient-to-br from-theme-900 via-theme-800 to-theme-950"></div>
+          <div
+            class="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(148,180,211,0.3),rgba(255,255,255,0))]">
+          </div>
+          <div
+            class="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]">
+          </div>
+
+          <!-- Floating Particles - Same as main page -->
+          <div class="particle particle-1"></div>
+          <div class="particle particle-2"></div>
+          <div class="particle particle-3"></div>
+          <div class="particle particle-4"></div>
+          <div class="particle particle-5"></div>
+          <div class="particle particle-6"></div>
+
+          <!-- Animated Background Elements - Same as main page -->
+          <div
+            class="absolute top-20 left-10 w-32 h-32 bg-gradient-to-br from-theme-400/10 to-transparent rounded-full animate-float-slow">
+          </div>
+          <div
+            class="absolute bottom-20 right-20 w-24 h-24 bg-gradient-to-br from-theme-500/10 to-transparent rounded-full animate-float-delay">
+          </div>
+          <div
+            class="absolute top-1/2 left-5 w-16 h-16 bg-gradient-to-br from-theme-300/10 to-transparent rounded-full animate-float">
+          </div>
+
+          <!-- Loading Bar -->
+          <div class="absolute top-0 left-0 right-0 z-50">
+            <div class="loading-bar"></div>
+          </div>
+
+          <!-- Main Content -->
+          <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
+            <!-- Success Icon -->
+            <div class="space-y-6 mb-8">
+              <div
+                class="w-32 h-32 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl animate-glow-pulse">
+                <svg class="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+              </div>
+            </div>
+
+            <!-- Main Heading with same style as main page -->
+            <div class="space-y-6">
+              <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight text-white">
+                <span class="block gradient-text animate-text-reveal stagger-2 animate-glow-pulse">
+                  🎉 Email Verified!
+                </span>
+              </h1>
+            </div>
+
+            <!-- Animated Subtitle -->
+            <div class="mt-8 animate-fade-in-up stagger-5">
+              <p class="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+                Welcome to ATOM Game Shop! Your account is now fully activated.
+              </p>
+            </div>
+
+            <!-- Success Message Box -->
+            <div class="mt-12 bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20 max-w-2xl mx-auto">
+              <div class="flex items-center justify-center mb-4">
+                <div
+                  class="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-lg flex items-center justify-center mr-4">
+                  <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                </div>
+                <h3 class="text-xl font-bold text-white">Verification Successful</h3>
+              </div>
+              <p class="text-gray-300 leading-relaxed">
+                <%= message %>
+              </p>
+            </div>
+
+            <!-- Dynamic CTA Buttons - Same style as main page -->
+            <div class="flex flex-col sm:flex-row justify-center items-center gap-4 mt-12 animate-scale-in stagger-6">
+              <a href="/shop"
+                class="group relative overflow-hidden bg-gradient-to-r from-primary to-secondary backdrop-blur-md border-2 border-primary/30 text-white px-12 py-4 rounded-2xl font-bold text-xl hover:shadow-2xl hover:shadow-primary/25 transition-all duration-500 transform hover:scale-105 glass-hover">
+                <span class="relative z-10 flex items-center">
+                  <div class="relative mr-3" style="perspective: 600px;">
+                    <!-- 3D Button Logo -->
+                    <div
+                      class="w-6 h-6 bg-gradient-to-br from-white/30 via-white/20 via-primary/10 to-white/10 rounded-lg flex items-center justify-center
+                        shadow-[0_3px_6px_rgba(255,255,255,0.15),0_1px_3px_rgba(0,0,0,0.1),inset_0_1px_2px_rgba(255,255,255,0.3),inset_0_-1px_2px_rgba(0,0,0,0.1)]
+                        group-hover:shadow-[0_4px_8px_rgba(255,255,255,0.2),0_2px_4px_rgba(0,0,0,0.15),inset_0_2px_4px_rgba(255,255,255,0.4),inset_0_-2px_4px_rgba(0,0,0,0.15)]
+                        before:absolute before:inset-0 before:bg-gradient-to-t before:from-transparent before:to-white/20 before:rounded-lg before:opacity-80
+                        after:absolute after:inset-0 after:bg-gradient-to-b after:from-transparent before:to-black/5 after:rounded-lg
+                        transition-all duration-300 group-hover:scale-105 group-hover:rotateX-[2deg] group-hover:rotateY-[2deg]">
+
+                      <!-- Top highlight -->
+                      <div class="absolute inset-0.5 bg-gradient-to-br from-white/30 to-transparent rounded-md"></div>
+
+                      <svg class="w-4 h-4 text-white relative z-10" fill="currentColor" viewBox="0 0 24 24"
+                        style="filter: drop-shadow(0 1px 1px rgba(0,0,0,0.2));">
+                        <path
+                          d="M12 2L2 7v10c0 5.55 3.84 9.739 9 11 5.16-1.261 9-5.45 9-11V7l-10-5z M12 4.44L20 8.57v8.43c0 4.25-2.77 7.36-8 8.42-5.23-1.06-8-4.17-8-8.42V8.57l8-4.13z M8.5 12.5L7 14l3 3 6-6-1.5-1.5-4.5 4.5-1.5-1.5z" />
+                      </svg>
+                    </div>
+
+                    <!-- Base shadow -->
+                    <div
+                      class="absolute -bottom-0.5 left-1/2 transform -translate-x-1/2 w-4 h-1 bg-white/10 rounded-full blur-sm
+                                 group-hover:w-5 group-hover:h-1.5 group-hover:bg-white/15 transition-all duration-300">
+                    </div>
+                  </div>
+                  💎 Start Shopping
+                  <span class="ml-3 transform group-hover:translate-x-1 transition-transform duration-300">→</span>
+                </span>
+                <div
+                  class="absolute inset-0 bg-gradient-to-r from-secondary/20 to-primary/20 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-500">
+                </div>
+              </a>
+
+              <!-- Wallet Link -->
+              <a href="/wallet"
+                class="group relative overflow-hidden bg-transparent border-2 border-theme-400/50 text-theme-300 px-8 py-4 rounded-2xl font-semibold text-lg hover:bg-theme-400/10 transition-all duration-300 transform hover:scale-105">
+                <span class="relative z-10 flex items-center">
+                  💰 My Wallet
+                  <svg class="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform duration-300"
+                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z">
+                    </path>
+                  </svg>
+                </span>
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <!-- Information Section - Same style as main page -->
+        <section class="py-20 bg-gradient-to-br from-gray-50 to-theme-50">
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Section Header -->
+            <div class="text-center mb-16 scroll-reveal">
+              <h2
+                class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-theme-600 to-theme-500 bg-clip-text text-transparent mb-6">
+                🎉 You can now enjoy all features:
+              </h2>
+              <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Your account is fully verified and ready for the fastest, safest Mobile Legends diamond top-up
+                experience
+              </p>
+              <div class="mt-8 w-24 h-1 bg-gradient-to-r from-theme-600 to-theme-500 mx-auto rounded-full"></div>
+            </div>
+
+            <!-- Feature Cards - Same style as main page -->
+            <div class="grid md:grid-cols-4 gap-8 mb-16">
+              <!-- Fast Delivery -->
+              <div
+                class="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 border border-theme-100 glass-hover scroll-reveal stagger-1 relative overflow-hidden">
+                <div
+                  class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-theme-400/10 to-transparent rounded-full transform translate-x-16 -translate-y-16">
+                </div>
+                <div
+                  class="w-16 h-16 bg-gradient-to-br from-theme-500 to-theme-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 relative z-10 animate-glow-pulse">
+                  <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                  </svg>
+                </div>
+                <h3
+                  class="text-2xl font-bold text-gray-800 mb-4 group-hover:text-theme-600 transition-colors duration-300">
+                  ⚡ Instant Delivery
+                </h3>
+                <p class="text-gray-600 leading-relaxed group-hover:text-gray-700 transition-colors duration-300">
+                  Get your ML diamonds instantly after payment completion
+                </p>
+                <div
+                  class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-theme-500 to-theme-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left">
+                </div>
+              </div>
+
+              <!-- Secure Payment -->
+              <div
+                class="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 border border-theme-100 glass-hover scroll-reveal stagger-2 relative overflow-hidden">
+                <div
+                  class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-theme-400/10 to-transparent rounded-full transform translate-x-16 -translate-y-16">
+                </div>
+                <div
+                  class="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 relative z-10 animate-glow-pulse">
+                  <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z">
+                    </path>
+                  </svg>
+                </div>
+                <h3
+                  class="text-2xl font-bold text-gray-800 mb-4 group-hover:text-theme-600 transition-colors duration-300">
+                  🔐 Secure Wallet
+                </h3>
+                <p class="text-gray-600 leading-relaxed group-hover:text-gray-700 transition-colors duration-300">
+                  Top up your wallet securely with multiple payment options
+                </p>
+                <div
+                  class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-theme-500 to-theme-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left">
+                </div>
+              </div>
+
+              <!-- Exclusive Offers -->
+              <div
+                class="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 border border-theme-100 glass-hover scroll-reveal stagger-3 relative overflow-hidden">
+                <div
+                  class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-theme-400/10 to-transparent rounded-full transform translate-x-16 -translate-y-16">
+                </div>
+                <div
+                  class="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 relative z-10 animate-glow-pulse">
+                  <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7">
+                    </path>
+                  </svg>
+                </div>
+                <h3
+                  class="text-2xl font-bold text-gray-800 mb-4 group-hover:text-theme-600 transition-colors duration-300">
+                  🎁 Exclusive Offers
+                </h3>
+                <p class="text-gray-600 leading-relaxed group-hover:text-gray-700 transition-colors duration-300">
+                  Access special deals and bonuses for verified users
+                </p>
+                <div
+                  class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-theme-500 to-theme-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left">
+                </div>
+              </div>
+
+              <!-- Fast Delivery -->
+              <div
+                class="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 border border-theme-100 glass-hover scroll-reveal stagger-4 relative overflow-hidden">
+                <div
+                  class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-theme-400/10 to-transparent rounded-full transform translate-x-16 -translate-y-16">
+                </div>
+                <div
+                  class="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 relative z-10 animate-glow-pulse">
+                  <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                  </svg>
+                </div>
+                <h3
+                  class="text-2xl font-bold text-gray-800 mb-4 group-hover:text-theme-600 transition-colors duration-300">
+                  ⚡ Lightning Fast
+                </h3>
+                <p class="text-gray-600 leading-relaxed group-hover:text-gray-700 transition-colors duration-300">
+                  Experience the fastest processing times in the industry
+                </p>
+                <div
+                  class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-theme-500 to-theme-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left">
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <% } else { %>
+          <!-- FAILURE PAGE -->
+          <!-- Hero Section with same design as main page -->
+          <section class="relative min-h-screen flex items-center justify-center overflow-hidden">
+            <!-- Modern Gradient Background - Same as main page -->
+            <div class="absolute inset-0 bg-gradient-to-br from-theme-900 via-theme-800 to-theme-950"></div>
+            <div
+              class="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(148,180,211,0.3),rgba(255,255,255,0))]">
+            </div>
+            <div
+              class="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]">
+            </div>
+
+            <!-- Floating Particles - Same as main page -->
+            <div class="particle particle-1"></div>
+            <div class="particle particle-2"></div>
+            <div class="particle particle-3"></div>
+            <div class="particle particle-4"></div>
+            <div class="particle particle-5"></div>
+            <div class="particle particle-6"></div>
+
+            <!-- Animated Background Elements - Same as main page -->
+            <div
+              class="absolute top-20 left-10 w-32 h-32 bg-gradient-to-br from-theme-400/10 to-transparent rounded-full animate-float-slow">
+            </div>
+            <div
+              class="absolute bottom-20 right-20 w-24 h-24 bg-gradient-to-br from-theme-500/10 to-transparent rounded-full animate-float-delay">
+            </div>
+            <div
+              class="absolute top-1/2 left-5 w-16 h-16 bg-gradient-to-br from-theme-300/10 to-transparent rounded-full animate-float">
+            </div>
+
+            <!-- Loading Bar -->
+            <div class="absolute top-0 left-0 right-0 z-50">
+              <div class="loading-bar"></div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
+              <!-- Error Icon -->
+              <div class="space-y-6 mb-8">
+                <div
+                  class="w-32 h-32 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl animate-glow-pulse">
+                  <svg class="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z">
+                    </path>
+                  </svg>
+                </div>
+              </div>
+
+              <!-- Main Heading with same style as main page -->
+              <div class="space-y-6">
+                <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight text-white">
+                  <span class="block gradient-text animate-text-reveal stagger-2 animate-glow-pulse">
+                    ⚠️ Verification Failed
+                  </span>
+                </h1>
+              </div>
+
+              <!-- Animated Subtitle -->
+              <div class="mt-8 animate-fade-in-up stagger-5">
+                <p class="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+                  We couldn't verify your email address. Don't worry, let's fix this together!
+                </p>
+              </div>
+
+              <!-- Error Message Box -->
+              <div class="mt-12 bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20 max-w-2xl mx-auto">
+                <div class="flex items-center justify-center mb-4">
+                  <div
+                    class="w-12 h-12 bg-gradient-to-br from-red-400 to-red-600 rounded-lg flex items-center justify-center mr-4">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                  </div>
+                  <h3 class="text-xl font-bold text-white">Verification Issue</h3>
+                </div>
+                <p class="text-gray-300 leading-relaxed">
+                  <%= message %>
+                </p>
+              </div>
+
+              <% if (showResendButton) { %>
+                <!-- Resend Section -->
+                <div class="mt-8 bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 max-w-lg mx-auto">
+                  <h3 class="text-white font-semibold text-lg mb-3 flex items-center justify-center">
+                    <svg class="w-6 h-6 text-blue-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                      </path>
+                    </svg>
+                    Need a new verification email?
+                  </h3>
+                  <p class="text-gray-300 text-sm mb-4">We can send you a fresh verification link</p>
+                  <button id="resendBtn" onclick="requestNewVerification()"
+                    class="group relative overflow-hidden bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-8 py-3 rounded-2xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl w-full">
+                    <span class="relative z-10 flex items-center justify-center">
+                      <svg class="w-5 h-5 mr-2 group-hover:animate-pulse" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                      </svg>
+                      <span id="resendText">Request New Email</span>
+                    </span>
+                  </button>
+                </div>
+                <% } %>
+
+                  <!-- Dynamic CTA Buttons - Same style as main page -->
+                  <div
+                    class="flex flex-col sm:flex-row justify-center items-center gap-4 mt-12 animate-scale-in stagger-6">
+                    <a href="/users/register"
+                      class="group relative overflow-hidden bg-gradient-to-r from-primary to-secondary backdrop-blur-md border-2 border-primary/30 text-white px-12 py-4 rounded-2xl font-bold text-xl hover:shadow-2xl hover:shadow-primary/25 transition-all duration-500 transform hover:scale-105 glass-hover">
+                      <span class="relative z-10 flex items-center">
+                        <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z">
+                          </path>
+                        </svg>
+                        Register Again
+                        <span
+                          class="ml-3 transform group-hover:translate-x-1 transition-transform duration-300">→</span>
+                      </span>
+                      <div
+                        class="absolute inset-0 bg-gradient-to-r from-secondary/20 to-primary/20 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-500">
+                      </div>
+                    </a>
+
+                    <!-- Back to Login -->
+                    <a href="/users/login"
+                      class="group relative overflow-hidden bg-transparent border-2 border-theme-400/50 text-theme-300 px-8 py-4 rounded-2xl font-semibold text-lg hover:bg-theme-400/10 transition-all duration-300 transform hover:scale-105">
+                      <span class="relative z-10 flex items-center">
+                        Back to Login
+                        <svg class="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform duration-300"
+                          fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1">
+                          </path>
+                        </svg>
+                      </span>
+                    </a>
+                  </div>
+            </div>
+          </section>
+          <% } %>
+
+            <!-- Support Section - Same style as main page -->
+            <section class="py-16 bg-gradient-to-br from-theme-900 via-theme-800 to-theme-700 relative overflow-hidden">
+              <!-- Background Effects -->
+              <div class="absolute inset-0">
+                <div
+                  class="absolute top-0 left-0 w-64 h-64 bg-gradient-to-br from-theme-400/10 to-transparent rounded-full transform -translate-x-32 -translate-y-32">
+                </div>
+                <div
+                  class="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-br from-theme-500/10 to-transparent rounded-full transform translate-x-48 translate-y-48">
+                </div>
+              </div>
+
+              <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <div
+                  class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-theme-400 to-theme-600 rounded-full mb-6 animate-glow-pulse">
+                  <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192L5.636 18.364M12 2.25a9.75 9.75 0 109.75 9.75A9.75 9.75 0 0012 2.25z">
+                    </path>
+                  </svg>
+                </div>
+                <h3 class="text-2xl md:text-3xl font-bold text-white mb-4">Need Help?</h3>
+                <p class="text-theme-200 text-lg max-w-2xl mx-auto">
+                  Our support team is here to help! Contact us at
+                  <a href="mailto:support@atomgameshop.com"
+                    class="text-theme-300 hover:text-theme-200 underline transition-colors duration-300 mx-1">
+                    support@atomgameshop.com
+                  </a>
+                  for any assistance.
+                </p>
+              </div>
+            </section>
+
+            <%- include('../partials/ml-scripts') %>
+
+              <script>
+                // Beautiful email input modal
+                function showEmailInputModal() {
+                  return new Promise((resolve) => {
+                    // Create modal backdrop
+                    const modalBackdrop = document.createElement('div');
+                    modalBackdrop.className = 'fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4';
+                    modalBackdrop.id = 'email-input-modal';
+
+                    // Create modal content
+                    modalBackdrop.innerHTML = `
+          <div class="bg-white/10 backdrop-blur-md rounded-2xl p-6 max-w-md w-full border border-white/20 shadow-2xl animate-scale-in">
+            <!-- Header -->
+            <div class="text-center mb-6">
+              <div class="w-16 h-16 bg-gradient-to-br from-theme-400 to-theme-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                </svg>
+              </div>
+              <h3 class="text-xl font-bold text-white mb-2">Resend Verification Email</h3>
+              <p class="text-white/80 text-sm">Enter your email address to receive a new verification link</p>
+            </div>
+
+            <!-- Email Input -->
+            <div class="mb-6">
+              <label class="block text-white/90 text-sm font-medium mb-2">Email Address</label>
+              <input type="email" id="emailInput" 
+                class="w-full px-4 py-3 bg-white/10 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-theme-400 focus:border-transparent transition-all duration-300"
+                placeholder="Enter your email address" autofocus>
+              <div id="emailError" class="text-red-300 text-sm mt-1 hidden"></div>
+            </div>
+
+            <!-- Action buttons -->
+            <div class="flex space-x-3">
+              <button onclick="closeEmailModal(null)" 
+                class="flex-1 bg-white/10 border border-white/30 text-white py-3 px-4 rounded-lg hover:bg-white/20 transition-all duration-300 font-medium">
+                Cancel
+              </button>
+              <button onclick="submitEmail()" 
+                class="flex-1 bg-gradient-to-r from-theme-500 to-theme-600 text-white py-3 px-4 rounded-lg hover:from-theme-600 hover:to-theme-700 transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:scale-105" 
+                id="submit-email-btn">
+                Send Email
+              </button>
+            </div>
+          </div>
+        `;
+
+                    // Add modal to page
+                    document.body.appendChild(modalBackdrop);
+
+                    // Store resolve function for later use
+                    window.emailModalResolve = resolve;
+
+                    // Add click outside to close
+                    modalBackdrop.addEventListener('click', function (e) {
+                      if (e.target === modalBackdrop) {
+                        closeEmailModal(null);
+                      }
+                    });
+
+                    // Handle Enter key
+                    modalBackdrop.querySelector('#emailInput').addEventListener('keypress', function (e) {
+                      if (e.key === 'Enter') {
+                        submitEmail();
+                      }
+                    });
+                  });
+                }
+
+                // Submit email from modal
+                function submitEmail() {
+                  const emailInput = document.getElementById('emailInput');
+                  const emailError = document.getElementById('emailError');
+                  const email = emailInput.value.trim();
+
+                  // Clear previous errors
+                  emailError.classList.add('hidden');
+                  emailInput.classList.remove('border-red-500');
+
+                  // Validate email
+                  if (!email) {
+                    emailError.textContent = 'Email address is required';
+                    emailError.classList.remove('hidden');
+                    emailInput.classList.add('border-red-500');
+                    emailInput.focus();
+                    return;
+                  }
+
+                  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                  if (!emailRegex.test(email)) {
+                    emailError.textContent = 'Please enter a valid email address';
+                    emailError.classList.remove('hidden');
+                    emailInput.classList.add('border-red-500');
+                    emailInput.focus();
+                    return;
+                  }
+
+                  closeEmailModal(email);
+                }
+
+                // Close email modal
+                function closeEmailModal(email) {
+                  const modal = document.getElementById('email-input-modal');
+                  if (modal) {
+                    modal.style.opacity = '0';
+                    modal.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                      modal.remove();
+                      if (window.emailModalResolve) {
+                        window.emailModalResolve(email);
+                        delete window.emailModalResolve;
+                      }
+                    }, 200);
+                  }
+                }
+
+                async function requestNewVerification() {
+                  const resendBtn = document.getElementById('resendBtn');
+                  const resendText = document.getElementById('resendText');
+
+                  if (resendBtn && resendBtn.disabled) return;
+
+                  // Show loading state
+                  if (resendBtn) {
+                    const originalText = resendText.textContent;
+                    resendText.textContent = 'Sending...';
+                    resendBtn.disabled = true;
+
+                    try {
+                      // Show beautiful email input modal instead of ugly prompt
+                      const email = await showEmailInputModal();
+                      if (!email) {
+                        resendBtn.disabled = false;
+                        resendText.textContent = originalText;
+                        return;
+                      }
+
+                      const response = await fetch('/users/resend-verification', {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ email })
+                      });
+
+                      const result = await response.json();
+
+                      if (result.success) {
+                        showSuccessToast(result.message || 'Verification email sent! Please check your inbox.');
+                        resendText.textContent = 'Email Sent!';
+                        setTimeout(() => {
+                          resendBtn.disabled = false;
+                          resendText.textContent = originalText;
+                        }, 5000);
+                      } else {
+                        showErrorToast(result.message || 'Failed to send email. Please try again.');
+                        resendBtn.disabled = false;
+                        resendText.textContent = originalText;
+                      }
+                    } catch (error) {
+                      console.error('Resend error:', error);
+                      showErrorToast('Network error. Please try again.');
+                      resendBtn.disabled = false;
+                      resendText.textContent = originalText;
+                    }
+                  }
+                }
+
+                // Auto-redirect countdown for success page
+                <% if (success) { %>
+                  let countdown = 8;
+                  const countdownInterval = setInterval(() => {
+                    countdown--;
+                    if (countdown <= 0) {
+                      clearInterval(countdownInterval);
+                      window.location.href = '/shop';
+                    }
+                  }, 1000);
+                <% } %>
+              </script>
+
+              <style>
+                @keyframes scale-in {
+                  0% {
+                    transform: scale(0.9);
+                    opacity: 0;
+                  }
+
+                  100% {
+                    transform: scale(1);
+                    opacity: 1;
+                  }
+                }
+
+                .animate-scale-in {
+                  animation: scale-in 0.3s ease-out;
+                }
+              </style>
+</body>
+
+</html>

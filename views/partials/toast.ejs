@@ -1,0 +1,260 @@
+<!-- Toast Container - Fixed Position -->
+<div id="toast-container"
+  style="position: fixed; top: 100px; right: 30px; z-index: 10000; min-width: 300px; max-width: 400px;"></div>
+
+<style>
+  .toast-notification {
+    margin-bottom: 15px;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    transition: all 0.4s ease;
+    transform: translateX(120%);
+    opacity: 0;
+    overflow: hidden;
+    min-height: 70px;
+  }
+
+  .toast-notification.show {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  .toast-notification.hide {
+    transform: translateX(120%);
+    opacity: 0;
+  }
+
+  .toast-notification.success {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    border-left: 5px solid #20c997;
+    color: white;
+  }
+
+  .toast-notification.error {
+    background: linear-gradient(135deg, #dc3545, #e74c3c);
+    border-left: 5px solid #e74c3c;
+    color: white;
+  }
+
+  .toast-notification.warning {
+    background: linear-gradient(135deg, #ffc107, #f39c12);
+    border-left: 5px solid #f39c12;
+    color: white;
+  }
+
+  .toast-notification.info {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    border-left: 5px solid #0056b3;
+    color: white;
+  }
+
+  .toast-content {
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    word-wrap: break-word;
+  }
+
+  .toast-icon {
+    font-size: 20px;
+    margin-right: 15px;
+    flex-shrink: 0;
+  }
+
+  .toast-message {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .toast-title {
+    font-weight: 600;
+    font-size: 16px;
+    margin-bottom: 5px;
+  }
+
+  .toast-text {
+    font-size: 14px;
+    opacity: 0.95;
+    line-height: 1.4;
+  }
+
+  .toast-close {
+    background: none;
+    border: none;
+    color: white;
+    opacity: 0.8;
+    margin-left: 15px;
+    cursor: pointer;
+    font-size: 20px;
+    padding: 5px;
+    flex-shrink: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .toast-close:hover {
+    opacity: 1;
+  }
+</style>
+
+<script>
+  window.activeToast = null;
+
+  function clearToasts() {
+    var container = document.getElementById('toast-container');
+    if (container) {
+      container.innerHTML = '';
+    }
+    window.activeToast = null;
+  }
+
+  function showToast(message, type, duration) {
+    type = type || 'info';
+    duration = duration || 5000;
+
+    clearToasts();
+
+    var container = document.getElementById('toast-container');
+    if (!container) return;
+
+    var toast = document.createElement('div');
+    toast.className = 'toast-notification ' + type;
+
+    var iconHtml = '';
+    var title = '';
+
+    if (type === 'success') {
+      title = 'Success!';
+      iconHtml = '<i class="fas fa-check-circle mr-2"></i>';
+    } else if (type === 'error') {
+      title = 'Error';
+      iconHtml = '<i class="fas fa-exclamation-circle mr-2"></i>';
+    } else if (type === 'warning') {
+      title = 'Warning';
+      iconHtml = '<i class="fas fa-exclamation-triangle mr-2"></i>';
+    } else {
+      title = 'Info';
+      iconHtml = '<i class="fas fa-info-circle mr-2"></i>';
+    }
+
+    var content = '<div class="toast-content">';
+    content += '<div class="toast-icon">' + iconHtml + '</div>';
+    content += '<div class="toast-message">';
+    content += '<div class="toast-title">' + title + '</div>';
+    content += '<div class="toast-text">' + message + '</div>';
+    content += '</div>';
+    content += '<button class="toast-close" onclick="removeToast(this.parentElement.parentElement)">';
+    content += '<i class="fas fa-times"></i>';
+    content += '</button>';
+    content += '</div>';
+
+    toast.innerHTML = content;
+
+    container.appendChild(toast);
+    window.activeToast = toast;
+
+    setTimeout(function () {
+      toast.classList.add('show');
+    }, 100);
+
+    setTimeout(function () {
+      removeToast(toast);
+    }, duration);
+
+    toast.addEventListener('mouseenter', function () {
+      toast.setAttribute('data-paused', 'true');
+    });
+
+    toast.addEventListener('mouseleave', function () {
+      if (toast.getAttribute('data-paused') === 'true') {
+        toast.removeAttribute('data-paused');
+        setTimeout(function () {
+          if (!toast.getAttribute('data-paused')) {
+            removeToast(toast);
+          }
+        }, 2000);
+      }
+    });
+  }
+
+  function removeToast(toast) {
+    if (!toast || !toast.parentElement || toast.getAttribute('data-paused') === 'true') return;
+
+    toast.classList.remove('show');
+    toast.classList.add('hide');
+
+    setTimeout(function () {
+      if (toast && toast.parentElement) {
+        toast.parentElement.removeChild(toast);
+        if (window.activeToast === toast) {
+          window.activeToast = null;
+        }
+      }
+    }, 300);
+  }
+
+  // Helper functions with better user experience
+  function showSuccessToast(message) {
+    showToast(message, 'success', 6000);
+  }
+
+  function showErrorToast(message) {
+    showToast(message, 'error', 7000); // Longer for errors
+  }
+
+  function showWarningToast(message) {
+    showToast(message, 'warning', 6000);
+  }
+
+  function showInfoToast(message) {
+    showToast(message, 'info', 5000);
+  }
+
+  function showRegistrationToast(name) {
+    showSuccessToast('Welcome to ML Diamonds, ' + name + '! Your account has been created successfully.');
+  }
+
+  function showLoginToast(name) {
+    showSuccessToast('Welcome back, ' + name + '! You have successfully logged in.');
+  }
+</script>
+
+<!-- Handle Server Messages -->
+<% if (typeof errorToast !=='undefined' && errorToast) { %>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      showErrorToast(<% - JSON.stringify(errorToast) %>);
+    });
+  </script>
+  <% } %>
+
+    <% if (typeof successToast !=='undefined' && successToast) { %>
+      <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          showSuccessToast(<% - JSON.stringify(successToast) %>);
+        });
+      </script>
+      <% } %>
+
+        <% if (typeof warningToast !=='undefined' && warningToast) { %>
+          <script>
+            document.addEventListener('DOMContentLoaded', function () {
+              showWarningToast(<% - JSON.stringify(warningToast) %>);
+            });
+          </script>
+          <% } %>
+
+            <% if (typeof loginToast !=='undefined' && loginToast) { %>
+              <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                  showLoginToast(<% - JSON.stringify(loginToast) %>);
+                });
+              </script>
+              <% } %>
+
+                <% if (typeof registrationToast !=='undefined' && registrationToast) { %>
+                  <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                      showRegistrationToast(<% - JSON.stringify(registrationToast) %>);
+                    });
+                  </script>
+                  <% } %>

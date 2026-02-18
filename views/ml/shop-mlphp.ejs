@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Mobile Legends Diamonds Philippines - ATOM Game Shop</title>
+  <meta name="description" content="Buy Mobile Legends Diamonds Philippines instantly with MMK and THB currency. Fast, secure, and affordable top-up service.">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#38B6FF',
+            secondary: '#2493D4',
+            accent: '#353535',
+            post: '#94B4D3',
+            mlblue: '#38B6FF',
+            mlgold: '#2493D4',
+            mlpurple: '#353535',
+            theme: {
+              50: '#e6f7ff',
+              100: '#b3e9ff',
+              200: '#80dbff',
+              300: '#4dcdff',
+              400: '#38B6FF',
+              500: '#2493D4',
+              600: '#1f7db8',
+              700: '#1a679c',
+              800: '#155180',
+              900: '#353535',
+              950: '#2a2a2a'
+            }
+          },
+          backgroundImage: {
+            'ml-gradient': 'linear-gradient(135deg, #38B6FF 0%, #2493D4 50%, #353535 100%)',
+            'hero-ml': 'linear-gradient(135deg, rgba(56, 182, 255, 0.9) 0%, rgba(36, 147, 212, 0.8) 50%, rgba(53, 53, 53, 0.9) 100%)',
+            'hero-pattern': "url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%23ffffff\" fill-opacity=\"0.1\"%3E%3Ccircle cx=\"30\" cy=\"30\" r=\"2\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')"
+          },
+          animation: {
+            'float': 'float 6s ease-in-out infinite',
+            'glow': 'glow 2s ease-in-out infinite alternate',
+            'bounce-slow': 'bounce 3s infinite',
+            'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'fade-in': 'fadeIn 0.8s ease-out',
+            'slide-up': 'slideUp 0.6s ease-out',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-gray-50 font-sans overflow-x-hidden" data-is-logged-in="<%= user ? '1' : '0' %>">
+  <%- include('../partials/ml-nav') %>
+
+  <!-- Shop Section -->
+  <section class="relative min-h-screen pt-20 pb-16">
+    <!-- Modern Gradient Background -->
+    <div class="absolute inset-0 bg-gradient-to-br from-theme-900 via-theme-800 to-theme-950"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(148,180,211,0.3),rgba(255,255,255,0))]">
+    </div>
+    <div class="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]">
+    </div>
+
+    <!-- Content -->
+    <div class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <% if (typeof mode !== 'undefined' && mode === 'types') { %>
+      <!-- Product Type Cards View -->
+      <div class="text-center mb-10 animate-fade-in">
+        <h1 class="text-3xl md:text-5xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent mb-4">
+          Choose Game Or Product Type
+        </h1>
+        <p class="text-lg text-gray-300 max-w-2xl mx-auto">
+          Select the game or product type you want to top up.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <% if (productTypes && productTypes.length > 0) { %>
+        <% productTypes.forEach(function(type) { %>
+        <a href="/shop/<%= type.typeCode %>" class="group block bg-white/5 border border-white/10 rounded-2xl p-5 hover:bg-white/10 transition-all duration-300 hover:-translate-y-1 hover:border-theme-400/70">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <h2 class="text-xl font-semibold text-white mt-1">
+                <%= type.name %>
+              </h2>
+            </div>
+            <div class="w-12 h-12 rounded-full bg-ml-gradient flex items-center justify-center text-2xl">
+              💎
+            </div>
+          </div>
+          <div class="flex items-center justify-between text-sm text-gray-300">
+            <span>Tap to view packages</span>
+            <span class="text-theme-300 group-hover:translate-x-1 transform transition-transform duration-300">→</span>
+          </div>
+        </a>
+        <% }) %>
+        <% } else { %>
+        <div class="col-span-full text-center text-gray-300">
+          No product types available yet.
+        </div>
+        <% } %>
+      </div>
+
+      <% } else { %>
+      <!-- Mobile Legends Product View -->
+      <!-- Header -->
+      <div class="text-center mb-8 animate-fade-in">
+        <h1 class="text-3xl md:text-5xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent mb-4">
+          Order Mobile Legends Diamonds Philippines
+        </h1>
+        <p class="text-lg text-gray-300 max-w-2xl mx-auto">
+          Enter your Mobile Legends ID and select your diamond package for instant delivery
+        </p>
+        <% if (user) { %>
+        <div class="mt-4 p-4 bg-green-500/20 border border-green-500/30 rounded-lg inline-block">
+          <p class="text-green-300">👋 Welcome back, <span class="font-bold text-white">
+              <%= user.name %>
+            </span>!</p>
+        </div>
+        <% } %>
+      </div>
+
+      <!-- Step 1: User ID Input -->
+      <div class="bg-white/10 backdrop-blur-md rounded-2xl p-6 mb-8 border border-white/20 animate-slide-up">
+        <h2 class="text-xl md:text-2xl font-bold text-white mb-6 flex items-center">
+          <span class="bg-gradient-to-r from-theme-400 to-theme-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3">1</span>
+          Enter Your Account Details
+        </h2>
+
+        <form id="orderForm" method="POST" action="/shop/order">
+          <!-- Static Fields for MLPHP -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label for="userId" class="block text-white/90 text-sm font-medium mb-2">User ID *</label>
+              <input type="text" id="userId" name="userId" required class="w-full px-4 py-3 bg-white/10 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-theme-400 focus:border-transparent transition-all duration-300" placeholder="Enter your User ID">
+            </div>
+            <div>
+              <label for="zoneId" class="block text-white/90 text-sm font-medium mb-2">Server ID *</label>
+              <input type="text" id="zoneId" name="zoneId" required class="w-full px-4 py-3 bg-white/10 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-theme-400 focus:border-transparent transition-all duration-300" placeholder="Enter your Server ID">
+            </div>
+          </div>
+          
+          <p id="gameNotes" class="mt-3 text-sm text-gray-300"></p>
+
+          <!-- Auto-Verification Display -->
+          <div id="verificationStatus" class="mt-4">
+            <!-- Loading State -->
+            <div id="loadingState" class="hidden">
+              <div class="bg-blue-500/20 border border-blue-500/30 rounded-lg p-4">
+                <p class="text-blue-300 font-medium flex items-center">
+                  <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                    </path>
+                  </svg>
+                  Verifying user...
+                </p>
+              </div>
+            </div>
+
+            <!-- Success State -->
+            <div id="successState" class="hidden">
+              <div class="bg-green-500/20 border border-green-500/30 rounded-lg p-4">
+                <p class="text-green-300 font-medium">✓ User Found: <span id="username" class="text-white"></span></p>
+              </div>
+            </div>
+
+            <!-- Error State -->
+            <div id="errorState" class="hidden">
+              <div class="bg-red-500/20 border border-red-500/30 rounded-lg p-4">
+                <p class="text-red-300 font-medium">✗ <span id="errorMessage">User not found or invalid ID</span></p>
+              </div>
+            </div>
+
+            <!-- Info State -->
+            <div id="infoState" class="bg-gray-500/20 border border-gray-500/30 rounded-lg p-4">
+              <p class="text-gray-300 font-medium">💡 Enter your User ID and Server ID to verify your account</p>
+            </div>
+          </div>
+      </div>
+
+      <!-- Step 2: Package Selection -->
+      <div class="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 animate-slide-up">
+        <h2 class="text-xl md:text-2xl font-bold text-white mb-6 flex items-center">
+          <span class="bg-gradient-to-r from-theme-400 to-theme-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3">2</span>
+          Select Package
+        </h2>
+
+        <!-- Currency Selection -->
+        <div class="mb-6">
+          <label class="block text-white/90 text-sm font-medium mb-2">Currency</label>
+          <div class="flex space-x-4">
+            <label class="flex items-center">
+              <input type="radio" name="currency" value="MMK" checked class="mr-2 text-theme-400">
+              <span class="text-white">MMK (Myanmar Kyat)</span>
+            </label>
+            <label class="flex items-center">
+              <input type="radio" name="currency" value="THB" class="mr-2 text-theme-400">
+              <span class="text-white">THB (Thai Baht)</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="mb-8">
+
+        <%
+          const subscriptionKeywords = [
+            'Weekly Elite Pack',
+            'Monthly Elite Pack',
+            'Super Value Pass',
+            'Twilight Pass',
+            'Weekly'
+          ];
+
+          const isSubscription = (name) =>
+            subscriptionKeywords.some(k => String(name || '').includes(k));
+
+          const subscriptionProducts = (products || []).filter(p => isSubscription(p.name));
+          const otherProducts = (products || []).filter(p => !isSubscription(p.name));
+
+          const premiumPackageImages = {
+            "weekly elite pack": "/images/weekly-elite.png",
+            "super value pass": "/images/super-value-pass.png",
+            "weekly pass": "/images/weekly-pass.png",
+            "weekly": "/images/weekly-pass.png",
+             "twilight pass": "/images/twilight_pass.jpg",
+            "monthly elite pack": "/images/monthly-epic.png"
+          };
+
+          function getPremiumPackageImage(name) {
+            const lower = name.toLowerCase();
+            return premiumPackageImages[lower];
+          }
+        %>
+
+        <h3 class="text-lg md:text-xl font-bold text-white mb-4 mt-6">
+          👑 Pass Packages
+        </h3>
+
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-10">
+          <% subscriptionProducts.forEach(function(product) { 
+              let type = 'WEEKLY';
+              let badgeColor = 'from-cyan-500 to-blue-500';
+              let desc = '7 days of rewards';
+
+              if (product.name.includes('Weekly Elite Pack') || product.name.includes('Super Value Pass') || product.name.includes('Twilight Pass') || product.name.includes('Monthly Elite Pack')) {
+                type = 'BUNDLE';
+                badgeColor = 'from-purple-500 to-pink-500';
+                desc = 'Exclusive Bundle';
+              }
+
+              const img = getPremiumPackageImage(product.name);
+          %>
+            <div
+              class="package-card relative bg-white/5 border border-white/10 rounded-xl p-4 cursor-pointer hover:bg-white/10 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-blue-500/20 group <%= product.is_featured ? 'ring-2 ring-yellow-400 shadow-lg shadow-yellow-400/20' : '' %>"
+              onclick="selectPackageEl(this)"
+              data-product-id="<%= product.id %>"
+              data-product-name="<%= product.name %>"
+              data-price-mmk="<%= product.price_mmk %>"
+              data-price-thb="<%= product.price_thb %>"
+            >
+              <% if (product.is_featured) { %>
+                <div class="absolute top-2 left-2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-black text-xs px-2 py-1 rounded-full font-bold shadow-lg z-10">
+                  ⭐ FEATURED
+                </div>
+              <% } %>
+
+              <div class="absolute top-2 right-2 bg-gradient-to-r <%= badgeColor %> text-white text-xs px-2 py-1 rounded-full font-bold">
+                <%= type %>
+              </div>
+
+              <div class="flex justify-center mt-3">
+                <div class="flex items-center gap-2 max-w-full">
+                  <img src="<%= img %>" class="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 
+                                object-contain drop-shadow-lg flex-shrink-0">
+                  <p class="text-white font-bold text-sm md:text-base line-clamp-2 max-w-[140px] sm:max-w-[180px]">
+                    <%= product.name.replace(/diamond|dia/gi, '').trim() %>
+                  </p>
+                </div>
+              </div>
+
+              <div class="mt-3 text-center">
+                <p class="price-mmk text-blue-400 font-bold text-base md:text-xl">
+                  <%= new Intl.NumberFormat('en-US').format(product.price_mmk) %> MMK
+                </p>
+                <p class="price-thb text-blue-400 font-bold hidden text-sm md:text-base">
+                  ฿<%= new Intl.NumberFormat('en-US').format(product.price_thb) %>
+                </p>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+
+        <h3 class="text-lg md:text-xl font-bold text-white mb-4">
+          💎 Diamond Packages
+        </h3>
+
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <% otherProducts.forEach(function(product) { %>
+            <div
+              class="package-card relative bg-white/5 border border-white/10 rounded-xl p-4 cursor-pointer hover:bg-white/10 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-blue-500/20 group <%= product.is_featured ? 'ring-2 ring-yellow-400 shadow-lg shadow-yellow-400/20' : '' %>"
+              onclick="selectPackageEl(this)"
+              data-product-id="<%= product.id %>"
+              data-product-name="<%= product.name %>"
+              data-price-mmk="<%= product.price_mmk %>"
+              data-price-thb="<%= product.price_thb %>"
+            >
+              <% if (product.is_featured) { %>
+              <div class="absolute top-2 left-2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-black text-xs px-2 py-1 rounded-full font-bold shadow-lg z-10">
+                ⭐ FEATURED
+              </div>
+              <% } %>
+
+              <div class="flex justify-center mt-3">
+                <div class="flex items-center gap-1 sm:gap-2 max-w-full">
+                  <img 
+                    src="/images/mlbb_diamond.png" 
+                    alt="twilight_pass_img"  
+                    class="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 
+                          object-contain drop-shadow-lg flex-shrink-0"
+                  />
+                  <p class="text-white font-bold 
+                             text-sm sm:text-base md:text-lg 
+                            leading-snug line-clamp-2 break-words max-w-[140px] sm:max-w-[180px]">
+                     <%= product.name.replace(/diamond|dia/gi, '').trim() %>
+                  </p>
+                </div>
+              </div>
+
+               <div class="mt-3 text-center">
+                <p class="price-mmk text-blue-400 font-bold 
+                          text-sm sm:text-base md:text-xl">
+                  <%= new Intl.NumberFormat('en-US').format(product.price_mmk) %> MMK
+                </p>
+
+                <p class="price-thb text-blue-400 font-bold hidden 
+                          text-xs sm:text-sm md:text-base">
+                  ฿<%= new Intl.NumberFormat('en-US').format(product.price_thb) %>
+                </p>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+
+        </div>
+
+
+
+        <!-- Selected Package Display -->
+        <div id="selectedPackage" class="hidden bg-blue-500/20 border border-blue-500/30 rounded-lg p-4 mb-6">
+          <h3 class="text-blue-300 font-semibold mb-2">📦 Selected Package</h3>
+          <div class="flex justify-between items-center">
+            <span id="packageDetails" class="text-white"></span>
+            <span id="packagePrice" class="text-theme-400 font-bold text-lg"></span>
+          </div>
+          <input type="hidden" id="selectedProductId" name="product_id">
+          <input type="hidden" id="selectedCurrency" name="currency" value="MMK">
+        </div>
+
+        <!-- Order Button -->
+        <button type="submit" id="orderBtn" disabled class="w-full bg-gradient-to-r from-blue-800 to-purple-800 text-white font-bold py-4 px-6 rounded-lg hover:from-blue-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
+          <span class="flex items-center justify-center">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+            </svg>
+            <strong>Proceed to Payment</strong>
+          </span>
+        </button>
+        </form>
+      </div>
+      <% } %>
+    </div>
+  </section>
+
+  <div id="purchase-success-overlay" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 p-4">
+    <div class="purchase-success-card w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl outline-none" tabindex="-1" data-variant="success">
+      <div class="flex items-start justify-between gap-4">
+        <div class="flex items-start gap-3">
+          <div id="purchase-success-icon-wrap" class="flex h-10 w-10 items-center justify-center rounded-full bg-green-100">
+            <span id="purchase-success-icon" class="text-xl font-bold text-green-700">✓</span>
+          </div>
+          <div>
+            <h3 id="purchase-success-title" class="text-xl font-bold text-gray-900">Order Created</h3>
+            <p class="mt-1 text-sm text-gray-600">Status updates will be sent to your email.</p>
+          </div>
+        </div>
+        <button type="button" id="purchase-success-close" class="rounded-lg px-3 py-2 text-gray-600 hover:bg-gray-100">✕</button>
+      </div>
+
+      <div class="mt-5 rounded-xl bg-gray-50 p-4">
+        <div class="flex items-center justify-between gap-3">
+          <p class="text-sm font-medium text-gray-700">Status</p>
+          <p id="purchase-success-status" class="text-sm font-bold text-gray-900">PENDING</p>
+        </div>
+        <div id="purchase-success-text" class="mt-2 text-sm text-gray-700"></div>
+
+        <div id="purchase-success-orderid-wrap" class="mt-4">
+          <div class="flex items-center justify-between gap-3">
+            <p class="text-sm font-medium text-gray-700">Order ID</p>
+            <p id="purchase-success-orderid" class="text-sm font-mono font-semibold text-gray-900">—</p>
+          </div>
+        </div>
+
+        <div id="purchase-success-purchaseid-wrap" class="mt-2">
+          <div class="flex items-center justify-between gap-3">
+            <p class="text-sm font-medium text-gray-700">Purchase ID</p>
+            <p id="purchase-success-purchaseid" class="text-sm font-mono font-semibold text-gray-900">—</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 flex items-center justify-end gap-3">
+        <button type="button" id="purchase-success-buy-more" class="rounded-lg bg-gray-900 px-4 py-2 text-sm font-bold text-white hover:bg-gray-800">Buy More</button>
+      </div>
+    </div>
+  </div>
+  
+  <%- include('../partials/toast') %>
+
+  <!-- Shop-specific JavaScript -->
+  <script>
+    let selectedPackageData = null;
+    let verificationTimer = null;
+    let isVerifying = false;
+    let lastVerifiedFields = null;
+    const isLoggedIn = !!(document.body && document.body.dataset && document.body.dataset.isLoggedIn === '1');
+    const gameCode = 'mlphp'; // Fixed for MLPHP
+
+    // UI State Helpers
+    const successOverlay = document.getElementById('purchase-success-overlay');
+    const successCard = successOverlay ? successOverlay.querySelector('.purchase-success-card') : null;
+    const successIconWrap = document.getElementById('purchase-success-icon-wrap');
+    const successIconEl = document.getElementById('purchase-success-icon');
+    const successTitleEl = document.getElementById('purchase-success-title');
+    const successStatusEl = document.getElementById('purchase-success-status');
+    const successTextEl = document.getElementById('purchase-success-text');
+    const successOrderIdEl = document.getElementById('purchase-success-orderid');
+    const successOrderWrap = document.getElementById('purchase-success-orderid-wrap');
+    const successPurchaseIdEl = document.getElementById('purchase-success-purchaseid');
+    const successPurchaseWrap = document.getElementById('purchase-success-purchaseid-wrap');
+    const successCloseBtn = document.getElementById('purchase-success-close');
+    const successBuyMoreBtn = document.getElementById('purchase-success-buy-more');
+
+    function openResultModal(data) {
+      if (!successOverlay) return;
+      const variant = (data && data.variant) ? String(data.variant) : 'success';
+      const title = (data && data.title) ? String(data.title) : (variant === 'error' ? 'Order Failed' : 'Order Created');
+      const status = (data && data.status) ? String(data.status) : (variant === 'error' ? 'FAILED' : 'PENDING');
+      const text = (data && data.text) ? String(data.text) : '';
+      const orderId = (data && data.orderId) ? String(data.orderId) : '';
+      const purchaseId = (data && data.purchaseId) ? String(data.purchaseId) : '';
+
+      if (successCard) successCard.dataset.variant = variant === 'error' ? 'error' : 'success';
+      if (successTitleEl) successTitleEl.textContent = title;
+      if (successStatusEl) successStatusEl.textContent = status;
+      if (successTextEl) {
+        successTextEl.textContent = text;
+        successTextEl.style.display = text ? '' : 'none';
+      }
+
+      if (successOrderIdEl) successOrderIdEl.textContent = orderId || '—';
+      if (successOrderWrap) successOrderWrap.style.display = orderId ? '' : 'none';
+      if (successPurchaseIdEl) successPurchaseIdEl.textContent = purchaseId || '—';
+      if (successPurchaseWrap) successPurchaseWrap.style.display = purchaseId ? '' : 'none';
+
+      if (successIconWrap) {
+        successIconWrap.className = 'flex h-10 w-10 items-center justify-center rounded-full ' + (variant === 'error' ? 'bg-red-100' : 'bg-green-100');
+      }
+      if (successIconEl) {
+        successIconEl.textContent = variant === 'error' ? '✕' : '✓';
+        successIconEl.className = 'text-xl font-bold ' + (variant === 'error' ? 'text-red-700' : 'text-green-700');
+      }
+
+      successOverlay.classList.remove('hidden');
+      successOverlay.classList.add('flex');
+      document.body.style.overflow = 'hidden';
+      if (successCard && typeof successCard.focus === 'function') successCard.focus();
+    }
+
+    function closeResultModal() {
+      if (!successOverlay) return;
+      successOverlay.classList.add('hidden');
+      successOverlay.classList.remove('flex');
+      document.body.style.overflow = '';
+      window.location.reload();
+    }
+
+    if (successOverlay) {
+      successOverlay.addEventListener('click', function(e) {
+        if (e && e.target === successOverlay) closeResultModal();
+      });
+      document.addEventListener('keydown', function(e) {
+        if (e && e.key === 'Escape' && !successOverlay.classList.contains('hidden')) closeResultModal();
+      });
+    }
+    if (successCloseBtn) successCloseBtn.addEventListener('click', function() { closeResultModal(); });
+    if (successBuyMoreBtn) successBuyMoreBtn.addEventListener('click', function() { closeResultModal(); });
+
+    // Auto-verification
+    function setupAutoVerification() {
+      const userIdInput = document.getElementById('userId');
+      const zoneIdInput = document.getElementById('zoneId');
+
+      if (!userIdInput || !zoneIdInput) return;
+
+      [userIdInput, zoneIdInput].forEach(input => {
+        input.addEventListener('input', () => {
+          clearTimeout(verificationTimer);
+          verificationTimer = setTimeout(() => {
+            const userId = userIdInput.value.trim();
+            const zoneId = zoneIdInput.value.trim();
+
+            if (userId && zoneId) {
+              verifyUser(userId, zoneId);
+            } else {
+              showInfoState();
+            }
+          }, 800);
+        });
+      });
+    }
+
+    function showLoadingState() {
+      hideAllStates();
+      document.getElementById('loadingState').classList.remove('hidden');
+    }
+
+    function showSuccessState(username) {
+      hideAllStates();
+      document.getElementById('username').textContent = username;
+      document.getElementById('successState').classList.remove('hidden');
+
+      // Enable package selection
+      document.querySelectorAll('.package-card').forEach(card => {
+        card.style.pointerEvents = 'auto';
+        card.style.opacity = '1';
+      });
+    }
+
+    function showErrorState(message = 'User not found or invalid ID') {
+      hideAllStates();
+      document.getElementById('errorMessage').textContent = message;
+      document.getElementById('errorState').classList.remove('hidden');
+
+      // Disable package selection
+      document.querySelectorAll('.package-card').forEach(card => {
+        card.style.pointerEvents = 'none';
+        card.style.opacity = '0.5';
+      });
+    }
+
+    function showInfoState() {
+      hideAllStates();
+      document.getElementById('infoState').classList.remove('hidden');
+
+      // Disable package selection
+      document.querySelectorAll('.package-card').forEach(card => {
+        card.style.pointerEvents = 'none';
+        card.style.opacity = '0.5';
+      });
+    }
+
+    function hideAllStates() {
+      ['loadingState', 'successState', 'errorState', 'infoState'].forEach(id => {
+        document.getElementById(id).classList.add('hidden');
+      });
+    }
+
+    // Smile One Verification
+    function verifyUser(userId, zoneId) {
+      if (isVerifying) return;
+
+      isVerifying = true;
+      showLoadingState();
+
+      fetch('/api/verify-user', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-csrf-token': '<%= csrfToken %>'
+          },
+          body: JSON.stringify({
+            userid: userId,
+            zoneid: zoneId,
+            gameCode: 'mlphp'
+          })
+        })
+        .then(async function(response) {
+          const contentType = response.headers.get("content-type");
+          if (contentType && contentType.indexOf("application/json") !== -1) {
+            const data = await response.json();
+            if (!response.ok) {
+              const error = new Error(data.message || 'User not found');
+              error.data = data;
+              throw error;
+            }
+            return data;
+          } else {
+            if (!response.ok) {
+              throw new Error(response.statusText || 'User not found');
+            }
+            return response.text().then(text => ({ status: response.status, message: text }));
+          }
+        })
+        .then(function(result) {
+          if (result.status === 200 && result.username) {
+            lastVerifiedFields = { userid: userId, zoneid: zoneId };
+            showSuccessState(result.username);
+            showSuccessToast('✓ User verified successfully!');
+          } else {
+            lastVerifiedFields = null;
+            showErrorState(result.message || 'User not found');
+            showErrorToast('✗ ' + (result.message || 'User not found'));
+          }
+        })
+        .catch(function(error) {
+          console.error('Verification error:', error);
+          lastVerifiedFields = null;
+          const msg = error.message || 'Network error. Please try again.';
+          showErrorState(msg);
+          showErrorToast(msg.startsWith('Network') ? msg : '✗ ' + msg);
+        })
+        .finally(function() {
+          isVerifying = false;
+        });
+    }
+
+    // Initialize auto-verification when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      showInfoState(); // Show initial info state
+      setupAutoVerification();
+      autoFillMLCredentials();
+    });
+
+    function selectPackage(element, productId, name, priceMMK, priceTHB) {
+      document.querySelectorAll('.package-card').forEach(card => {
+        card.classList.remove('ring-2', 'ring-yellow-400', 'bg-yellow-400/10');
+      });
+
+      element.classList.add('ring-2', 'ring-yellow-400', 'bg-yellow-400/10');
+
+      selectedPackageData = {
+        productId,
+        name,
+        priceMMK,
+        priceTHB,
+        diamonds: null
+      };
+
+      const currency = document.querySelector('input[name="currency"]:checked').value;
+      const price = currency === 'MMK' ? priceMMK : priceTHB;
+      const currencySymbol = currency === 'MMK' ? 'MMK' : '฿';
+
+      const selectedDiv = document.getElementById('selectedPackage');
+      const detailsSpan = document.getElementById('packageDetails');
+      const priceSpan = document.getElementById('packagePrice');
+
+      detailsSpan.textContent = name;
+      priceSpan.textContent = new Intl.NumberFormat('en-US').format(price) + ' ' + currencySymbol;
+
+      document.getElementById('selectedProductId').value = productId;
+      document.getElementById('selectedCurrency').value = currency;
+
+      selectedDiv.classList.remove('hidden');
+      document.getElementById('orderBtn').disabled = false;
+    }
+
+    function selectPackageEl(element) {
+      if (!element || !element.dataset) return;
+      const productId = String(element.dataset.productId || '');
+      const name = String(element.dataset.productName || '');
+      const priceMMK = Number(element.dataset.priceMmk || 0);
+      const priceTHB = Number(element.dataset.priceThb || 0);
+      selectPackage(element, productId, name, priceMMK, priceTHB);
+    }
+
+    document.querySelectorAll('input[name="currency"]').forEach(radio => {
+      radio.addEventListener('change', function() {
+        const currency = this.value;
+        document.getElementById('selectedCurrency').value = currency;
+
+        if (currency === 'MMK') {
+          document.querySelectorAll('.price-mmk').forEach(el => el.classList.remove('hidden'));
+          document.querySelectorAll('.price-thb').forEach(el => el.classList.add('hidden'));
+        } else {
+          document.querySelectorAll('.price-mmk').forEach(el => el.classList.add('hidden'));
+          document.querySelectorAll('.price-thb').forEach(el => el.classList.remove('hidden'));
+        }
+
+        if (selectedPackageData) {
+          const price = currency === 'MMK' ? selectedPackageData.priceMMK : selectedPackageData.priceTHB;
+          const currencySymbol = currency === 'MMK' ? 'MMK' : '฿';
+          document.getElementById('packagePrice').textContent = new Intl.NumberFormat('en-US').format(price) + ' ' + currencySymbol;
+        }
+      });
+    });
+
+    function saveMLCredentials(userId, zoneId) {
+      try {
+        const credentials = {
+          userId: userId,
+          zoneId: zoneId,
+          savedAt: new Date().toISOString()
+        };
+        localStorage.setItem('mlphp_credentials', JSON.stringify(credentials));
+      } catch (error) {
+      }
+    }
+
+    function loadMLCredentials() {
+      try {
+        const saved = localStorage.getItem('mlphp_credentials');
+        if (saved) {
+          return JSON.parse(saved);
+        }
+      } catch (error) {
+      }
+      return null;
+    }
+
+    function autoFillMLCredentials() {
+      const credentials = loadMLCredentials();
+      if (credentials && credentials.userId && credentials.zoneId) {
+        document.getElementById('userId').value = credentials.userId;
+        document.getElementById('zoneId').value = credentials.zoneId;
+
+        setTimeout(function() {
+          const userId = document.getElementById('userId').value;
+          const zoneId = document.getElementById('zoneId').value;
+          verifyUser(userId, zoneId);
+        }, 500);
+      }
+    }
+
+    // Form submission handler
+    document.getElementById('orderForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const userId = document.getElementById('userId').value;
+      const zoneId = document.getElementById('zoneId').value;
+      const productId = document.getElementById('selectedProductId').value;
+      const currency = document.getElementById('selectedCurrency').value;
+
+      if (!userId || !zoneId) {
+        showErrorToast('Please verify your User ID first');
+        return;
+      }
+
+      if (!selectedPackageData || !productId) {
+        showErrorToast('Please select a package');
+        return;
+      }
+
+      if (!isLoggedIn) {
+        showErrorToast('Please login to place an order');
+        setTimeout(function() {
+          window.location.href = '/users/login';
+        }, 2000);
+        return;
+      }
+
+      if (!lastVerifiedFields) {
+        showErrorToast('Please verify your account first');
+        return;
+      }
+
+      processOrder(userId, zoneId, productId, currency);
+    });
+
+    let isProcessingOrder = false;
+    let lastOrderTime = 0;
+    const ORDER_COOLDOWN = 5000;
+
+    function processOrder(userId, zoneId, productId, currency) {
+      if (isProcessingOrder) {
+        showErrorToast('⚠️ Order already in progress. Please wait...');
+        return;
+      }
+
+      const now = Date.now();
+      if (now - lastOrderTime < ORDER_COOLDOWN) {
+        const remainingTime = Math.ceil((ORDER_COOLDOWN - (now - lastOrderTime)) / 1000);
+        showErrorToast(`⏳ Please wait ${remainingTime} seconds before placing another order`);
+        return;
+      }
+
+      isProcessingOrder = true;
+      lastOrderTime = now;
+      showInfoToast('Processing your order...');
+
+      var orderBtn = document.getElementById('orderBtn');
+      orderBtn.disabled = true;
+      orderBtn.innerHTML = '<span class="flex items-center justify-center"><svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Processing Order...</span>';
+
+      document.querySelectorAll('.package-card').forEach(card => {
+        card.style.pointerEvents = 'none';
+        card.style.opacity = '0.6';
+      });
+
+      document.getElementById('userId').disabled = true;
+      document.getElementById('zoneId').disabled = true;
+
+      fetch('/api/place-order', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-csrf-token': '<%= csrfToken %>'
+          },
+          body: JSON.stringify({
+            userid: userId,
+            zoneid: zoneId,
+            product_id: productId,
+            currency: currency
+          })
+        })
+        .then(function(response) {
+          return response.json();
+        })
+        .then(function(result) {
+          if (result.status === 200) {
+            saveMLCredentials(userId, zoneId);
+
+            openResultModal({
+              variant: 'success',
+              title: 'Order Created',
+              status: 'COMPLETED',
+              text: result.message || 'Diamonds will be delivered to your account shortly.',
+              purchaseId: result.data && result.data.purchaseId,
+              orderId: result.data && result.data.order_id
+            });
+            
+            // Reset form
+            document.getElementById('orderForm').reset();
+            document.getElementById('selectedPackage').classList.add('hidden');
+            selectedPackageData = null;
+            showInfoState();
+            
+          } else {
+            openResultModal({
+              variant: 'error',
+              title: 'Order Failed',
+              status: 'FAILED',
+              text: result.message || 'Something went wrong.',
+              purchaseId: result.data && result.data.purchaseId
+            });
+          }
+        })
+        .catch(function(error) {
+          console.error('Order error:', error);
+          openResultModal({
+              variant: 'error',
+              title: 'System Error',
+              status: 'ERROR',
+              text: 'Network error or server unavailable. Please try again.'
+            });
+        })
+        .finally(function() {
+          isProcessingOrder = false;
+
+          orderBtn.disabled = false;
+          orderBtn.innerHTML = '<span class="flex items-center justify-center"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>Proceed to Payment</span>'
+
+          document.querySelectorAll('.package-card').forEach(card => {
+            card.style.pointerEvents = 'auto';
+            card.style.opacity = '1';
+          });
+
+          document.getElementById('userId').disabled = false;
+          document.getElementById('zoneId').disabled = false;
+        });
+    }
+  </script>
+  <%- include('../partials/ml-footer') %>
+  <%- include('../partials/ml-scripts') %>
+</body>
+
+</html>

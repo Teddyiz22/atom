@@ -1,0 +1,68 @@
+User-agent: *
+Allow: /
+Allow: /shop
+Allow: /about
+Allow: /faq
+Allow: /contact
+Allow: /users/register
+Allow: /users/login
+
+# Block admin areas
+Disallow: /admin/
+Disallow: /api/
+
+# Block private user areas  
+Disallow: /profile
+Disallow: /wallet
+Disallow: /users/logout
+Disallow: /users/forgot-password
+Disallow: /users/reset-password
+Disallow: /users/verification-pending
+Disallow: /users/verification-result
+
+# Block file directories
+Disallow: /public/uploads/
+Disallow: /config/
+Disallow: /controllers/
+Disallow: /middleware/
+Disallow: /models/
+Disallow: /routes/
+Disallow: /scripts/
+Disallow: /services/
+Disallow: /views/
+
+# Allow CSS, JS, and images
+Allow: /css/
+Allow: /js/
+Allow: /images/
+Allow: /admin/css/
+Allow: /admin/js/
+Allow: /admin/img/
+
+# Sitemap location
+Sitemap: https://atomgameshop.com/sitemap.xml
+
+# Crawl delay (be respectful)
+Crawl-delay: 1
+
+# Block common bot user agents that aren't search engines
+User-agent: CCBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: GPTBot
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: / 

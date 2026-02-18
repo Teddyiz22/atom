@@ -1,0 +1,356 @@
+{
+  "nav": {
+    "home": "Home",
+    "products": "Products",
+    "shop": "Shop Now",
+    "about": "About Us",
+    "contact": "Contact",
+    "wallet": "My Wallet",
+    "guide": "Guides",
+    "profile": "Profile",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "admin_panel": "Admin Panel",
+    "language": "Language"
+  },
+  "home": {
+    "title": "ML Diamonds - Top Up Your Gaming Experience",
+    "hero_title": "Your Games Store",
+    "hero_subtitle": "Top up in seconds, play for hours",
+    "hero_cta": "Top Up Now",
+    "features_title": "Why Choose Us?",
+    "feature_1_title": "Instant Delivery",
+    "feature_1_desc": "Get your diamonds within minutes",
+    "feature_2_title": "Secure Payment",
+    "feature_2_desc": "Safe and encrypted transactions",
+    "feature_3_title": "24/7 Support",
+    "feature_3_desc": "Round-the-clock customer service",
+    "feature_4_title": "Best Prices",
+    "feature_4_desc": "Competitive rates for all packages"
+  },
+  "products": {
+    "title": "Diamond Packages",
+    "subtitle": "Choose your perfect diamond package",
+    "diamonds": "Diamonds",
+    "price": "Price",
+    "buy_now": "Buy Now",
+    "weekly_pass": "Weekly Pass",
+    "diamond_package": "Diamond Package"
+  },
+  "wallet": {
+    "title": "My Wallet",
+    "balance": "Balance",
+    "mmk_balance": "MMK Balance",
+    "thb_balance": "THB Balance",
+    "top_up": "Top Up",
+    "transaction_history": "Transaction History",
+    "amount": "Amount",
+    "currency": "Currency",
+    "status": "Status",
+    "date": "Date",
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "no_transactions": "No transactions found"
+  },
+  "profile": {
+    "title": "My Profile",
+    "personal_info": "Personal Information",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone Number",
+    "edit_profile": "Edit Profile",
+    "save_changes": "Save Changes",
+    "cancel": "Cancel"
+  },
+  "auth": {
+    "login_title": "Login to Your Account",
+    "register_title": "Create New Account",
+    "email": "Email Address",
+    "password": "Password",
+    "confirm_password": "Confirm Password",
+    "full_name": "Full Name",
+    "phone_number": "Phone Number",
+    "login_button": "Login",
+    "register_button": "Register",
+    "forgot_password": "Forgot Password?",
+    "have_account": "Already have an account?",
+    "no_account": "Don't have an account?",
+    "terms_agree": "I agree to the Terms and Conditions",
+    "remember_me": "Remember Me"
+  },
+  "common": {
+    "loading": "Loading...",
+    "submit": "Submit",
+    "close": "Close",
+    "confirm": "Confirm",
+    "success": "Success",
+    "error": "Error",
+    "warning": "Warning",
+    "info": "Information",
+    "search": "Search",
+    "filter": "Filter",
+    "reset": "Reset",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "view": "View"
+  },
+  "footer": {
+    "about_us": "About Us",
+    "contact_us": "Contact Us",
+    "privacy_policy": "Privacy Policy",
+    "terms_service": "Terms of Service",
+    "follow_us": "Follow Us",
+    "copyright": "ATOM Game Shop. All rights reserved."
+  },
+  "messages": {
+    "login_success": "Login successful! Welcome back.",
+    "register_success": "Registration successful! You can now login.",
+    "logout_success": "You have been logged out successfully.",
+    "profile_updated": "Profile updated successfully.",
+    "wallet_updated": "Wallet balance updated successfully.",
+    "transaction_submitted": "Transaction submitted successfully.",
+    "invalid_credentials": "Invalid email or password.",
+    "email_exists": "Email address already exists.",
+    "required_fields": "Please fill in all required fields.",
+    "passwords_not_match": "Passwords do not match.",
+    "insufficient_balance": "Insufficient wallet balance.",
+    "transaction_failed": "Transaction failed. Please try again."
+  },
+  "about": {
+    "title": "About ATOM Game Shop",
+    "subtitle": "Your trusted partner for premium gaming top-ups since March 2022",
+    "meta_description": "Learn about ATOM Game Shop - Your trusted diamond store providing affordable prices and balanced service for Mobile Legends, PUBG, and Honor of Kings since March 2022.",
+    "hero_title": "About ATOM Game Shop",
+    "hero_subtitle": "Top up in seconds, play for hours!!!",
+    "founded_title": "Our Story",
+    "founded_text": "ATOM Game Shop started selling diamonds and UC on Facebook on March 30, 2022, and has received tremendous support from our valued customers.",
+    "mission_title": "Our Mission",
+    "mission_text": "Our key product philosophy is 'affordable prices with balanced service.' True to our 'balanced' approach, we prioritize our customers with genuine, sincere, and balanced service.",
+    "service_title": "Customer Experience",
+    "service_text": "For everyone who visits and supports our page, we display diamond and UC prices clearly to save time and make purchasing easy. Our payment process is also transparent and convenient for a smooth experience.",
+    "trust_title": "Why Trust Us?",
+    "trust_text": "When you need diamonds or UC, choose the most trustworthy store. We recommend supporting ATOM Game Shop, which has earned the highest 5.0-star reviews from thousands of satisfied customers.",
+    "values_title": "Our Values",
+    "value_1_title": "Affordable Prices",
+    "value_1_desc": "Competitive rates that won't break your budget",
+    "value_2_title": "Balanced Service",
+    "value_2_desc": "Fair and sincere service for every customer",
+    "value_3_title": "Customer First",
+    "value_3_desc": "Your satisfaction is our top priority",
+    "value_4_title": "Transparency",
+    "value_4_desc": "Clear pricing and honest communication always",
+    "stats_title": "Our Achievement",
+    "customers_served": "26.1k+",
+    "customers_label": "Happy Customers",
+    "star_rating": "5.0",
+    "rating_label": "Star Rating",
+    "games_supported": "10+",
+    "games_label": "Games Supported",
+    "years_experience": "2+",
+    "experience_label": "Years Experience"
+  },
+  "guide": {
+    "title": "Guides",
+    "subtitle": "Step-by-step video tutorials to help you get started with ATOM Game Shop",
+    "step1_title": "Account Opening",
+    "step1_desc": "Learn how to open your Atom game shop account to make Top-Up process.",
+    "step1_point1": "Click the create account button at Home Page",
+    "step1_point2": "Enter your credentials",
+    "step1_point3": "Verify your account",
+    "step1_point4": "Enjoy your Top-up",
+    "step2_title": "Wallet Top-Up",
+    "step2_desc": "Learn how to add funds to your wallet for seamless transactions.",
+    "step2_point1": "Navigate to wallet section",
+    "step2_point2": "Choose your preferred payment method",
+    "step2_point3": "Enter the amount to top-up",
+    "step2_point4": "Complete the payment process",
+    "step3_title": "Diamond Purchase",
+    "step3_desc": "Purchase Mobile Legends diamonds using your wallet balance.",
+    "step3_point1": "Go to the shop section",
+    "step3_point2": "Select your diamond package",
+    "step3_point3": "Enter your Mobile Legends ID and Zone",
+    "step3_point4": "Confirm and complete purchase",
+    "key_points": "Key Points:",
+    "tips_title": "Pro Tips",
+    "tip1_title": "Fast Processing",
+    "tip1_desc": "Diamonds are delivered instantly after successful payment confirmation.",
+    "tip2_title": "Secure Payment",
+    "tip2_desc": "All transactions are protected with advanced encryption technology.",
+    "tip3_title": "Mobile Friendly",
+    "tip3_desc": "Access our platform from any device - desktop, tablet, or mobile.",
+    "tip4_title": "Game Ready",
+    "tip4_desc": "Double-check your Mobile Legends ID and Zone before purchasing.",
+    "pro_tips_title": "💡 Pro Tips",
+    "tip_1": "Always double-check your game ID before purchasing",
+    "tip_2": "Keep your account balance topped up for faster transactions",
+    "tip_3": "Contact support if you need help with any step",
+    "cta_title": "Ready to Get Started?",
+    "cta_desc": "Browse our diamond packages or get in touch if you need assistance",
+    "shop_now": "Shop Now",
+    "contact_us": "Contact Us",
+    "need_help": "Need Help?"
+  },
+  "disclaimer": {
+    "title": "Disclaimer",
+    "main": "ATOM Game Shop is an independent third-party platform that provides digital game top-up services. We are not officially affiliated with, partnered with, or endorsed by Moonton (Mobile Legends: Bang Bang), PUBG Corporation / KRAFTON, or any other game publishers. All game names, logos, and trademarks used are the property of their respective owners.",
+    "third_party_title": "Third Party Links",
+    "third_party_content": "The site may contain (or you may be sent through the site) links to other websites or content belonging to or originating from third parties or links to websites and features in banners or other advertising. Such external links are not investigated, monitored, or checked for accuracy, adequacy, validity, reliability, availability or completeness by us.",
+    "last_updated": "Last updated"
+  },
+  "privacy_policy": {
+    "title": "Privacy Policy",
+    "effective_date": "Effective Date: Feb 29/2026",
+    "website": "Website: atomgameshop.com",
+    "intro": "At ATOM Game Shop (atomgameshop.com), we value your privacy and are committed to protecting your personal information. This Privacy Policy explains how we collect, use, store, and protect your data when you use our website and services.",
+    "sections": [
+      {
+        "title": "1. Information We Collect",
+        "content": "We may collect the following information:",
+        "list": [
+          "Personal information (such as name, email address, phone number)",
+          "Account details (username, login information)",
+          "Payment and wallet transaction information",
+          "Game-related information (Game ID, Server ID)",
+          "Technical data (IP address, browser type, device information)"
+        ]
+      },
+      {
+        "title": "2. How We Use Your Information",
+        "content": "We use your information to:",
+        "list": [
+          "Provide game top-up and digital services",
+          "Process payments and wallet transactions",
+          "Manage user accounts",
+          "Improve our website and services",
+          "Communicate with users regarding orders, promotions, or support",
+          "Prevent fraud and ensure security"
+        ]
+      },
+      {
+        "title": "3. Data Protection & Security",
+        "content": "We implement appropriate technical and organizational security measures to protect your personal data against unauthorized access, loss, or misuse."
+      },
+      {
+        "title": "4. Sharing of Information",
+        "content": "We do not sell or trade your personal information. Your data may only be shared with:",
+        "list": [
+          "Payment service providers",
+          "Legal authorities if required by law",
+          "Service partners strictly for service delivery purposes"
+        ]
+      },
+      {
+        "title": "5. Cookies",
+        "content": "Our website may use cookies to enhance user experience, analyze traffic, and improve services. You can disable cookies in your browser settings."
+      },
+      {
+        "title": "6. User Rights",
+        "content": "You have the right to:",
+        "list": [
+          "Access your personal data",
+          "Request correction or deletion of your data",
+          "Withdraw consent at any time"
+        ]
+      },
+      {
+        "title": "7. Third-Party Links",
+        "content": "Our website may contain links to third-party sites. We are not responsible for the privacy practices of those websites."
+      },
+      {
+        "title": "8. Changes to This Policy",
+        "content": "We may update this Privacy Policy from time to time. Any changes will be posted on this page."
+      },
+      {
+        "title": "9. Contact Us",
+        "content": "If you have any questions about this Privacy Policy, please contact us at:",
+        "contact_link": {
+          "text": "Telegram - https://t.me/atomgameshop",
+          "url": "https://t.me/atomgameshop"
+        }
+      }
+    ]
+  },
+  "terms_conditions": {
+    "title": "Terms & Conditions",
+    "effective_date": "Effective Date: Feb 29/2025",
+    "website": "Website: atomgameshop.com",
+    "intro": "Welcome to ATOM Game Shop (atomgameshop.com). By accessing or using our website and services, you agree to comply with and be bound by the following Terms & Conditions. Please read them carefully.",
+    "sections": [
+      {
+        "title": "1. Acceptance of Terms",
+        "content": "By using this website, you confirm that you are at least 18 years old or have permission from a legal guardian, and you agree to these Terms & Conditions."
+      },
+      {
+        "title": "2. Services",
+        "content": "ATOM Game Shop provides digital game top-up services, including but not limited to in-game currency, digital items, and wallet top-ups. All purchases are digital goods and are delivered electronically."
+      },
+      {
+        "title": "3. User Account",
+        "list": [
+          "Users are responsible for maintaining the confidentiality of their account information.",
+          "You agree to provide accurate and complete information.",
+          "We reserve the right to suspend or terminate accounts involved in fraud, abuse, or violations of these terms."
+        ]
+      },
+      {
+        "title": "4. Payments & Pricing",
+        "list": [
+          "Prices are displayed on the website and may change without prior notice.",
+          "All payments must be completed before services are delivered.",
+          "ATOM Game Shop is not responsible for incorrect top-ups caused by wrong Game ID or Server ID provided by the user."
+        ]
+      },
+      {
+        "title": "5. No Refund Policy",
+        "content": "All sales are final. Due to the nature of digital goods, refunds, cancellations, or exchanges are not allowed once the order has been processed."
+      },
+      {
+        "title": "6. Service Delivery",
+        "list": [
+          "Most top-ups are processed instantly; however, delays may occur due to technical issues or third-party systems.",
+          "We are not responsible for delays caused by game publishers or external service providers."
+        ]
+      },
+      {
+        "title": "7. Prohibited Activities",
+        "content": "Users must not:",
+        "list": [
+          "Use the service for illegal or unauthorized purposes",
+          "Attempt to hack, abuse, or disrupt the website",
+          "Provide false or misleading information",
+          "Use stolen or unauthorized payment methods"
+        ]
+      },
+      {
+        "title": "8. Intellectual Property",
+        "content": "All content on this website, including logos, text, images, and design, belongs to ATOM Game Shop or its partners and may not be used without permission."
+      },
+      {
+        "title": "9. Limitation of Liability",
+        "content": "ATOM Game Shop shall not be liable for any direct, indirect, incidental, or consequential damages arising from the use of our services."
+      },
+      {
+        "title": "10. Termination",
+        "content": "We reserve the right to suspend or terminate access to our services at any time without notice if these Terms & Conditions are violated."
+      },
+      {
+        "title": "11. Changes to Terms",
+        "content": "We may update these Terms & Conditions at any time. Continued use of the website constitutes acceptance of the updated terms."
+      },
+      {
+        "title": "12. Contact Information",
+        "content": "For any questions regarding these Terms & Conditions, please contact:",
+        "contact_link": {
+          "text": "Telegram - https://t.me/atomgameshop",
+          "url": "https://t.me/atomgameshop"
+        }
+      }
+    ]
+  }
+}

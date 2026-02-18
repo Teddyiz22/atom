@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <%- include('../partials/ml-head', { title: 'Wallet - ATOM Game Shop' ,
+    description: 'Top up your ATOM Game Shop wallet with multiple payment methods. Fast and secure transactions.' }) %>
+  <style>
+    .copy-success {
+      animation: copySuccess 0.3s ease-out;
+    }
+
+    @keyframes copySuccess {
+      0% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.1);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-gray-50 font-sans overflow-x-hidden">
+  <%- include('../partials/ml-nav') %>
+
+  <!-- Wallet Section -->
+  <section class="relative min-h-screen pt-20 pb-16">
+    <!-- Modern Gradient Background -->
+    <div class="absolute inset-0 bg-gradient-to-br from-theme-900 via-theme-800 to-theme-950"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(148,180,211,0.3),rgba(255,255,255,0))]">
+    </div>
+    <div class="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]">
+    </div>
+
+    <!-- Content -->
+    <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Header -->
+      <div class="text-center mb-8 animate-fade-in">
+        <div class="flex items-center justify-center mb-4">
+          <h1 class="text-3xl md:text-5xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent mr-4">
+            💰 Wallet
+          </h1>
+          <button onclick="refreshBalance()" class="bg-white/10 hover:bg-white/20 border border-white/30 text-white p-3 rounded-full transition-all duration-300 transform hover:scale-110 hover:rotate-180" title="Refresh Balance">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+              </path>
+            </svg>
+          </button>
+        </div>
+        <p class="text-lg text-gray-300 max-w-2xl mx-auto">
+          <b>မနက် 9 နာရီမှ ည 12 နာရီအတွင်းသာ Wallet ထဲသို့ ငွေဖြည့်ပါရန် မေတ္တာရပ်ခံအပ်ပါသည်။</b>
+        </p>
+      </div>
+
+      <!-- Wallet Balance Cards -->
+      <div class="grid sm:grid-cols-2 gap-6 mb-8 animate-slide-up">
+        <!-- Myanmar Kyat Wallet -->
+        <div class="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 relative overflow-hidden">
+          <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-theme-400/20 to-theme-600/20 rounded-full transform translate-x-16 -translate-y-16">
+          </div>
+          <div class="relative z-10">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold text-white">Myanmar Kyat</h3>
+              <span class="text-2xl">🇲🇲</span>
+            </div>
+            <div class="mb-6">
+              <p class="text-3xl font-bold text-theme-300 mb-2">
+                <span class="mmk-balance">
+                  <% if (typeof user !=='undefined' && user && user.wallet) { %>
+                  <%= user.wallet.balance_mmk.toLocaleString() %>
+                  <% } else { %>
+                  0
+                  <% } %>
+                </span>
+                <span class="text-lg text-gray-300">MMK</span>
+              </p>
+              <p class="text-sm text-gray-400">Available Balance</p>
+            </div>
+            <button onclick="selectCurrency('MMK')" class="w-full bg-gradient-to-r from-theme-500 to-theme-600 hover:from-theme-600 hover:to-theme-700 text-white font-medium py-3 px-4 rounded-lg transition-all duration-300 transform hover:scale-105">
+              Top Up →
+            </button>
+          </div>
+        </div>
+
+        <!-- Thai Baht Wallet -->
+        <div class="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 relative overflow-hidden">
+          <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-theme-400/20 to-theme-600/20 rounded-full transform translate-x-16 -translate-y-16">
+          </div>
+          <div class="relative z-10">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold text-white">Thai Baht</h3>
+              <span class="text-2xl">🇹🇭</span>
+            </div>
+            <div class="mb-6">
+              <p class="text-3xl font-bold text-theme-300 mb-2">
+                <span class="thb-balance">
+                  <% if (typeof user !=='undefined' && user && user.wallet) { %>
+                  <%= user.wallet.balance_thb.toLocaleString() %>
+                  <% } else { %>
+                  0
+                  <% } %>
+                </span>
+                <span class="text-lg text-gray-300">BAHT</span>
+              </p>
+              <p class="text-sm text-gray-400">Available Balance</p>
+            </div>
+            <button onclick="selectCurrency('THB')" class="w-full bg-gradient-to-r from-theme-500 to-theme-600 hover:from-theme-600 hover:to-theme-700 text-white font-medium py-3 px-4 rounded-lg transition-all duration-300 transform hover:scale-105">
+              Top Up →
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top Up Form -->
+      <div id="topupForm" class="hidden animate-slide-up">
+        <div class="bg-white/10 backdrop-blur-md rounded-2xl p-6 md:p-8 border border-white/20 mb-8">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl md:text-2xl font-bold text-white flex items-center">
+              <span class="bg-gradient-to-r from-green-400 to-green-600 text-black w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3">💳</span>
+              Top Up <span id="selectedCurrency" class="text-theme-300 ml-2"></span>
+            </h2>
+            <button type="button" onclick="hideTopupForm()" class="text-gray-400 hover:text-white transition-colors duration-300">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+
+          <form action="/wallet/topup" method="POST" enctype="multipart/form-data" onsubmit="handleTopup(event)" class="space-y-6">
+            <!-- Hidden fields for form submission -->
+            <input type="hidden" id="selectedAmountInput" name="selectedAmount" value="">
+            <input type="hidden" id="currencyInput" name="currency" value="">
+
+            <!-- Top Up Amount -->
+            <div>
+              <label class="block text-white/90 text-sm font-medium mb-3">Select Amount</label>
+              <div class="grid grid-cols-3 gap-3 mb-4" id="amountButtons">
+                <!-- MMK Amounts (Default) -->
+                <button type="button" onclick="selectAmount(5000)" data-currency="MMK" class="amount-btn bg-white/10 border border-white/30 text-white py-3 px-4 rounded-lg font-medium hover:bg-white/20 transition-all duration-300 text-sm">
+                  <span class="amount-value">5,000</span>
+                  <span class="amount-currency text-gray-400 text-xs block">MMK</span>
+                </button>
+                <button type="button" onclick="selectAmount(10000)" data-currency="MMK" class="amount-btn bg-white/10 border border-white/30 text-white py-3 px-4 rounded-lg font-medium hover:bg-white/20 transition-all duration-300 text-sm">
+                  <span class="amount-value">10,000</span>
+                  <span class="amount-currency text-gray-400 text-xs block">MMK</span>
+                </button>
+                <button type="button" onclick="selectAmount(20000)" data-currency="MMK" class="amount-btn bg-white/10 border border-white/30 text-white py-3 px-4 rounded-lg font-medium hover:bg-white/20 transition-all duration-300 text-sm">
+                  <span class="amount-value">20,000</span>
+                  <span class="amount-currency text-gray-400 text-xs block">MMK</span>
+                </button>
+
+                <!-- THB Amounts (Hidden by default) -->
+                <button type="button" onclick="selectAmount(100)" data-currency="THB" class="amount-btn bg-white/10 border border-white/30 text-white py-3 px-4 rounded-lg font-medium hover:bg-white/20 transition-all duration-300 text-sm hidden">
+                  <span class="amount-value">100</span>
+                  <span class="amount-currency text-gray-400 text-xs block">BAHT</span>
+                </button>
+                <button type="button" onclick="selectAmount(200)" data-currency="THB" class="amount-btn bg-white/10 border border-white/30 text-white py-3 px-4 rounded-lg font-medium hover:bg-white/20 transition-all duration-300 text-sm hidden">
+                  <span class="amount-value">200</span>
+                  <span class="amount-currency text-gray-400 text-xs block">BAHT</span>
+                </button>
+                <button type="button" onclick="selectAmount(300)" data-currency="THB" class="amount-btn bg-white/10 border border-white/30 text-white py-3 px-4 rounded-lg font-medium hover:bg-white/20 transition-all duration-300 text-sm hidden">
+                  <span class="amount-value">300</span>
+                  <span class="amount-currency text-gray-400 text-xs block">BAHT</span>
+                </button>
+              </div>
+
+              <!-- Custom Amount -->
+              <div>
+                <label for="customAmount" class="block text-white/90 text-sm font-medium mb-2">Or enter custom
+                  amount</label>
+                <input type="number" id="customAmount" name="amount" min="1" class="w-full px-4 py-3 bg-white/10 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-theme-300 focus:border-transparent transition-all duration-300" placeholder="Enter amount">
+              </div>
+            </div>
+
+            <!-- Payment Method -->
+            <div>
+              <label for="paymentMethod" class="block text-white/90 text-sm font-medium mb-2">Payment Method *</label>
+              <select id="paymentMethod" name="payment_type" required onchange="updatePaymentAccount()" class="w-full px-4 py-3 bg-white/10 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-theme-300 focus:border-transparent transition-all duration-300">
+                <option value="" class="text-gray-900">Select Payment Method</option>
+                <!-- Options will be populated dynamically based on selected currency -->
+              </select>
+            </div>
+
+            <!-- Account Information (appears after selecting payment method) -->
+            <div id="accountInfo" class="hidden">
+              <div class="bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-500/30 rounded-lg p-4">
+                <h3 class="text-green-300 font-semibold mb-3 flex items-center">
+                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  Send Payment To
+                </h3>
+                <div class="space-y-3">
+                  <div class="flex justify-between items-center bg-white/10 rounded-lg p-3">
+                    <div>
+                      <p class="text-white font-medium" id="accountName">Account Name</p>
+                      <p class="text-gray-400 text-sm" id="paymentMethodName">Payment Method</p>
+                    </div>
+                  </div>
+                  <div class="flex justify-between items-center bg-white/10 rounded-lg p-3">
+                    <div class="flex-1">
+                      <p class="text-gray-400 text-sm">Account Number</p>
+                      <p class="text-white font-mono text-lg" id="accountNumber">Loading...</p>
+                    </div>
+                    <button type="button" onclick="copyAccountNumber(event)" class="bg-theme-400 hover:bg-theme-500 text-black px-4 py-2 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 flex items-center">
+                      <svg id="copyIcon" class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z">
+                        </path>
+                      </svg>
+                      <span id="copyText">Copy</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sender Account Details -->
+            <div>
+              <label for="senderName" class="block text-white/90 text-sm font-medium mb-2">Your Account Name
+                *</label>
+              <input type="text" id="senderName" name="sender_account_name" required class="w-full px-4 py-3 bg-white/10 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-theme-300 focus:border-transparent transition-all duration-300" placeholder="Enter your account name">
+            </div>
+
+            <!-- Upload Screenshot -->
+            <div id="uploadSection" class="hidden">
+              <label for="screenshot" class="block text-white/90 text-sm font-medium mb-2">Upload Payment Screenshot
+                *</label>
+
+              <!-- Upload Drop Zone - only show when no image is selected -->
+              <div id="uploadDropZone" class="border-2 border-dashed border-white/30 rounded-lg p-6 text-center hover:border-white/50 transition-colors duration-300">
+                <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                </svg>
+                <input type="file" id="screenshot" name="screenshot" accept="image/*" class="hidden" onchange="handleFileSelect(event)" required>
+                <label for="screenshot" class="cursor-pointer block">
+                  <span class="text-white font-medium text-lg">📱 Choose Screenshot</span>
+                  <p class="text-gray-400 text-sm mt-2">PNG, JPG - Auto-compressed to ~500KB</p>
+                </label>
+              </div>
+
+              <!-- Image Preview Section -->
+              <div id="imagePreview" class="hidden mt-6">
+                <div class="bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 overflow-hidden">
+                  <!-- Header with filename and remove button -->
+                  <div class="flex items-center justify-between p-4 border-b border-white/10">
+                    <div class="flex items-center space-x-3">
+                      <div class="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center">
+                        <svg class="w-4 h-4 text-green-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                      </div>
+                      <div>
+                        <p class="text-white font-medium text-sm" id="fileName">Payment Screenshot</p>
+                        <p class="text-gray-400 text-xs" id="imageInfo">Screenshot uploaded successfully</p>
+                      </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                      <!-- Replace button -->
+                      <button type="button" onclick="replaceImage()" class="w-8 h-8 rounded-full bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 hover:text-blue-200 transition-all duration-200 flex items-center justify-center group" title="Replace image">
+                        <svg class="w-4 h-4 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                        </svg>
+                      </button>
+                      <!-- Remove button -->
+                      <button type="button" onclick="removeImage()" class="w-8 h-8 rounded-full bg-red-500/20 hover:bg-red-500/30 text-red-300 hover:text-red-200 transition-all duration-200 flex items-center justify-center group" title="Remove image">
+                        <svg class="w-4 h-4 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                          </path>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Simple Image Preview - No Modal -->
+                  <div class="p-4 sm:p-6">
+                    <div class="bg-white/5 rounded-lg p-4">
+                      <img id="previewImage" src="" alt="Payment Screenshot Preview" class="w-full h-auto max-w-full rounded-lg shadow-lg">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Simple File Info (fallback for non-image files) -->
+              <div id="selectedFile" class="hidden mt-4 p-4 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10">
+                <div class="flex items-center space-x-3">
+                  <div class="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center">
+                    <svg class="w-5 h-5 text-green-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="text-white font-medium text-sm" id="fileNameSimple">File uploaded</p>
+                    <p class="text-gray-400 text-xs">File ready for submission</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Place Order Button -->
+            <button type="submit" id="placeOrderBtn" disabled class="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold py-4 px-6 rounded-lg hover:from-green-700 hover:to-emerald-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:from-gray-600 disabled:to-gray-600">
+              <span class="flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path d="M3 7h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                  <circle cx="16" cy="12" r="2" />
+                </svg>
+                Place Top-Up Order
+              </span>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <%- include('../partials/ml-scripts') %>
+
+  <script>
+    let selectedCurrencyType = '';
+    let selectedAmountValue = 0;
+
+    // Payment account data
+    const paymentAccounts = {
+      // MMK Payment Methods
+      'Wave Pay': {
+        name: 'Nay Myo Tun',
+        method: 'Wave Pay',
+        number: '09404466692',
+        currency: 'MMK'
+      },
+      'KBZ Pay': {
+        name: 'Nay Myo Tun',
+        method: 'KBZ Pay',
+        number: '09404466692',
+        currency: 'MMK'
+      },
+      'AYA Pay': {
+        name: 'Nay Myo Tun',
+        method: 'AYA Pay',
+        number: '09404466692',
+        currency: 'MMK'
+      },
+      'UAB Pay': {
+        name: 'Nay Myo Tun',
+        method: 'UAB Pay',
+        number: '09404466692',
+        currency: 'MMK'
+      },
+      'CB Pay': {
+        name: 'Nay Myo Tun',
+        method: 'CB Pay',
+        number: '09404466692',
+        currency: 'MMK'
+      },
+      // THB Payment Methods
+      'Krungthai Bank': {
+        name: 'Mr. Nay Myo Tun',
+        method: 'Krungthai Bank',
+        number: '5010-802-937',
+        currency: 'THB'
+      }
+    };
+
+    function selectCurrency(currency) {
+      selectedCurrencyType = currency;
+      document.getElementById('selectedCurrency').textContent = currency;
+      document.getElementById('currencyInput').value = currency;
+      document.getElementById('topupForm').classList.remove('hidden');
+
+      // Update amount buttons based on selected currency
+      updateAmountButtons(currency);
+
+      // Update payment method options based on selected currency
+      updatePaymentMethodOptions(currency);
+
+      // Reset form but keep currency
+      resetForm();
+
+      // Re-set currency after reset
+      document.getElementById('currencyInput').value = currency;
+      selectedCurrencyType = currency;
+
+      console.log('💱 Currency selected:', currency);
+
+      document.getElementById('topupForm').scrollIntoView({
+        behavior: 'smooth'
+      });
+    }
+
+    function updateAmountButtons(currency) {
+      const amountButtons = document.querySelectorAll('.amount-btn');
+
+      amountButtons.forEach(button => {
+        const buttonCurrency = button.getAttribute('data-currency');
+        if (buttonCurrency === currency) {
+          button.classList.remove('hidden');
+        } else {
+          button.classList.add('hidden');
+        }
+      });
+    }
+
+    function updatePaymentMethodOptions(currency) {
+      const paymentMethodSelect = document.getElementById('paymentMethod');
+      paymentMethodSelect.innerHTML = '<option value="" class="text-gray-900">Select Payment Method</option>';
+
+      // Filter payment accounts by currency
+      Object.keys(paymentAccounts).forEach(methodKey => {
+        const account = paymentAccounts[methodKey];
+        if (account.currency === currency) {
+          const option = document.createElement('option');
+          option.value = methodKey;
+          option.textContent = methodKey;
+          option.className = 'text-gray-900';
+          paymentMethodSelect.appendChild(option);
+        }
+      });
+    }
+
+    function hideTopupForm() {
+      document.getElementById('topupForm').classList.add('hidden');
+      resetForm();
+    }
+
+    function selectAmount(amount) {
+      selectedAmountValue = amount;
+      document.getElementById('selectedAmountInput').value = amount;
+      document.querySelectorAll('.amount-btn').forEach(btn => {
+        btn.classList.remove('ring-2', 'ring-theme-300', 'bg-theme-400/20');
+        btn.classList.add('bg-white/10');
+      });
+      event.target.closest('.amount-btn').classList.add('ring-2', 'ring-theme-300', 'bg-theme-400/20');
+      event.target.closest('.amount-btn').classList.remove('bg-white/10');
+      document.getElementById('customAmount').value = '';
+      checkFormCompletion();
+    }
+
+    function updatePaymentAccount() {
+      const paymentMethod = document.getElementById('paymentMethod').value;
+      const accountInfo = document.getElementById('accountInfo');
+      const uploadSection = document.getElementById('uploadSection');
+
+      if (paymentMethod && paymentAccounts[paymentMethod]) {
+        const account = paymentAccounts[paymentMethod];
+        document.getElementById('accountName').textContent = account.name;
+        document.getElementById('paymentMethodName').textContent = account.method;
+        document.getElementById('accountNumber').textContent = account.number;
+        accountInfo.classList.remove('hidden');
+        uploadSection.classList.remove('hidden');
+      } else {
+        accountInfo.classList.add('hidden');
+        uploadSection.classList.add('hidden');
+      }
+      checkFormCompletion();
+    }
+
+    function copyAccountNumber(event) {
+      // Prevent event conflicts with other buttons
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+      }
+
+      const accountNumber = document.getElementById('accountNumber').textContent;
+
+      // Don't copy if account number is still loading
+      if (accountNumber === 'Loading...') {
+        showErrorToast('Account information is still loading');
+        return;
+      }
+
+      navigator.clipboard.writeText(accountNumber).then(() => {
+        const copyIcon = document.getElementById('copyIcon');
+        const copyText = document.getElementById('copyText');
+        const button = copyIcon.closest('button');
+
+        // Update button to show success state
+        copyIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>';
+        copyText.textContent = 'Copied!';
+        button.classList.add('copy-success');
+
+        // Show success toast
+        showSuccessToast('Account number copied to clipboard!');
+
+        // Reset button after 2 seconds
+        setTimeout(() => {
+          copyIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>';
+          copyText.textContent = 'Copy';
+          button.classList.remove('copy-success');
+        }, 2000);
+      }).catch(err => {
+        console.error('Failed to copy: ', err);
+        showErrorToast('Failed to copy account number');
+      });
+    }
+
+    // Canvas-based image compression fallback
+    async function compressImageWithCanvas(file) {
+      return new Promise((resolve) => {
+        console.log('Starting Canvas compression for:', file.name, file.size);
+
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const img = new Image();
+
+        img.onload = function() {
+          console.log('Image loaded, original dimensions:', img.width, 'x', img.height);
+
+          // Calculate new dimensions (max 1920px, maintain aspect ratio)
+          let {
+            width,
+            height
+          } = img;
+          const maxSize = 1920;
+
+          if (width > height && width > maxSize) {
+            height = (height * maxSize) / width;
+            width = maxSize;
+          } else if (height > maxSize) {
+            width = (width * maxSize) / height;
+            height = maxSize;
+          }
+
+          console.log('Resized to:', width, 'x', height);
+
+          canvas.width = width;
+          canvas.height = height;
+
+          // Draw and compress
+          ctx.drawImage(img, 0, 0, width, height);
+
+          // Try different quality levels to get under 500KB
+          const qualities = [0.8, 0.7, 0.6, 0.5, 0.4, 0.3];
+          let attempts = 0;
+
+          function tryCompress(qualityIndex) {
+            if (qualityIndex >= qualities.length) {
+              console.log('All quality levels tried, using lowest quality');
+              canvas.toBlob((blob) => {
+                console.log('Final compressed size:', blob ? blob.size : 'null');
+                resolve(blob);
+              }, 'image/jpeg', 0.2);
+              return;
+            }
+
+            const quality = qualities[qualityIndex];
+            console.log('Trying quality:', quality);
+
+            canvas.toBlob((blob) => {
+              if (blob) {
+                console.log('Compressed size with quality', quality, ':', blob.size, 'bytes');
+                if (blob.size <= 500 * 1024) { // 500KB
+                  console.log('Compression successful!');
+                  resolve(blob);
+                  return;
+                }
+              }
+              tryCompress(qualityIndex + 1);
+            }, 'image/jpeg', quality);
+          }
+
+          tryCompress(0);
+        };
+
+        img.onerror = (error) => {
+          console.error('Image load error:', error);
+          resolve(null);
+        };
+
+        img.src = URL.createObjectURL(file);
+      });
+    }
+
+    async function handleFileSelect(event) {
+      const file = event.target.files[0];
+      const imagePreview = document.getElementById('imagePreview');
+      const selectedFile = document.getElementById('selectedFile');
+      const uploadDropZone = document.getElementById('uploadDropZone');
+      const fileName = document.getElementById('fileName');
+      const fileNameSimple = document.getElementById('fileNameSimple');
+      const previewImage = document.getElementById('previewImage');
+      const imageInfo = document.getElementById('imageInfo');
+
+      if (file) {
+        // Check if file is an image
+        if (file.type.startsWith('image/')) {
+          try {
+            // Show compression progress
+            showInfoToast('🔄 Compressing image...');
+
+            // Check if imageCompression is available
+            if (typeof imageCompression === 'undefined') {
+              console.log('Image compression library not available, using Canvas fallback');
+              // Use Canvas-based compression as fallback
+              const compressedFile = await compressImageWithCanvas(file);
+              if (compressedFile) {
+                // Create a new File object with proper name
+                const newFile = new File([compressedFile], file.name.replace(/\.[^/.]+$/, "_compressed.jpg"), {
+                  type: 'image/jpeg',
+                  lastModified: Date.now()
+                });
+
+                // Update the file input with compressed file
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(newFile);
+                event.target.files = dataTransfer.files;
+
+                // Show image preview with compressed file
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                  previewImage.src = e.target.result;
+                  fileName.textContent = newFile.name;
+
+                  // Format file sizes (original vs compressed)
+                  const originalSize = (file.size / 1024 / 1024).toFixed(2);
+                  const compressedSize = (newFile.size / 1024).toFixed(0);
+                  const compressionRatio = ((1 - newFile.size / file.size) * 100).toFixed(0);
+
+                  imageInfo.textContent = `${compressedSize} KB • Compressed from ${originalSize} MB (${compressionRatio}% smaller)`;
+
+                  // Show preview and hide upload zone
+                  imagePreview.classList.remove('hidden');
+                  selectedFile.classList.add('hidden');
+                  uploadDropZone.classList.add('hidden');
+
+                  showSuccessToast(`✅ Image compressed successfully! ${compressionRatio}% smaller`);
+                };
+                reader.readAsDataURL(compressedFile);
+                return;
+              } else {
+                throw new Error('Canvas compression also failed');
+              }
+            }
+
+            // Compression options - target 500KB max, 0.8 quality
+            const options = {
+              maxSizeMB: 0.5, // 500KB
+              maxWidthOrHeight: 1920, // Max width/height
+              useWebWorker: false, // Disable web worker for better compatibility
+              quality: 0.8,
+              initialQuality: 0.8,
+              alwaysKeepResolution: false
+            };
+
+            console.log('Starting compression with options:', options);
+            console.log('Original file:', file.name, file.size, 'bytes');
+
+            // Compress the image
+            const compressedBlob = await imageCompression(file, options);
+
+            console.log('Compression successful:', compressedBlob.name, compressedBlob.size, 'bytes');
+
+            // Create a proper File object from the compressed blob
+            const compressedFile = new File([compressedBlob], compressedBlob.name || file.name.replace(/\.[^/.]+$/, "_compressed.jpg"), {
+              type: 'image/jpeg',
+              lastModified: Date.now()
+            });
+
+            // Update the file input with compressed file
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(compressedFile);
+            event.target.files = dataTransfer.files;
+
+            // Show image preview with compressed file
+            const reader = new FileReader();
+            reader.onload = function(e) {
+              previewImage.src = e.target.result;
+              fileName.textContent = compressedFile.name;
+
+              // Format file sizes (original vs compressed)
+              const originalSize = (file.size / 1024 / 1024).toFixed(2);
+              const compressedSize = (compressedFile.size / 1024).toFixed(0);
+              const compressionRatio = ((1 - compressedFile.size / file.size) * 100).toFixed(0);
+
+              imageInfo.textContent = `${compressedSize} KB • Compressed from ${originalSize} MB (${compressionRatio}% smaller)`;
+
+              // Show preview and hide upload zone
+              imagePreview.classList.remove('hidden');
+              selectedFile.classList.add('hidden');
+              uploadDropZone.classList.add('hidden');
+
+              showSuccessToast(`✅ Image compressed successfully! ${compressionRatio}% smaller`);
+            };
+            reader.readAsDataURL(compressedFile);
+
+          } catch (error) {
+            console.error('Compression error:', error);
+
+            // Show specific error message
+            let errorMessage = '❌ Failed to compress image. ';
+            if (error.message.includes('not loaded')) {
+              errorMessage += 'Compression library not available.';
+            } else if (error.message.includes('File type')) {
+              errorMessage += 'Unsupported file type.';
+            } else {
+              errorMessage += 'Please try a different file.';
+            }
+            showErrorToast(errorMessage);
+
+            // Fallback to original file
+            const reader = new FileReader();
+            reader.onload = function(e) {
+              previewImage.src = e.target.result;
+              fileName.textContent = file.name;
+              const fileSize = (file.size / 1024 / 1024).toFixed(2);
+              imageInfo.textContent = `${fileSize} MB • Original file (not compressed)`;
+
+              imagePreview.classList.remove('hidden');
+              selectedFile.classList.add('hidden');
+              uploadDropZone.classList.add('hidden');
+            };
+            reader.readAsDataURL(file);
+          }
+        } else {
+          // Fallback for non-image files
+          fileNameSimple.textContent = file.name;
+          selectedFile.classList.remove('hidden');
+          imagePreview.classList.add('hidden');
+          uploadDropZone.classList.add('hidden');
+
+          showWarningToast('⚠️ File uploaded, but image preview is only available for image files.');
+        }
+      } else {
+        // No file selected - show upload zone
+        imagePreview.classList.add('hidden');
+        selectedFile.classList.add('hidden');
+        uploadDropZone.classList.remove('hidden');
+      }
+      checkFormCompletion();
+    }
+
+    function replaceImage() {
+      // Trigger file input click to select new image
+      document.getElementById('screenshot').click();
+    }
+
+    function removeImage() {
+      // Clear the file input
+      document.getElementById('screenshot').value = '';
+
+      // Hide preview sections and show upload zone
+      document.getElementById('imagePreview').classList.add('hidden');
+      document.getElementById('selectedFile').classList.add('hidden');
+      document.getElementById('uploadDropZone').classList.remove('hidden');
+
+      // Clear image sources
+      document.getElementById('previewImage').src = '';
+
+      // Re-check form completion
+      checkFormCompletion();
+
+      showInfoToast('🗑️ Payment screenshot removed');
+    }
+
+    function checkFormCompletion() {
+      const paymentMethod = document.getElementById('paymentMethod').value;
+      const customAmount = document.getElementById('customAmount').value;
+      const screenshot = document.getElementById('screenshot').files[0];
+      const senderName = document.getElementById('senderName').value.trim();
+      const placeOrderBtn = document.getElementById('placeOrderBtn');
+
+      // Check if we have a valid amount (either preset or custom)
+      const customAmountValue = customAmount ? parseInt(customAmount) : 0;
+      const hasAmount = selectedAmountValue > 0 || customAmountValue > 0;
+      const hasPaymentMethod = paymentMethod !== '';
+      const hasScreenshot = screenshot !== undefined;
+      const hasSenderDetails = senderName !== '';
+
+      // Enable button if all conditions are met
+      const shouldEnable = hasAmount && hasPaymentMethod && hasScreenshot && hasSenderDetails;
+      placeOrderBtn.disabled = !shouldEnable;
+
+      // Debug logging
+      console.log('🔍 Form completion check:', {
+        selectedAmountValue,
+        customAmountValue,
+        hasAmount,
+        hasPaymentMethod,
+        hasScreenshot,
+        hasSenderDetails,
+        shouldEnable
+      });
+    }
+
+    function handleTopup(event) {
+      event.preventDefault();
+
+      // Get form values
+      const customAmount = document.getElementById('customAmount').value.trim();
+      const paymentMethod = document.getElementById('paymentMethod').value;
+      const senderName = document.getElementById('senderName').value.trim();
+      const screenshot = document.getElementById('screenshot').files[0];
+
+      // Ensure currency is set (critical fix for the error)
+      if (!selectedCurrencyType || selectedCurrencyType === '') {
+        showErrorToast('Please select a currency by clicking "Top Up" button first');
+        return;
+      }
+      document.getElementById('currencyInput').value = selectedCurrencyType;
+
+      // Determine final amount
+      let finalAmount;
+      if (customAmount && customAmount !== '') {
+        finalAmount = parseInt(customAmount);
+        // Use custom amount - clear selectedAmount field
+        document.getElementById('selectedAmountInput').value = '';
+      } else if (selectedAmountValue > 0) {
+        finalAmount = selectedAmountValue;
+        // Use selected amount - ensure it's set in the hidden field
+        document.getElementById('selectedAmountInput').value = finalAmount;
+        // Clear custom amount field
+        document.getElementById('customAmount').value = '';
+      } else {
+        showErrorToast('Please select or enter an amount');
+        return;
+      }
+
+      // Validate all required fields
+      if (!finalAmount || finalAmount <= 0) {
+        showErrorToast('Minimum top-up amount is 1 ' + selectedCurrencyType);
+        return;
+      }
+
+      if (!paymentMethod) {
+        showErrorToast('Please select a payment method');
+        return;
+      }
+
+      if (!senderName) {
+        showErrorToast('Please enter your account name');
+        return;
+      }
+
+      // Account number validation removed - no longer needed
+
+      if (!screenshot) {
+        showErrorToast('Please upload a payment screenshot');
+        return;
+      }
+
+      // Final check - ensure the correct field is populated for server validation
+      if (customAmount && customAmount !== '') {
+        // Using custom amount
+        document.getElementById('customAmount').value = finalAmount;
+        document.getElementById('selectedAmountInput').value = '';
+      } else {
+        // Using preset amount
+        document.getElementById('selectedAmountInput').value = finalAmount;
+        document.getElementById('customAmount').value = '';
+      }
+
+      // Double-check currency is set before submission
+      document.getElementById('currencyInput').value = selectedCurrencyType;
+
+      console.log('🚀 Submitting form with values:', {
+        selectedAmount: document.getElementById('selectedAmountInput').value,
+        customAmount: document.getElementById('customAmount').value,
+        currency: document.getElementById('currencyInput').value,
+        paymentMethod: paymentMethod,
+        senderName: senderName,
+        hasScreenshot: !!screenshot,
+        selectedCurrencyType: selectedCurrencyType
+      });
+
+      // Show loading state
+      const submitBtn = document.getElementById('placeOrderBtn');
+      const originalText = submitBtn.innerHTML;
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = `
+              <span class="flex items-center justify-center">
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Processing...
+              </span>
+            `;
+
+      // Submit the form
+      event.target.submit();
+    }
+
+    function resetForm() {
+      document.getElementById('paymentMethod').value = '';
+      document.getElementById('customAmount').value = '';
+      document.getElementById('screenshot').value = '';
+      document.getElementById('senderName').value = '';
+      document.getElementById('accountInfo').classList.add('hidden');
+      document.getElementById('uploadSection').classList.add('hidden');
+      document.getElementById('selectedFile').classList.add('hidden');
+      document.getElementById('imagePreview').classList.add('hidden');
+      document.getElementById('uploadDropZone').classList.remove('hidden');
+      document.getElementById('previewImage').src = '';
+      document.getElementById('placeOrderBtn').disabled = true;
+      document.getElementById('selectedAmountInput').value = '';
+      // Don't reset currency - keep the selected currency
+      // document.getElementById('currencyInput').value = '';
+      selectedAmountValue = 0;
+      document.querySelectorAll('.amount-btn').forEach(btn => {
+        btn.classList.remove('ring-2', 'ring-theme-300', 'bg-theme-400/20');
+        btn.classList.add('bg-white/10');
+      });
+    }
+
+    // Event listeners
+    document.getElementById('customAmount').addEventListener('input', function() {
+      selectedAmountValue = 0;
+      document.getElementById('selectedAmountInput').value = '';
+      document.querySelectorAll('.amount-btn').forEach(btn => {
+        btn.classList.remove('ring-2', 'ring-theme-300', 'bg-theme-400/20');
+        btn.classList.add('bg-white/10');
+      });
+      checkFormCompletion();
+    });
+
+    document.getElementById('senderName').addEventListener('input', checkFormCompletion);
+  </script>
+
+  <!-- Image Compression Library -->
+  <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
+  <script>
+    // Check if library loaded successfully
+    window.addEventListener('load', function() {
+      if (typeof imageCompression === 'undefined') {
+        console.warn('Image compression library failed to load from CDN');
+        console.log('Will use Canvas fallback compression');
+      } else {
+        console.log('Image compression library loaded successfully');
+      }
+
+      // Test compression availability
+      window.testCompression = function() {
+        console.log('Testing compression...');
+        console.log('imageCompression available:', typeof imageCompression !== 'undefined');
+        console.log('Canvas available:', typeof document.createElement('canvas').getContext === 'function');
+      };
+    });
+  </script>
+
+  <!-- Toast Messages from Server -->
+  <script>
+    // Check for success message
+    const urlParams = new URLSearchParams(window.location.search);
+    const successMsg = urlParams.get('success');
+    const errorMsg = urlParams.get('error');
+
+    if (successMsg) {
+      showSuccessToast(decodeURIComponent(successMsg));
+      // Clean URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
+    if (errorMsg) {
+      showErrorToast(decodeURIComponent(errorMsg));
+      // Clean URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
+    // Auto-refresh wallet balance
+    async function refreshWalletBalance() {
+      try {
+        // Show loading state
+        const mmkBalance = document.querySelector('.mmk-balance');
+        const thbBalance = document.querySelector('.thb-balance');
+
+        if (mmkBalance) mmkBalance.innerHTML = '<span class="animate-pulse">Loading...</span>';
+        if (thbBalance) thbBalance.innerHTML = '<span class="animate-pulse">Loading...</span>';
+
+        const response = await fetch('/wallet/api/balance');
+        if (response.ok) {
+          const data = await response.json();
+
+          // Update MMK balance
+          if (mmkBalance) {
+            mmkBalance.textContent = data.balance_mmk.toLocaleString();
+          }
+
+          // Update THB balance
+          if (thbBalance) {
+            thbBalance.textContent = data.balance_thb.toLocaleString();
+          }
+
+          console.log('💰 Wallet balance refreshed:', data);
+        } else {
+          console.error('Failed to refresh wallet balance');
+          // Restore original values on error
+          if (mmkBalance) mmkBalance.textContent = '0';
+          if (thbBalance) thbBalance.textContent = '0';
+        }
+      } catch (error) {
+        console.error('Error refreshing wallet balance:', error);
+        // Restore original values on error
+        const mmkBalance = document.querySelector('.mmk-balance');
+        const thbBalance = document.querySelector('.thb-balance');
+        if (mmkBalance) mmkBalance.textContent = '0';
+        if (thbBalance) thbBalance.textContent = '0';
+      }
+    }
+
+    // Load balance immediately when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('🔄 Loading wallet balance on page load...');
+      // Small delay to ensure DOM is fully rendered
+      setTimeout(refreshWalletBalance, 100);
+    });
+
+    // Refresh balance every 30 seconds
+    setInterval(refreshWalletBalance, 30000);
+
+    // Manual refresh function
+    window.refreshBalance = function() {
+      console.log('🔄 Manual balance refresh triggered');
+      refreshWalletBalance();
+      showSuccessToast('💰 Balance refreshed!');
+    };
+
+    // Focus-based refresh (when user returns to tab)
+    document.addEventListener('visibilitychange', function() {
+      if (!document.hidden) {
+        console.log('🔄 Tab focus refresh triggered');
+        refreshWalletBalance();
+      }
+    });
+  </script>
+
+  <%- include('../partials/ml-footer') %>
+  <%- include('../partials/ml-scripts') %>
+</body>
+
+</html>

@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <%- include('../partials/ml-head', { title: 'Login - ATOM Game Shop' ,
+    description: 'Login to your ATOM Game Shop account for faster checkout and order tracking.' }) %>
+  <% if (typeof errorToast !=='undefined' && errorToast) { %>
+  <meta name="error-toast" content="<%= errorToast %>">
+  <% } %>
+  <% if (typeof showResendVerification !=='undefined' && showResendVerification) { %>
+  <meta name="show-resend-verification" content="true">
+  <meta name="user-email" content="<%= userEmail %>">
+  <% } %>
+</head>
+
+<body class="bg-gray-50 font-sans overflow-x-hidden">
+  <%- include('../partials/ml-nav') %>
+
+  <!-- Include Toast System -->
+  <%- include('../partials/toast') %>
+
+  <!-- Login Section -->
+  <section class="relative min-h-screen flex items-center justify-center pt-16">
+    <!-- Modern Gradient Background -->
+    <div class="absolute inset-0 bg-gradient-to-br from-theme-900 via-theme-800 to-theme-950"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(148,180,211,0.3),rgba(255,255,255,0))]">
+    </div>
+    <div class="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]">
+    </div>
+
+    <!-- Login Form -->
+    <div class="relative z-10 w-full max-w-md mx-auto px-4">
+      <div class="bg-white/10 backdrop-blur-md rounded-2xl p-8 shadow-2xl border border-white/20">
+        <!-- Header -->
+        <div class="text-center mb-8">
+          <div class="w-20 h-20 bg-gradient-to-br from-theme-400 to-theme-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+            </svg>
+          </div>
+          <h2 class="text-3xl font-bold text-white mb-2">
+            <%= __('auth.login_title') %>
+          </h2>
+          <p class="text-white/80">Login to ATOM Game Shop</p>
+        </div>
+
+        <!-- Login Form -->
+        <form action="/users/login" method="POST" class="space-y-6" id="loginForm">
+          <!-- Email -->
+          <div>
+            <label for="email" class="block text-white/90 text-sm font-medium mb-2">
+              <%= __('auth.email') %>
+            </label>
+            <input type="email" id="email" name="email" required class="w-full px-4 py-3 bg-white/10 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-theme-400 focus:border-transparent transition-all duration-300" placeholder="<%= __('auth.email') %>">
+            <div id="emailError" class="error-message text-red-300 text-sm mt-1 hidden"></div>
+          </div>
+
+          <!-- Password -->
+          <div>
+            <label for="password" class="block text-white/90 text-sm font-medium mb-2">
+              <%= __('auth.password') %>
+            </label>
+            <input type="password" id="password" name="password" required class="w-full px-4 py-3 bg-white/10 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-theme-400 focus:border-transparent transition-all duration-300" placeholder="<%= __('auth.password') %>">
+            <div id="passwordError" class="error-message text-red-300 text-sm mt-1 hidden"></div>
+          </div>
+
+          <!-- Remember Me & Forgot Password -->
+          <div class="flex items-center justify-between">
+            <div class="flex items-center">
+              <input type="checkbox" id="remember" name="remember" value="true" class="w-4 h-4 text-theme-400 bg-white/10 border-white/30 rounded focus:ring-theme-400 focus:ring-2">
+              <label for="remember" class="ml-2 text-white/80 text-sm">
+                <%= __('auth.remember_me') %>
+              </label>
+            </div>
+            <div class="text-sm">
+              <a href="/users/forgot-password" class="text-theme-300 hover:text-theme-200 transition-colors duration-300">
+                <%= __('auth.forgot_password') %>
+              </a>
+            </div>
+          </div>
+
+          <!-- Login Button -->
+          <button type="submit" id="loginBtn" class="w-full bg-gradient-to-r from-theme-500 to-theme-600 text-white font-bold py-3 px-4 rounded-lg hover:from-theme-600 hover:to-theme-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
+            <%= __('auth.login_button') %>
+          </button>
+
+          <!-- Social Login -->
+          <!-- <div class="relative">
+                <div class="absolute inset-0 flex items-center">
+                  <div class="w-full border-t border-white/30"></div>
+                </div>
+                <div class="relative flex justify-center text-sm">
+                  <span class="px-2 bg-transparent text-white/60">Or continue with</span>
+                </div>
+              </div>
+
+              <button type="button" onclick="handleGoogleLogin(event)"
+                class="w-full bg-white/10 border border-white/30 text-white py-3 px-4 rounded-lg hover:bg-white/20 transition-all duration-300 flex items-center justify-center">
+                <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                  <path
+                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                    fill="#4285F4" />
+                  <path
+                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                    fill="#34A853" />
+                  <path
+                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                    fill="#FBBC05" />
+                  <path
+                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                    fill="#EA4335" />
+                </svg>
+                Continue with Google
+              </button> -->
+
+          <!-- Register Link -->
+          <div class="text-center pt-4 border-t border-white/20">
+            <p class="text-white/80">
+              <%= __('auth.no_account') %>
+              <a href="/users/register" class="text-theme-300 hover:text-theme-200 font-medium transition-colors duration-300 ml-1">
+                <%= __('nav.register') %>
+              </a>
+            </p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <%- include('../partials/ml-scripts') %>
+
+  <script>
+    // Handle Google login button with proper event handling
+    function handleGoogleLogin(event) {
+      // Prevent event conflicts
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+      }
+
+      // Show loading state
+      const button = event.target.closest('button');
+      const originalText = button.innerHTML;
+      button.disabled = true;
+      button.innerHTML = `
+                <svg class="animate-spin w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Connecting to Google...
+              `;
+
+      // Redirect to Google OAuth
+      setTimeout(() => {
+        window.location.href = '/auth/google';
+      }, 1000);
+    }
+
+    // Login form validation and toast handling
+    function clearErrorStyles(inputId) {
+      const input = document.getElementById(inputId);
+      const errorDiv = document.getElementById(inputId + 'Error');
+
+      if (input) {
+        input.classList.remove('border-red-500', 'bg-red-500/10');
+        input.classList.add('border-white/30', 'bg-white/10');
+      }
+      if (errorDiv) {
+        errorDiv.classList.add('hidden');
+        errorDiv.textContent = '';
+      }
+    }
+
+    function showErrorStyles(inputId, message) {
+      const input = document.getElementById(inputId);
+      const errorDiv = document.getElementById(inputId + 'Error');
+
+      if (input) {
+        input.classList.remove('border-white/30', 'bg-white/10');
+        input.classList.add('border-red-500', 'bg-red-500/10');
+      }
+      if (errorDiv) {
+        errorDiv.classList.remove('hidden');
+        errorDiv.textContent = message;
+      }
+    }
+
+    function validateEmail() {
+      const email = document.getElementById('email').value.trim();
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      if (!email) {
+        showErrorStyles('email', '<%= __("messages.required_fields") %>');
+        return false;
+      }
+      if (!emailRegex.test(email)) {
+        showErrorStyles('email', 'Please enter a valid email address');
+        return false;
+      }
+      clearErrorStyles('email');
+      return true;
+    }
+
+    function validatePassword() {
+      const password = document.getElementById('password').value;
+
+      if (!password) {
+        showErrorStyles('password', '<%= __("messages.required_fields") %>');
+        return false;
+      }
+      clearErrorStyles('password');
+      return true;
+    }
+
+    function validateLoginForm(event) {
+      event.preventDefault();
+
+      // Clear all previous errors
+      ['email', 'password'].forEach(clearErrorStyles);
+
+      // Validate all fields
+      const isEmailValid = validateEmail();
+      const isPasswordValid = validatePassword();
+
+      if (!isEmailValid || !isPasswordValid) {
+        showErrorToast('<%= __("messages.required_fields") %>');
+        return false;
+      }
+
+      // Show loading state
+      const loginBtn = document.getElementById('loginBtn');
+      const originalText = loginBtn.textContent;
+      loginBtn.textContent = '<%= __("common.loading") %>';
+      loginBtn.disabled = true;
+
+      // Submit form
+      document.getElementById('loginForm').submit();
+    }
+
+    // Real-time validation
+    document.getElementById('email').addEventListener('blur', validateEmail);
+    document.getElementById('password').addEventListener('blur', validatePassword);
+
+    // Form submission
+    document.getElementById('loginForm').addEventListener('submit', validateLoginForm);
+
+    // Handle server-side error toasts
+    document.addEventListener('DOMContentLoaded', function() {
+      const errorToast = document.querySelector('meta[name="error-toast"]');
+      if (errorToast) {
+        const message = errorToast.getAttribute('content');
+        if (message) {
+          showErrorToast(message);
+
+          // Check if we should show resend verification option
+          const showResend = document.querySelector('meta[name="show-resend-verification"]');
+          const userEmail = document.querySelector('meta[name="user-email"]');
+
+          if (showResend && userEmail && message.includes('verify your email')) {
+            setTimeout(() => {
+              showVerificationPrompt(userEmail.getAttribute('content'));
+            }, 2000);
+          }
+        }
+      }
+    });
+
+    // Show verification prompt with beautiful modal
+    function showVerificationPrompt(email) {
+      createVerificationModal(email);
+    }
+
+    // Create beautiful verification modal
+    function createVerificationModal(email) {
+      // Create modal backdrop
+      const modalBackdrop = document.createElement('div');
+      modalBackdrop.className = 'fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4';
+      modalBackdrop.id = 'verification-modal';
+
+      // Create modal content
+      modalBackdrop.innerHTML = `
+              <div class="bg-white/10 backdrop-blur-md rounded-2xl p-6 max-w-md w-full border border-white/20 shadow-2xl animate-pulse-scale">
+                <!-- Header -->
+                <div class="text-center mb-6">
+                  <div class="w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                    </svg>
+                  </div>
+                  <h3 class="text-xl font-bold text-white mb-2">Email Verification Required</h3>
+                  <p class="text-white/80 text-sm">Would you like us to resend the verification email?</p>
+                </div>
+
+                <!-- Email display -->
+                <div class="bg-white/10 rounded-lg p-3 mb-6 border border-white/20">
+                  <div class="flex items-center">
+                    <svg class="w-5 h-5 text-blue-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path>
+                    </svg>
+                    <span class="text-white text-sm font-medium">${email}</span>
+                  </div>
+                </div>
+
+                <!-- Action buttons -->
+                <div class="flex space-x-3">
+                  <button onclick="closeVerificationModal()" 
+                    class="flex-1 bg-white/10 border border-white/30 text-white py-3 px-4 rounded-lg hover:bg-white/20 transition-all duration-300 font-medium">
+                    Cancel
+                  </button>
+                  <button onclick="handleResendVerification('${email}')" 
+                    class="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 text-white py-3 px-4 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:scale-105" 
+                    id="resend-btn">
+                    Resend Email
+                  </button>
+                </div>
+              </div>
+            `;
+
+      // Add modal to page
+      document.body.appendChild(modalBackdrop);
+
+      // Add click outside to close
+      modalBackdrop.addEventListener('click', function(e) {
+        if (e.target === modalBackdrop) {
+          closeVerificationModal();
+        }
+      });
+
+      // Add CSS animation
+      const style = document.createElement('style');
+      style.textContent = `
+              @keyframes pulse-scale {
+                0% { transform: scale(0.95); opacity: 0; }
+                100% { transform: scale(1); opacity: 1; }
+              }
+              .animate-pulse-scale {
+                animation: pulse-scale 0.3s ease-out;
+              }
+            `;
+      document.head.appendChild(style);
+    }
+
+    // Close verification modal
+    function closeVerificationModal() {
+      const modal = document.getElementById('verification-modal');
+      if (modal) {
+        modal.style.opacity = '0';
+        modal.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+          modal.remove();
+        }, 200);
+      }
+    }
+
+    // Handle resend verification with loading state
+    function handleResendVerification(email) {
+      const resendBtn = document.getElementById('resend-btn');
+      const originalText = resendBtn.innerHTML;
+
+      // Show loading state
+      resendBtn.disabled = true;
+      resendBtn.innerHTML = `
+              <svg class="animate-spin w-5 h-5 mr-2 inline" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Sending...
+            `;
+
+      // Send request
+      resendVerificationEmail(email).finally(() => {
+        resendBtn.disabled = false;
+        resendBtn.innerHTML = originalText;
+        closeVerificationModal();
+      });
+    }
+
+    // Resend verification email
+    async function resendVerificationEmail(email) {
+      try {
+        const response = await fetch('/users/resend-verification', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            email: email
+          })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          showSuccessToast('Verification email sent! Please check your inbox.');
+        } else {
+          showErrorToast(result.message);
+        }
+      } catch (error) {
+        console.error('Resend error:', error);
+        showErrorToast('Network error. Please try again.');
+      }
+    }
+  </script>
+
+</body>
+
+</html>

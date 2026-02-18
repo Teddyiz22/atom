@@ -1,0 +1,303 @@
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+  <h1 class="h3 mb-0 text-gray-800">
+    <i class="fas fa-edit"></i> Edit Product
+  </h1>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
+      <li class="breadcrumb-item"><a href="/admin/products">Products</a></li>
+      <li class="breadcrumb-item active">Edit</li>
+    </ol>
+  </nav>
+</div>
+
+<div class="row">
+  <!-- Edit Form -->
+  <div class="col-lg-8">
+    <div class="card shadow mb-4">
+      <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">
+          <i class="fas fa-edit"></i> Edit Product Details
+        </h6>
+      </div>
+      <div class="card-body">
+        <form id="editProductForm">
+          <!-- Product Name (Read-only) -->
+          <div class="form-group">
+            <label class="form-label">Product Name</label>
+            <input type="text" class="form-control" id="name" name="name" value="<%= product.name %>" required>
+          </div>
+
+          <!-- Diamond Information (Read-only) -->
+          <div class="form-group">
+            <label class="form-label">Diamond Amount</label>
+            <div class="row">
+              <div class="col-md-6">
+                <strong>Diamonds:</strong>
+                <%= product.diamond_amount %>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <!-- Price MMK (Editable) -->
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="price_mmk" class="form-label">Price (MMK) <span class="text-danger">*</span></label>
+                <input type="number" class="form-control" id="price_mmk" name="price_mmk"
+                  value="<%= product.price_mmk %>" min="0" step="0.01" required>
+                <small class="form-text text-muted">Price in Myanmar Kyat</small>
+              </div>
+            </div>
+
+            <!-- Price THB (Editable) -->
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="price_thb" class="form-label">Price (THB) <span class="text-danger">*</span></label>
+                <input type="number" class="form-control" id="price_thb" name="price_thb"
+                  value="<%= product.price_thb %>" min="0" step="0.01" required>
+                <small class="form-text text-muted">Price in Thai Baht</small>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sort Order (Editable) -->
+          <div class="form-group">
+            <label for="sort_order" class="form-label">Sort Order</label>
+            <input type="number" class="form-control" id="sort_order" name="sort_order"
+              value="<%= product.sort_order %>" min="0">
+            <small class="form-text text-muted">Lower numbers appear first</small>
+          </div>
+
+          <!-- Status Controls (Editable) -->
+          <div class="form-group">
+            <label class="form-label">Product Status</label>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="is_active" name="is_active"
+                    <%=product.is_active ? 'checked' : '' %>>
+                  <label class="custom-control-label" for="is_active">
+                    <i class="fas fa-toggle-on text-success"></i> Product is Active
+                  </label>
+                </div>
+                <small class="form-text text-muted">Inactive products won't be available for purchase</small>
+              </div>
+              <div class="col-md-6">
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="is_featured" name="is_featured"
+                    <%=product.is_featured ? 'checked' : '' %>>
+                  <label class="custom-control-label" for="is_featured">
+                    <i class="fas fa-star text-warning"></i> Featured Product
+                  </label>
+                </div>
+                <small class="form-text text-muted">Featured products appear prominently</small>
+              </div>
+            </div>
+          </div>
+
+          <!-- Form Actions -->
+          <div class="form-group mt-4">
+            <button type="submit" class="btn btn-primary" id="updateBtn">
+              <i class="fas fa-save"></i> Update Product
+            </button>
+            <a href="/admin/products" class="btn btn-secondary ml-2">
+              <i class="fas fa-times"></i> Cancel
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Current Product Preview -->
+  <div class="col-lg-4">
+    <div class="card shadow mb-4">
+      <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">
+          <i class="fas fa-eye"></i> Current Product
+        </h6>
+      </div>
+      <div class="card-body">
+        <div class="text-center">
+          <div class="mb-3">
+            <% if (product.category==='DIAMOND' ) { %>
+              <i class="fas fa-gem fa-3x text-primary"></i>
+              <% } else if (product.category==='WEEKLY_PASS' ) { %>
+                <i class="fas fa-calendar-week fa-3x text-success"></i>
+                <% } else { %>
+                  <i class="fas fa-star fa-3x text-warning"></i>
+                  <% } %>
+          </div>
+          <h5 class="font-weight-bold">
+            <%= product.name %>
+          </h5>
+
+          <div class="row text-center mb-3">
+            <div class="col-12">
+              <div class="h4 mb-0 text-primary">
+                <%= product.diamond_amount %> Diamonds
+              </div>
+              <small class="text-muted">Total Amount</small>
+            </div>
+          </div>
+
+          <div class="row text-center mb-3">
+            <div class="col-6">
+              <div class="border-right">
+                <div class="h5 mb-0">
+                  <%= new Intl.NumberFormat('en-US').format(product.price_mmk) %> MMK
+                </div>
+                <small class="text-muted">Myanmar Kyat</small>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="h5 mb-0">
+                ฿<%= new Intl.NumberFormat('en-US').format(product.price_thb) %>
+              </div>
+              <small class="text-muted">Thai Baht</small>
+            </div>
+          </div>
+
+          <div class="mb-2">
+            <% if (product.category==='DIAMOND' ) { %>
+              <span class="badge badge-primary">Diamond Package</span>
+              <% } else if (product.category==='WEEKLY_PASS' ) { %>
+                <span class="badge badge-success">Weekly Pass</span>
+                <% } else { %>
+                  <span class="badge badge-warning">Other</span>
+                  <% } %>
+          </div>
+
+          <% if (product.is_featured) { %>
+            <div class="badge badge-warning mb-2">
+              <i class="fas fa-star"></i> Featured
+            </div>
+            <% } %>
+
+              <div class="mt-3">
+                <span class="badge <%= product.is_active ? 'badge-success' : 'badge-danger' %>">
+                  <i class="fas <%= product.is_active ? 'fa-check' : 'fa-times' %>"></i>
+                  <%= product.is_active ? 'Active' : 'Inactive' %>
+                </span>
+              </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Product Statistics -->
+    <div class="card shadow mb-4">
+      <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-info">
+          <i class="fas fa-chart-bar"></i> Product Info
+        </h6>
+      </div>
+      <div class="card-body">
+        <div class="row text-center">
+          <div class="col-6">
+            <div class="h5 mb-0 text-primary">
+              <%= product.diamond_amount %>
+            </div>
+            <small class="text-muted">Diamonds</small>
+          </div>
+          <div class="col-6">
+            <div class="h5 mb-0 text-info">#<%= product.sort_order %>
+            </div>
+            <small class="text-muted">Sort Order</small>
+          </div>
+        </div>
+        <hr>
+        <div class="text-center">
+          <small class="text-muted">
+            Created: <%= new Date(product.created_at).toLocaleDateString() %><br>
+              Updated: <%= new Date(product.updated_at).toLocaleDateString() %>
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- JavaScript for AJAX Form Handling -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // Form submission with AJAX
+    document.getElementById('editProductForm').addEventListener('submit', function (e) {
+      e.preventDefault(); // Prevent default form submission
+
+      console.log('🔍 AJAX form submission started');
+
+      const priceMMK = document.getElementById('price_mmk');
+      const priceTHB = document.getElementById('price_thb');
+      const sortOrder = document.getElementById('sort_order');
+      const isActive = document.getElementById('is_active');
+      const isFeatured = document.getElementById('is_featured');
+      const updateBtn = document.getElementById('updateBtn');
+
+      let isValid = true;
+
+      // Validate required fields
+      [priceMMK, priceTHB].forEach(field => {
+        if (!field.value.trim() || parseFloat(field.value) < 0) {
+          field.classList.add('is-invalid');
+          isValid = false;
+        } else {
+          field.classList.remove('is-invalid');
+        }
+      });
+
+      if (!isValid) {
+        showErrorToast('Please enter valid prices for both MMK and THB');
+        return;
+      }
+
+      // Disable the button and show loading
+      updateBtn.disabled = true;
+      updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+
+      // Prepare form data
+      const formData = {
+        price_mmk: parseFloat(priceMMK.value),
+        price_thb: parseFloat(priceTHB.value),
+        sort_order: parseInt(sortOrder.value) || 0,
+        is_active: isActive.checked,
+        is_featured: isFeatured.checked
+      };
+
+      console.log('📦 Sending data:', formData);
+
+      // Send AJAX request
+      fetch(`/admin/products/<%= product.id %>/update`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+      })
+        .then(response => response.json())
+        .then(data => {
+          console.log('📥 Response:', data);
+
+          if (data.success) {
+            showSuccessToast(data.message);
+            // Optionally redirect after a delay
+            setTimeout(() => {
+              window.location.href = '/admin/products';
+            }, 1500);
+          } else {
+            showErrorToast(data.message || 'Update failed');
+          }
+        })
+        .catch(error => {
+          console.error('❌ Error:', error);
+          showErrorToast('Failed to update product. Please try again.');
+        })
+        .finally(() => {
+          // Re-enable the button
+          updateBtn.disabled = false;
+          updateBtn.innerHTML = '<i class="fas fa-save"></i> Update Product';
+        });
+    });
+  });
+</script>

@@ -1,0 +1,339 @@
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+  <h1 class="h3 mb-0 text-gray-800">Website Settings</h1>
+  <a href="/admin" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+    <i class="fas fa-arrow-left fa-sm text-white-50"></i> Back to Dashboard
+  </a>
+</div>
+
+<!-- Maintenance Mode Settings -->
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="card shadow mb-4">
+      <div class="card-header py-3 bg-warning">
+        <h6 class="m-0 font-weight-bold text-white">
+          <i class="fas fa-tools mr-2"></i>
+          Maintenance Mode Control
+        </h6>
+      </div>
+      <div class="card-body">
+        <!-- Current Status -->
+        <div class="alert alert-info" role="alert" id="statusAlert">
+          <div class="d-flex align-items-center">
+            <i class="fas fa-info-circle mr-2"></i>
+            <div>
+              <strong>Current Status:</strong>
+              <span id="currentStatus">Loading...</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Maintenance Mode Toggle -->
+        <div class="row">
+          <div class="col-md-6">
+            <div class="card border-left-primary h-100 py-2">
+              <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                  <div class="col mr-2">
+                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                      Maintenance Mode
+                    </div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                      <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" id="maintenanceMode">
+                        <label class="custom-control-label" for="maintenanceMode">
+                          <span id="toggleLabel">Enable Maintenance</span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-auto">
+                    <i class="fas fa-tools fa-2x text-gray-300"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="card border-left-info h-100 py-2">
+              <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                  <div class="col mr-2">
+                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                      Admin Access
+                    </div>
+                    <div class="h6 mb-0 text-gray-800">
+                      Always Enabled
+                    </div>
+                    <div class="text-xs text-gray-600">
+                      Admins can access the site even during maintenance
+                    </div>
+                  </div>
+                  <div class="col-auto">
+                    <i class="fas fa-shield-alt fa-2x text-gray-300"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- What happens section -->
+        <div class="mt-4">
+          <h6 class="font-weight-bold text-gray-800 mb-3">
+            <i class="fas fa-question-circle mr-2"></i>
+            What happens when maintenance mode is enabled?
+          </h6>
+          <div class="row">
+            <div class="col-md-6">
+              <ul class="list-unstyled">
+                <li class="mb-2">
+                  <i class="fas fa-check text-success mr-2"></i>
+                  Regular users see a maintenance page
+                </li>
+                <li class="mb-2">
+                  <i class="fas fa-check text-success mr-2"></i>
+                  Admin users can still access the site
+                </li>
+              </ul>
+            </div>
+            <div class="col-md-6">
+              <ul class="list-unstyled">
+                <li class="mb-2">
+                  <i class="fas fa-check text-success mr-2"></i>
+                  All user orders are blocked
+                </li>
+                <li class="mb-2">
+                  <i class="fas fa-check text-success mr-2"></i>
+                  Site automatically refreshes every 30 seconds
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Test Maintenance Page Button -->
+        <div class="mt-4 pt-3 border-top">
+          <a href="/maintenance-preview" target="_blank" class="btn btn-outline-info btn-sm">
+            <i class="fas fa-eye mr-2"></i>
+            Preview Maintenance Page
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- JavaScript for Maintenance Mode -->
+<script>
+  let isUpdating = false;
+
+  // Load current maintenance status with proper null checks
+  async function loadMaintenanceStatus() {
+    try {
+      const response = await fetch('/admin/maintenance/status');
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (!data.success) {
+        throw new Error(data.message || 'Server returned error');
+      }
+
+      // Get DOM elements with null checks
+      const checkbox = document.getElementById('maintenanceMode');
+      const statusText = document.getElementById('currentStatus');
+      const statusAlert = document.getElementById('statusAlert');
+      const toggleLabel = document.getElementById('toggleLabel');
+
+      // Check if all required elements exist
+      if (!checkbox || !statusText || !statusAlert || !toggleLabel) {
+        throw new Error('Required DOM elements not found');
+      }
+
+      checkbox.checked = data.enabled;
+
+      if (data.enabled) {
+        statusText.textContent = 'Maintenance Mode is ACTIVE';
+        statusAlert.className = 'alert alert-warning';
+        statusAlert.innerHTML = `
+        <div class="d-flex align-items-center">
+          <i class="fas fa-exclamation-triangle mr-2"></i>
+          <div><strong>Warning:</strong> Maintenance mode is currently active. Regular users cannot access the website.</div>
+        </div>
+      `;
+        toggleLabel.textContent = 'Disable Maintenance';
+      } else {
+        statusText.textContent = 'Website is ONLINE';
+        statusAlert.className = 'alert alert-success';
+        statusAlert.innerHTML = `
+        <div class="d-flex align-items-center">
+          <i class="fas fa-check-circle mr-2"></i>
+          <div><strong>Good:</strong> Website is running normally. All users can access the site.</div>
+      </div>
+      `;
+        toggleLabel.textContent = 'Enable Maintenance';
+      }
+    } catch (error) {
+      console.error('Error loading maintenance status:', error);
+
+      // Set default values when error occurs (with null checks)
+      const checkbox = document.getElementById('maintenanceMode');
+      const statusText = document.getElementById('currentStatus');
+      const statusAlert = document.getElementById('statusAlert');
+      const toggleLabel = document.getElementById('toggleLabel');
+
+      if (checkbox) checkbox.checked = false;
+      if (statusText) statusText.textContent = 'Error: Unable to load maintenance status.';
+      if (statusAlert) {
+        statusAlert.className = 'alert alert-danger';
+        statusAlert.innerHTML = `
+          <div class="d-flex align-items-center">
+            <i class="fas fa-exclamation-circle mr-2"></i>
+            <div><strong>Error:</strong> Unable to load maintenance status. Please refresh the page.</div>
+          </div>
+        `;
+      }
+      if (toggleLabel) toggleLabel.textContent = 'Enable Maintenance';
+    }
+  }
+
+  // Toggle maintenance mode with proper null checks
+  async function toggleMaintenanceMode() {
+    if (isUpdating) return;
+
+    const checkbox = document.getElementById('maintenanceMode');
+    if (!checkbox) {
+      console.error('Maintenance mode checkbox not found');
+      return;
+    }
+
+    const newStatus = checkbox.checked;
+    isUpdating = true;
+
+    try {
+      const response = await fetch('/admin/maintenance/toggle', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ enabled: newStatus })
+      });
+
+      const result = await response.json();
+
+      // Get DOM elements
+      const statusText = document.getElementById('currentStatus');
+      const statusAlert = document.getElementById('statusAlert');
+      const toggleLabel = document.getElementById('toggleLabel');
+
+      if (result.success) {
+        // Success: update status area only
+        if (newStatus) {
+          if (statusText) statusText.textContent = 'Maintenance Mode is ACTIVE';
+          if (statusAlert) {
+            statusAlert.className = 'alert alert-warning';
+            statusAlert.innerHTML = `
+              <div class="d-flex align-items-center">
+                <i class="fas fa-exclamation-triangle mr-2"></i>
+                <div><strong>Warning:</strong> Maintenance mode is currently active. Regular users cannot access the website.</div>
+              </div>
+            `;
+          }
+          if (toggleLabel) toggleLabel.textContent = 'Disable Maintenance';
+        } else {
+          if (statusText) statusText.textContent = 'Website is ONLINE';
+          if (statusAlert) {
+            statusAlert.className = 'alert alert-success';
+            statusAlert.innerHTML = `
+              <div class="d-flex align-items-center">
+                <i class="fas fa-check-circle mr-2"></i>
+                <div><strong>Good:</strong> Website is running normally. All users can access the site.</div>
+          </div>
+            `;
+          }
+          if (toggleLabel) toggleLabel.textContent = 'Enable Maintenance';
+        }
+      } else {
+        // Error: update status area only
+        if (statusText) statusText.textContent = 'Error: Unable to update maintenance mode.';
+        if (statusAlert) {
+          statusAlert.className = 'alert alert-danger';
+          statusAlert.innerHTML = `
+            <div class="d-flex align-items-center">
+              <i class="fas fa-exclamation-circle mr-2"></i>
+              <div><strong>Error:</strong> ${result.message || 'Failed to update maintenance mode.'}</div>
+          </div>
+          `;
+        }
+        if (toggleLabel) toggleLabel.textContent = newStatus ? 'Disable Maintenance' : 'Enable Maintenance';
+        // Revert checkbox
+        checkbox.checked = !newStatus;
+      }
+    } catch (error) {
+      console.error('Error toggling maintenance mode:', error);
+      // Error: update status area only
+      const statusText = document.getElementById('currentStatus');
+      const statusAlert = document.getElementById('statusAlert');
+      const toggleLabel = document.getElementById('toggleLabel');
+      if (statusText) statusText.textContent = 'Error: Network error. Please try again.';
+      if (statusAlert) {
+        statusAlert.className = 'alert alert-danger';
+        statusAlert.innerHTML = `
+          <div class="d-flex align-items-center">
+            <i class="fas fa-exclamation-circle mr-2"></i>
+            <div><strong>Error:</strong> Network error. Please try again.</div>
+          </div>
+        `;
+      }
+      if (toggleLabel) toggleLabel.textContent = newStatus ? 'Disable Maintenance' : 'Enable Maintenance';
+      // Revert checkbox
+      checkbox.checked = !newStatus;
+    } finally {
+      isUpdating = false;
+    }
+  }
+
+  // Wait for DOM to be fully loaded
+  function initializeMaintenance() {
+    console.log('Initializing maintenance mode controls...');
+
+    // Check if all required elements exist
+    const checkbox = document.getElementById('maintenanceMode');
+    const statusText = document.getElementById('currentStatus');
+    const statusAlert = document.getElementById('statusAlert');
+    const toggleLabel = document.getElementById('toggleLabel');
+
+    if (!checkbox || !statusText || !statusAlert || !toggleLabel) {
+      console.error('Required DOM elements not found:', {
+        checkbox: !!checkbox,
+        statusText: !!statusText,
+        statusAlert: !!statusAlert,
+        toggleLabel: !!toggleLabel
+      });
+
+      // Retry after a short delay
+      setTimeout(initializeMaintenance, 500);
+      return;
+    }
+
+    console.log('All DOM elements found, loading maintenance status...');
+    loadMaintenanceStatus();
+
+    // Add event listener to checkbox
+    checkbox.addEventListener('change', toggleMaintenanceMode);
+    console.log('Event listener attached to maintenance checkbox');
+  }
+
+  // Initialize when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeMaintenance);
+  } else {
+    // DOM is already loaded
+    initializeMaintenance();
+  }
+</script>

@@ -1,0 +1,230 @@
+<style>
+  /* Fix the "Show entries" dropdown */
+  .dataTables_length select {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 6px !important;
+    color: white !important;
+
+    padding: 6px 30px 6px 12px !important; 
+    min-width: 100px !important;
+    font-size: 14px !important;
+    cursor: pointer;
+
+    appearance: auto !important;
+    -webkit-appearance: auto !important;
+  }
+
+  .dataTables_length {
+    margin-bottom: 15px !important;
+    color: #9ca3af !important; 
+  }
+</style>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <%
+    const typeCodeLower = String(productType?.typeCode || '').trim().toLowerCase();
+    const isG2bulkVirtual = provider === 'g2bulk';
+    const fmt = (n) => {
+      const v = Number(n);
+      if (!Number.isFinite(v)) return '-';
+      return v.toLocaleString(undefined, { maximumFractionDigits: 2 });
+    };
+  %>
+  <div class="flex items-start justify-between gap-4 border-b border-white/10 pb-5 mb-8">
+    <div>
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+        <span class="<%= provider === 'smile' ? 'text-indigo-300' : 'text-teal-300' %>"><%= provider %></span> Products
+        <span class="text-gray-200">- <%= productType.name %></span>
+      </h1>
+      <p class="text-sm text-gray-300 mt-2">Type Code: <span class="font-mono text-gray-200"><%= productType.typeCode %></span></p>
+    </div>
+    <div class="flex items-center gap-2">
+      <% if (provider === 'smile') { %>
+        <a href="/admin/product-management/<%= provider %>/<%= productType.typeCode %>/new" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-sm font-semibold text-white transition-colors">
+          Add Product
+          <i class="fas fa-plus text-xs"></i>
+        </a>
+      <% } %>
+      <a href="/admin/product-management/<%= provider %>" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-sm font-semibold text-gray-100 transition-colors">
+        <svg class="h-4 w-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        Back
+      </a>
+    </div>
+  </div>
+
+  <% if (typeof success !== 'undefined' && success) { %>
+    <div class="mb-6 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-emerald-200">
+      Saved.
+    </div>
+  <% } %>
+
+  <% if (typeof error !== 'undefined' && error) { %>
+    <div class="mb-6 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-red-200">
+      <%= error %>
+    </div>
+  <% } %>
+
+  <div class="rounded-2xl border border-white/10 bg-white/5 p-5">
+    <div class="flex items-center justify-between gap-3 mb-4">
+      <h2 class="text-lg font-semibold text-white">Product List</h2>
+      <span class="text-xs font-bold uppercase rounded-full bg-white/10 border border-white/10 px-3 py-1 text-gray-200">
+        Total: <%= products?.length || 0 %>
+      </span>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table id="providerProductsTable" class="table table-bordered table-hover w-full">
+        <thead>
+          <tr>
+            <% if (isG2bulkVirtual) { %>
+              <th style="width: 90px;">ID</th>
+              <th>Name</th>
+              <th style="width: 160px;">Unit Price (USD)</th>
+              <th style="width: 160px;">Sell Price (MMK)</th>
+              <th style="width: 160px;">Sell Price (THB)</th>
+              <th style="width: 120px;">Actions</th>
+            <% } else { %>
+              <th style="width: 90px;">ID</th>
+              <th>Name</th>
+              <th style="width: 140px;"><%= provider === 'smile' ? 'Price' : 'Amount' %></th>
+              <% if (provider === 'smile') { %>
+                <th style="width: 140px;">Region</th>
+              <% } %>
+              <th style="width: 150px;">Price (MMK)</th>
+              <th style="width: 150px;">Price (THB)</th>
+              <th style="width: 120px;">Status</th>
+              <th style="width: 120px;">Featured</th>
+              <% if (provider === 'smile') { %>
+                <th style="width: 180px;">Smile ID</th>
+              <% } %>
+              <th style="width: 160px;">Actions</th>
+            <% } %>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (!products || products.length === 0) { %>
+            <tr>
+              <td colspan="<%= isG2bulkVirtual ? 5 : (provider === 'smile' ? 9 : 7) %>" class="text-center text-muted">No products yet.</td>
+            </tr>
+          <% } else { %>
+            <% products.forEach(p => { %>
+              <tr>
+                <% if (isG2bulkVirtual) { %>
+                  <td><%= p.id %></td>
+                  <td>
+                    <%= p.name %>
+                    <% if (p.is_fixed_price) { %>
+                      <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                        Fixed
+                      </span>
+                    <% } %>
+                  </td>
+                  <td class="text-right"><%= fmt(p.unit_price_usd) %></td>
+                  <td>
+                    <input type="number" step="any" class="w-full bg-white/5 border border-white/10 rounded px-2 py-1 text-white text-right focus:outline-none focus:border-indigo-500" 
+                      id="price_mmk_<%= p.id %>" value="<%= p.price_mmk || '' %>" placeholder="MMK">
+                  </td>
+                  <td>
+                    <input type="number" step="any" class="w-full bg-white/5 border border-white/10 rounded px-2 py-1 text-white text-right focus:outline-none focus:border-indigo-500" 
+                      id="price_thb_<%= p.id %>" value="<%= p.price_thb || '' %>" placeholder="THB">
+                  </td>
+                  <td class="text-center">
+                    <button type="button" 
+                      class="inline-flex items-center justify-center h-9 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white transition-colors"
+                      data-name="<%= p.name %>"
+                      onclick="saveFixedPrice(this, '<%= p.id %>', '<%= p.fixed_product_id || '' %>')">
+                      <i class="fas fa-save mr-1"></i> Save
+                    </button>
+                  </td>
+                <% } else { %>
+                  <td><%= p.id %></td>
+                  <td><%= p.name %></td>
+                  <td><%= provider === 'smile' ? fmt(p.diamond_amount) : p.diamond_amount %></td>
+                  <% if (provider === 'smile') { %>
+                    <td><span class="uppercase text-xs font-bold px-2 py-1 rounded bg-white/10 text-gray-300"><%= p.region === 'ph' ? 'Philippines' : 'Brazil' %></span></td>
+                  <% } %>
+                  <td><%= fmt(p.price_mmk) %></td>
+                  <td><%= fmt(p.price_thb) %></td>
+                  <td>
+                    <form action="/admin/product-management/<%= provider %>/<%= productType.typeCode %>/toggle-status/<%= p.id %>" method="POST" class="inline-block">
+                      <button type="submit" class="px-3 py-1 rounded-full text-xs font-semibold <%= p.is_active ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-red-500/20 text-red-300 border border-red-500/30' %>">
+                        <%= p.is_active ? 'Active' : 'Inactive' %>
+                      </button>
+                    </form>
+                  </td>
+                  <td>
+                    <form action="/admin/product-management/<%= provider %>/<%= productType.typeCode %>/toggle-featured/<%= p.id %>" method="POST" class="inline-block">
+                      <button type="submit" class="px-3 py-1 rounded-full text-xs font-semibold <%= p.is_featured ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30' : 'bg-gray-500/20 text-gray-400 border border-gray-500/30' %>">
+                        <%= p.is_featured ? 'Featured' : 'Normal' %>
+                      </button>
+                    </form>
+                  </td>
+                  <% if (provider === 'smile') { %>
+                    <td><%= p.smileIDCombination || '' %></td>
+                  <% } %>
+                  <td class="text-right">
+                    <form method="POST" action="/admin/product-management/<%= provider %>/<%= productType.typeCode %>/toggle-status/<%= p.id %>" class="d-inline-block m-0">
+                      <button type="submit" class="inline-flex items-center justify-center h-9 px-3 rounded-lg <%= p.is_active ? 'bg-amber-500/15 hover:bg-amber-500/25 border border-amber-400/20 text-amber-200' : 'bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-400/20 text-emerald-200' %> transition-colors mr-1">
+                        <i class="fas fa-<%= p.is_active ? 'ban' : 'check' %> mr-1"></i>
+                        <%= p.is_active ? 'Deactivate' : 'Activate' %>
+                      </button>
+                    </form>
+                    <a class="inline-flex items-center justify-center h-9 w-9 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-gray-100 transition-colors" href="/admin/product-management/<%= provider %>/<%= productType.typeCode %>/edit/<%= p.id %>">
+                      <i class="fas fa-edit"></i>
+                    </a>
+                    <form method="POST" action="/admin/product-management/<%= provider %>/<%= productType.typeCode %>/delete/<%= p.id %>" class="d-inline-block m-0" onsubmit="return confirm('Delete this product?')">
+                      <button type="submit" class="inline-flex items-center justify-center h-9 w-9 rounded-lg bg-red-500/15 hover:bg-red-500/25 border border-red-400/20 text-red-200 transition-colors ml-1">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </form>
+                  </td>
+                <% } %>
+              </tr>
+            <% }) %>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    $(document).ready(function () {
+      $('#providerProductsTable').DataTable({
+        order: [[0, 'DESC']],
+        pageLength: 10
+      });
+    });
+
+    function saveFixedPrice(btn, g2bulkId, fixedProductId) {
+      const name = btn.getAttribute('data-name');
+      const priceMmk = document.getElementById('price_mmk_' + g2bulkId).value;
+      const priceThb = document.getElementById('price_thb_' + g2bulkId).value;
+      
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = '/admin/product-management/g2bulk/save-price';
+      
+      const inputs = [
+        { name: 'g2bulk_product_id', value: g2bulkId },
+        { name: 'fixed_product_id', value: fixedProductId },
+        { name: 'type_code', value: '<%= productType.typeCode %>' },
+        { name: 'name', value: name },
+        { name: 'price_mmk', value: priceMmk },
+        { name: 'price_thb', value: priceThb }
+      ];
+      
+      inputs.forEach(data => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = data.name;
+        input.value = data.value;
+        form.appendChild(input);
+      });
+      
+      document.body.appendChild(form);
+      form.submit();
+    }
+  </script>
+</div>

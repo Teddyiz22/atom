@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <%- include('../partials/ml-head', { title: 'Register - ATOM Game Shop' ,
+    description: 'Create your ATOM Game Shop account for faster checkout and exclusive offers.' }) %>
+  <% if (typeof errorToast !=='undefined' && errorToast) { %>
+  <meta name="error-toast" content="<%= errorToast %>">
+  <% } %>
+</head>
+
+<body class="bg-gray-50 font-sans overflow-x-hidden">
+  <%- include('../partials/ml-nav') %>
+
+  <!-- Include Toast System -->
+  <%- include('../partials/toast') %>
+
+  <!-- Register Section -->
+  <section class="relative min-h-screen flex items-center justify-center pt-16 py-8">
+    <!-- Modern Gradient Background -->
+    <div class="absolute inset-0 bg-gradient-to-br from-theme-900 via-theme-800 to-theme-950"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(148,180,211,0.3),rgba(255,255,255,0))]">
+    </div>
+    <div class="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]">
+    </div>
+
+    <!-- Register Form -->
+    <div class="relative z-10 w-full max-w-md mx-auto px-4">
+      <div class="bg-white/10 backdrop-blur-md rounded-2xl p-8 shadow-2xl border border-white/20">
+        <!-- Header -->
+        <div class="text-center mb-8">
+          <div class="w-20 h-20 bg-gradient-to-br from-theme-400 to-theme-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+            </svg>
+          </div>
+          <h2 class="text-3xl font-bold text-white mb-2">
+            <%= __('auth.register_title') %>
+          </h2>
+          <p class="text-white/80">Create your account and start gaming</p>
+        </div>
+
+        <!-- Error toasts will be handled by JavaScript -->
+
+        <!-- Register Form -->
+        <form action="/users/register" method="POST" class="space-y-6" id="registerForm">
+          <!-- Full Name -->
+          <div>
+            <label for="fullName" class="block text-white/90 text-sm font-medium mb-2">
+              <%= __('auth.full_name') %>
+            </label>
+            <input type="text" id="fullName" name="fullName" required class="w-full px-4 py-3 bg-white/10 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-theme-400 focus:border-transparent transition-all duration-300" placeholder="<%= __('auth.full_name') %>">
+            <div id="fullNameError" class="error-message text-red-300 text-sm mt-1 hidden"></div>
+          </div>
+
+          <!-- Email -->
+          <div>
+            <label for="email" class="block text-white/90 text-sm font-medium mb-2">
+              <%= __('auth.email') %>
+            </label>
+            <input type="email" id="email" name="email" required class="w-full px-4 py-3 bg-white/10 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-theme-400 focus:border-transparent transition-all duration-300" placeholder="<%= __('auth.email') %>">
+            <div id="emailError" class="error-message text-red-300 text-sm mt-1 hidden"></div>
+          </div>
+
+          <!-- Phone Number -->
+          <div>
+            <label for="phoneNumber" class="block text-white/90 text-sm font-medium mb-2">
+              <%= __('auth.phone_number') %>
+            </label>
+            <input type="tel" id="phoneNumber" name="phoneNumber" required class="w-full px-4 py-3 bg-white/10 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-theme-400 focus:border-transparent transition-all duration-300" placeholder="<%= __('auth.phone_number') %>">
+            <div id="phoneNumberError" class="error-message text-red-300 text-sm mt-1 hidden"></div>
+          </div>
+
+          <!-- Password -->
+          <div>
+            <label for="password" class="block text-white/90 text-sm font-medium mb-2">
+              <%= __('auth.password') %>
+            </label>
+            <input type="password" id="password" name="password" required class="w-full px-4 py-3 bg-white/10 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-theme-400 focus:border-transparent transition-all duration-300" placeholder="<%= __('auth.password') %>">
+            <div id="passwordError" class="error-message text-red-300 text-sm mt-1 hidden"></div>
+            <div class="text-white/60 text-xs mt-1">Password must be at least 6 characters long</div>
+          </div>
+
+          <!-- Confirm Password -->
+          <div>
+            <label for="confirmPassword" class="block text-white/90 text-sm font-medium mb-2">
+              <%= __('auth.confirm_password') %>
+            </label>
+            <input type="password" id="confirmPassword" name="confirmPassword" required class="w-full px-4 py-3 bg-white/10 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-theme-400 focus:border-transparent transition-all duration-300" placeholder="<%= __('auth.confirm_password') %>">
+            <div id="confirmPasswordError" class="error-message text-red-300 text-sm mt-1 hidden"></div>
+          </div>
+
+          <!-- Terms and Privacy -->
+          <div class="flex items-start">
+            <input type="checkbox" id="terms" name="terms" required class="w-4 h-4 mt-1 text-theme-400 bg-white/10 border-white/30 rounded focus:ring-theme-400 focus:ring-2">
+            <label for="terms" class="ml-3 text-white/80 text-sm leading-relaxed">
+              <%= __('auth.terms_agree') %>
+            </label>
+            <div id="termsError" class="error-message text-red-300 text-sm mt-1 hidden ml-7"></div>
+          </div>
+
+          <!-- Register Button -->
+          <button type="submit" id="registerBtn" class="w-full bg-gradient-to-r from-theme-500 to-theme-600 text-white font-bold py-3 px-4 rounded-lg hover:from-theme-600 hover:to-theme-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
+            <%= __('auth.register_button') %>
+          </button>
+
+          <!-- Social Registration -->
+          <!-- <div class="relative">
+                <div class="absolute inset-0 flex items-center">
+                  <div class="w-full border-t border-white/30"></div>
+                </div>
+                <div class="relative flex justify-center text-sm">
+                  <span class="px-2 bg-transparent text-white/60">Or continue with</span>
+                </div>
+              </div> -->
+
+          <!-- <button type="button" onclick="handleGoogleLogin(event)" class="w-full bg-white/10 border border-white/30 text-white py-3 px-4 rounded-lg hover:bg-white/20 transition-all duration-300 flex items-center justify-center">
+            <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
+              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
+              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
+            </svg>
+            Continue with Google
+          </button> -->
+
+          <!-- Login Link -->
+          <div class="text-center pt-4 border-t border-white/20">
+            <p class="text-white/80">
+              <%= __('auth.have_account') %>
+              <a href="/users/login" class="text-theme-300 hover:text-theme-200 font-medium transition-colors duration-300 ml-1">
+                <%= __('nav.login') %>
+              </a>
+            </p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <%- include('../partials/ml-scripts') %>
+
+  <script>
+    // Handle Google login button with proper event handling
+    function handleGoogleLogin(event) {
+      // Prevent event conflicts
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+      }
+
+      // Show loading state
+      const button = event.target.closest('button');
+      const originalText = button.innerHTML;
+      button.disabled = true;
+      button.innerHTML = `
+                <svg class="animate-spin w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Connecting to Google...
+              `;
+
+      // For now, show a toast that Google login is not implemented
+      setTimeout(() => {
+        button.disabled = false;
+        button.innerHTML = originalText;
+        showErrorToast('Google login is not implemented yet. Please register with email.');
+      }, 1500);
+    }
+
+    // Clear any previous error styles
+    function clearErrorStyles(inputId) {
+      const input = document.getElementById(inputId);
+      const errorDiv = document.getElementById(inputId + 'Error');
+
+      // Add null checks to prevent errors
+      if (input) {
+        input.classList.remove('border-red-500', 'bg-red-500/10');
+        input.classList.add('border-white/30', 'bg-white/10');
+      }
+      if (errorDiv) {
+        errorDiv.classList.add('hidden');
+        errorDiv.textContent = '';
+      }
+    }
+
+    // Show error styles
+    function showErrorStyles(inputId, message) {
+      const input = document.getElementById(inputId);
+      const errorDiv = document.getElementById(inputId + 'Error');
+
+      // Add null checks to prevent errors
+      if (input) {
+        input.classList.remove('border-white/30', 'bg-white/10');
+        input.classList.add('border-red-500', 'bg-red-500/10');
+      }
+      if (errorDiv) {
+        errorDiv.classList.remove('hidden');
+        errorDiv.textContent = message;
+      }
+    }
+
+    // Validate full name
+    function validateFullName() {
+      const fullName = document.getElementById('fullName').value.trim();
+      if (!fullName) {
+        showErrorStyles('fullName', 'Full name is required');
+        return false;
+      }
+      if (fullName.length < 2) {
+        showErrorStyles('fullName', 'Full name must be at least 2 characters');
+        return false;
+      }
+      clearErrorStyles('fullName');
+      return true;
+    }
+
+    // Validate email
+    function validateEmail() {
+      const email = document.getElementById('email').value.trim();
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      if (!email) {
+        showErrorStyles('email', 'Email is required');
+        return false;
+      }
+      if (!emailRegex.test(email)) {
+        showErrorStyles('email', 'Please enter a valid email address');
+        return false;
+      }
+      clearErrorStyles('email');
+      return true;
+    }
+
+    // Validate phone number
+    function validatePhoneNumber() {
+      const phone = document.getElementById('phoneNumber').value.trim();
+      const phoneRegex = /^[\+]?[0-9\s\-\(\)]{10,}$/;
+
+      if (!phone) {
+        showErrorStyles('phoneNumber', 'Phone number is required');
+        return false;
+      }
+      if (!phoneRegex.test(phone)) {
+        showErrorStyles('phoneNumber', 'Please enter a valid phone number');
+        return false;
+      }
+      clearErrorStyles('phoneNumber');
+      return true;
+    }
+
+    // Validate password
+    function validatePassword() {
+      const password = document.getElementById('password').value;
+
+      if (!password) {
+        showErrorStyles('password', 'Password is required');
+        return false;
+      }
+      if (password.length < 6) {
+        showErrorStyles('password', 'Password must be at least 6 characters long');
+        return false;
+      }
+      clearErrorStyles('password');
+      return true;
+    }
+
+    // Validate confirm password - FIXED to prevent multiple toasts
+    function validateConfirmPassword() {
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+
+      if (!confirmPassword) {
+        showErrorStyles('confirmPassword', 'Please confirm your password');
+        return false;
+      }
+      if (password !== confirmPassword) {
+        showErrorStyles('confirmPassword', 'Passwords do not match');
+        // Only show toast in main validation, not here
+        return false;
+      }
+      clearErrorStyles('confirmPassword');
+      return true;
+    }
+
+    // Validate terms
+    function validateTerms() {
+      const terms = document.getElementById('terms').checked;
+
+      if (!terms) {
+        showErrorStyles('terms', 'You must agree to the Terms of Service');
+        return false;
+      }
+      clearErrorStyles('terms');
+      return true;
+    }
+
+    // Main form validation - FIXED to show toast only once
+    function validateForm(event) {
+      event.preventDefault();
+
+      // Clear all previous errors
+      ['fullName', 'email', 'phoneNumber', 'password', 'confirmPassword', 'terms'].forEach(clearErrorStyles);
+
+      let isValid = true;
+      let firstError = '';
+
+      // Validate all fields and collect first error
+      if (!validateFullName()) {
+        isValid = false;
+        if (!firstError) firstError = 'Please enter your full name';
+      }
+      if (!validateEmail()) {
+        isValid = false;
+        if (!firstError) firstError = 'Please enter a valid email address';
+      }
+      if (!validatePhoneNumber()) {
+        isValid = false;
+        if (!firstError) firstError = 'Please enter a valid phone number';
+      }
+      if (!validatePassword()) {
+        isValid = false;
+        if (!firstError) firstError = 'Password must be at least 6 characters long';
+      }
+      if (!validateConfirmPassword()) {
+        isValid = false;
+        if (!firstError) firstError = 'Passwords do not match';
+      }
+      if (!validateTerms()) {
+        isValid = false;
+        if (!firstError) firstError = 'Please agree to the Terms of Service';
+      }
+
+      if (isValid) {
+        // Show loading state
+        const submitBtn = document.getElementById('registerBtn');
+        if (submitBtn) {
+          const originalText = submitBtn.textContent;
+          submitBtn.textContent = 'Creating Account...';
+          submitBtn.disabled = true;
+
+          // Submit the form
+          document.getElementById('registerForm').submit();
+        }
+      } else {
+        // Show only ONE error toast with the first error
+        showErrorToast(firstError);
+      }
+
+      return false; // Prevent default form submission
+    }
+
+    // Add real-time validation - MODIFIED to not show toasts
+    document.addEventListener('DOMContentLoaded', function() {
+      // Check for server error message and show toast
+      const errorMessage = document.querySelector('meta[name="error-toast"]');
+      if (errorMessage) {
+        showErrorToast(errorMessage.getAttribute('content'));
+      }
+
+      const form = document.getElementById('registerForm');
+      if (form) {
+        form.addEventListener('submit', validateForm);
+      }
+
+      // Add real-time validation on blur (without toasts)
+      const fullNameInput = document.getElementById('fullName');
+      const emailInput = document.getElementById('email');
+      const phoneInput = document.getElementById('phoneNumber');
+      const passwordInput = document.getElementById('password');
+      const confirmPasswordInput = document.getElementById('confirmPassword');
+
+      if (fullNameInput) fullNameInput.addEventListener('blur', validateFullName);
+      if (emailInput) emailInput.addEventListener('blur', validateEmail);
+      if (phoneInput) phoneInput.addEventListener('blur', validatePhoneNumber);
+      if (passwordInput) passwordInput.addEventListener('blur', validatePassword);
+      if (confirmPasswordInput) confirmPasswordInput.addEventListener('blur', validateConfirmPassword);
+
+      // Add real-time password match validation (silent)
+      if (confirmPasswordInput) {
+        confirmPasswordInput.addEventListener('input', function() {
+          if (this.value && passwordInput && passwordInput.value) {
+            validateConfirmPassword();
+          }
+        });
+      }
+    });
+  </script>
+
+</body>
+
+</html>

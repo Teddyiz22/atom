@@ -1,0 +1,109 @@
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+  <h1 class="h3 mb-0 text-gray-800">
+    <i class="fas fa-plus"></i> Add New Product
+  </h1>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
+      <li class="breadcrumb-item"><a href="/admin/products">Products</a></li>
+      <li class="breadcrumb-item active">New</li>
+    </ol>
+  </nav>
+</div>
+
+<div class="row">
+  <div class="col-lg-8">
+    <div class="card shadow mb-4">
+      <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">
+          <i class="fas fa-box"></i> Product Details
+        </h6>
+      </div>
+      <div class="card-body">
+        <form method="POST" action="/admin/products">
+          <div class="form-group">
+            <label for="name" class="form-label">Product Name <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="name" name="name" minlength="3" maxlength="255" required>
+          </div>
+
+          <div class="form-group">
+            <label for="description" class="form-label">Description</label>
+            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="category" class="form-label">Category <span class="text-danger">*</span></label>
+                <select class="form-control" id="category" name="category" required>
+                  <option value="DIAMOND">Diamond Packages</option>
+                  <option value="DOUBLE_DIAMOND">Double Diamond</option>
+                  <option value="WEEKLY_PASS">Weekly Pass</option>
+                  <option value="TWILIGHT_PASS">Twilight Pass</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="diamond_amount" class="form-label">Diamond Amount <span class="text-danger">*</span></label>
+                <input type="number" class="form-control" id="diamond_amount" name="diamond_amount" min="0" step="1" required>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="price_mmk" class="form-label">Price (MMK) <span class="text-danger">*</span></label>
+                <input type="number" class="form-control" id="price_mmk" name="price_mmk" min="0" step="0.01" required>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="price_thb" class="form-label">Price (THB) <span class="text-danger">*</span></label>
+                <input type="number" class="form-control" id="price_thb" name="price_thb" min="0" step="0.01" required>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="sort_order" class="form-label">Sort Order</label>
+            <input type="number" class="form-control" id="sort_order" name="sort_order" min="0" step="1" value="0">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Status</label>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="is_active" name="is_active" checked>
+                  <label class="custom-control-label" for="is_active">
+                    <i class="fas fa-toggle-on text-success"></i> Product is Active
+                  </label>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="is_featured" name="is_featured">
+                  <label class="custom-control-label" for="is_featured">
+                    <i class="fas fa-star text-warning"></i> Featured Product
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group mt-4">
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-save"></i> Create Product
+            </button>
+            <a href="/admin/products" class="btn btn-secondary ml-2">
+              <i class="fas fa-times"></i> Cancel
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

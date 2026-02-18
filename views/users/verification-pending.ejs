@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <%- include('../partials/ml-head', { title: 'Email Verification Pending - ATOM Game Shop' ,
+    description: 'Please check your email to verify your ATOM Game Shop account.' }) %>
+</head>
+
+<body class="bg-gray-50 font-sans overflow-x-hidden">
+  <%- include('../partials/ml-nav') %>
+
+    <!-- Include Toast System -->
+    <%- include('../partials/toast') %>
+
+      <!-- Hero Section with same design as main page -->
+      <section class="relative min-h-screen flex items-center justify-center overflow-hidden">
+        <!-- Modern Gradient Background - Same as main page -->
+        <div class="absolute inset-0 bg-gradient-to-br from-theme-900 via-theme-800 to-theme-950"></div>
+        <div
+          class="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(148,180,211,0.3),rgba(255,255,255,0))]">
+        </div>
+        <div
+          class="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]">
+        </div>
+
+        <!-- Floating Particles - Same as main page -->
+        <div class="particle particle-1"></div>
+        <div class="particle particle-2"></div>
+        <div class="particle particle-3"></div>
+        <div class="particle particle-4"></div>
+        <div class="particle particle-5"></div>
+        <div class="particle particle-6"></div>
+
+        <!-- Animated Background Elements - Same as main page -->
+        <div
+          class="absolute top-20 left-10 w-32 h-32 bg-gradient-to-br from-theme-400/10 to-transparent rounded-full animate-float-slow">
+        </div>
+        <div
+          class="absolute bottom-20 right-20 w-24 h-24 bg-gradient-to-br from-theme-500/10 to-transparent rounded-full animate-float-delay">
+        </div>
+        <div
+          class="absolute top-1/2 left-5 w-16 h-16 bg-gradient-to-br from-theme-300/10 to-transparent rounded-full animate-float">
+        </div>
+
+        <!-- Loading Bar -->
+        <div class="absolute top-0 left-0 right-0 z-50">
+          <div class="loading-bar"></div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
+          <!-- Animated Email Icon -->
+          <div class="space-y-6 mb-8">
+            <div
+              class="w-32 h-32 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl animate-glow-pulse">
+              <svg class="w-16 h-16 text-white animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                </path>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Main Heading with same style as main page -->
+          <div class="space-y-6">
+            <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight text-white">
+              <span class="block gradient-text animate-text-reveal stagger-2 animate-glow-pulse">
+                📧 Check Your Email
+              </span>
+            </h1>
+          </div>
+
+          <!-- Animated Subtitle -->
+          <div class="mt-8 animate-fade-in-up stagger-5">
+            <p class="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+              Hi <span class="text-theme-300 font-semibold">
+                <%= name %>
+              </span>! We've sent a verification link to your email address.
+            </p>
+          </div>
+
+          <!-- Email Display Box -->
+          <div class="mt-12 bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20 max-w-2xl mx-auto">
+            <div class="flex items-center justify-center mb-4">
+              <div
+                class="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center mr-4">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                </svg>
+              </div>
+              <h3 class="text-xl font-bold text-white">Verification email sent to:</h3>
+            </div>
+            <div
+              class="text-theme-300 text-lg font-semibold break-all bg-white/5 rounded-lg py-3 px-4 border border-white/20">
+              <%= email %>
+            </div>
+          </div>
+
+          <!-- Instructions Box - Same style as main page feature cards -->
+          <div class="mt-12 bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20 max-w-3xl mx-auto">
+            <h3 class="text-white font-bold text-2xl mb-6 flex items-center justify-center">
+              <svg class="w-8 h-8 text-yellow-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
+                </path>
+              </svg>
+              💡 What to do next:
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div
+                class="flex flex-col items-center bg-white/5 rounded-xl p-6 hover:bg-white/10 transition-all duration-300">
+                <div
+                  class="w-12 h-12 bg-gradient-to-br from-theme-500 to-theme-600 rounded-lg flex items-center justify-center mb-4">
+                  <span class="text-white font-bold text-lg">1</span>
+                </div>
+                <h4 class="text-white font-semibold mb-2">Check Your Inbox</h4>
+                <p class="text-gray-300 text-sm text-center">Check your email inbox (and spam/junk folder)</p>
+              </div>
+              <div
+                class="flex flex-col items-center bg-white/5 rounded-xl p-6 hover:bg-white/10 transition-all duration-300">
+                <div
+                  class="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center mb-4">
+                  <span class="text-white font-bold text-lg">2</span>
+                </div>
+                <h4 class="text-white font-semibold mb-2">Click Verify Button</h4>
+                <p class="text-gray-300 text-sm text-center">Click the "Verify My Email" button in the email</p>
+              </div>
+              <div
+                class="flex flex-col items-center bg-white/5 rounded-xl p-6 hover:bg-white/10 transition-all duration-300">
+                <div
+                  class="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center mb-4">
+                  <span class="text-white font-bold text-lg">3</span>
+                </div>
+                <h4 class="text-white font-semibold mb-2">Start Shopping</h4>
+                <p class="text-gray-300 text-sm text-center">Start shopping for ML diamonds instantly!</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Resend Section -->
+          <div class="mt-8 bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 max-w-lg mx-auto">
+            <h3 class="text-white font-semibold text-lg mb-3 flex items-center justify-center">
+              <svg class="w-6 h-6 text-orange-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              Didn't receive the email?
+            </h3>
+            <p class="text-gray-300 text-sm mb-4 text-center">Check your spam folder or request a new verification email
+            </p>
+            <button id="resendBtn" onclick="resendVerification()"
+              class="group relative overflow-hidden bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-8 py-3 rounded-2xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl w-full disabled:opacity-50 disabled:cursor-not-allowed">
+              <span class="relative z-10 flex items-center justify-center">
+                <svg class="w-5 h-5 mr-2 group-hover:animate-pulse" fill="none" stroke="currentColor"
+                  viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                </svg>
+                <span id="resendText">Resend Email</span>
+              </span>
+            </button>
+            <div id="timer" class="text-gray-400 text-sm mt-3 text-center hidden">
+              You can request a new email in <span id="countdown" class="text-orange-400 font-semibold">60</span>
+              seconds
+            </div>
+          </div>
+
+          <!-- Dynamic CTA Buttons - Same style as main page -->
+          <div class="flex flex-col sm:flex-row justify-center items-center gap-4 mt-12 animate-scale-in stagger-6">
+            <a href="/users/login"
+              class="group relative overflow-hidden bg-gradient-to-r from-primary to-secondary backdrop-blur-md border-2 border-primary/30 text-white px-12 py-4 rounded-2xl font-bold text-xl hover:shadow-2xl hover:shadow-primary/25 transition-all duration-500 transform hover:scale-105 glass-hover">
+              <span class="relative z-10 flex items-center">
+                <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1">
+                  </path>
+                </svg>
+                Back to Login
+                <span class="ml-3 transform group-hover:translate-x-1 transition-transform duration-300">→</span>
+              </span>
+              <div
+                class="absolute inset-0 bg-gradient-to-r from-secondary/20 to-primary/20 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-500">
+              </div>
+            </a>
+
+            <!-- Register Again Link -->
+            <a href="/users/register"
+              class="group relative overflow-hidden bg-transparent border-2 border-theme-400/50 text-theme-300 px-8 py-4 rounded-2xl font-semibold text-lg hover:bg-theme-400/10 transition-all duration-300 transform hover:scale-105">
+              <span class="relative z-10 flex items-center">
+                Register Again
+                <svg class="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform duration-300"
+                  fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+                </svg>
+              </span>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Support Section - Same style as main page -->
+      <section class="py-16 bg-gradient-to-br from-theme-900 via-theme-800 to-theme-700 relative overflow-hidden">
+        <!-- Background Effects -->
+        <div class="absolute inset-0">
+          <div
+            class="absolute top-0 left-0 w-64 h-64 bg-gradient-to-br from-theme-400/10 to-transparent rounded-full transform -translate-x-32 -translate-y-32">
+          </div>
+          <div
+            class="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-br from-theme-500/10 to-transparent rounded-full transform translate-x-48 translate-y-48">
+          </div>
+        </div>
+
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div
+            class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-theme-400 to-theme-600 rounded-full mb-6 animate-glow-pulse">
+            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192L5.636 18.364M12 2.25a9.75 9.75 0 109.75 9.75A9.75 9.75 0 0012 2.25z">
+              </path>
+            </svg>
+          </div>
+          <h3 class="text-2xl md:text-3xl font-bold text-white mb-4">Need Help?</h3>
+          <p class="text-theme-200 text-lg max-w-2xl mx-auto">
+            Our support team is here to help! Contact us at
+            <a href="mailto:support@atomgameshop.com"
+              class="text-theme-300 hover:text-theme-200 underline transition-colors duration-300 mx-1">
+              support@atomgameshop.com
+            </a>
+            for any assistance.
+          </p>
+        </div>
+      </section>
+
+      <%- include('../partials/ml-scripts') %>
+
+        <script>
+          let resendCooldown = 0;
+          let countdownInterval;
+
+          function startCooldown() {
+            resendCooldown = 60;
+            const resendBtn = document.getElementById('resendBtn');
+            const resendText = document.getElementById('resendText');
+            const timer = document.getElementById('timer');
+            const countdown = document.getElementById('countdown');
+
+            resendBtn.disabled = true;
+            resendText.textContent = 'Email Sent!';
+            timer.classList.remove('hidden');
+
+            countdownInterval = setInterval(() => {
+              resendCooldown--;
+              countdown.textContent = resendCooldown;
+
+              if (resendCooldown <= 0) {
+                clearInterval(countdownInterval);
+                resendBtn.disabled = false;
+                resendText.textContent = 'Resend Email';
+                timer.classList.add('hidden');
+              }
+            }, 1000);
+          }
+
+          async function resendVerification() {
+            const resendBtn = document.getElementById('resendBtn');
+            const resendText = document.getElementById('resendText');
+
+            if (resendBtn.disabled) return;
+
+            // Show loading state
+            const originalText = resendText.textContent;
+            resendText.textContent = 'Sending...';
+            resendBtn.disabled = true;
+
+            try {
+              const response = await fetch('/users/resend-verification', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  email: '<%= email %>'
+                })
+              });
+
+              const result = await response.json();
+
+              if (result.success) {
+                showSuccessToast(result.message || 'Verification email sent! Please check your inbox.');
+                startCooldown();
+              } else {
+                showErrorToast(result.message || 'Failed to send email. Please try again.');
+                resendBtn.disabled = false;
+                resendText.textContent = originalText;
+              }
+            } catch (error) {
+              console.error('Resend error:', error);
+              showErrorToast('Network error. Please try again.');
+              resendBtn.disabled = false;
+              resendText.textContent = originalText;
+            }
+          }
+
+          // Auto-animate elements on load
+          document.addEventListener('DOMContentLoaded', function () {
+            // Add staggered animation entrance
+            const elements = document.querySelectorAll('.animate-fade-in-up, .animate-scale-in');
+            elements.forEach((el, index) => {
+              el.style.opacity = '0';
+              el.style.transform = 'translateY(20px)';
+              setTimeout(() => {
+                el.style.transition = 'all 0.6s ease-out';
+                el.style.opacity = '1';
+                el.style.transform = 'translateY(0)';
+              }, index * 150);
+            });
+          });
+        </script>
+
+        <style>
+          @keyframes scale-in {
+            0% {
+              transform: scale(0.9);
+              opacity: 0;
+            }
+
+            100% {
+              transform: scale(1);
+              opacity: 1;
+            }
+          }
+
+          .animate-scale-in {
+            animation: scale-in 0.3s ease-out;
+          }
+        </style>
+</body>
+
+</html>

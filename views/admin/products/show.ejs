@@ -1,0 +1,270 @@
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+  <h1 class="h3 mb-0 text-gray-800">
+    <i class="fas fa-eye"></i> Product Details
+  </h1>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/admin">Dashboard</a></li>
+      <li class="breadcrumb-item"><a href="/admin/products">Products</a></li>
+      <li class="breadcrumb-item active">Details</li>
+    </ol>
+  </nav>
+</div>
+
+<div class="container-fluid">
+  <div class="row">
+    <!-- Product Information -->
+    <div class="col-lg-8">
+      <div class="card shadow mb-4">
+        <div class="card-header py-3">
+          <h6 class="m-0 font-weight-bold text-primary">
+            <i class="fas fa-info-circle"></i> Product Information
+          </h6>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="font-weight-bold">Product Name:</label>
+                <p class="text-gray-900">
+                  <%= product.name %>
+                </p>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="font-weight-bold">Category:</label>
+                <p>
+                  <% if (product.category==='DIAMOND' ) { %>
+                    <span class="badge badge-primary">Diamond Package</span>
+                    <% } else if (product.category==='WEEKLY_PASS' ) { %>
+                      <span class="badge badge-success">Weekly Pass</span>
+                      <% } else { %>
+                        <span class="badge badge-warning">Other</span>
+                        <% } %>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-4">
+              <div class="form-group">
+                <label class="font-weight-bold">Diamond Amount:</label>
+                <p class="text-gray-900 h5">
+                  <i class="fas fa-gem text-primary"></i>
+                  <%= product.diamond_amount %>
+                </p>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label class="font-weight-bold">Price (MMK):</label>
+                <p class="text-gray-900 h5">
+                  <%= new Intl.NumberFormat('en-US').format(product.price_mmk) %> MMK
+                </p>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label class="font-weight-bold">Price (THB):</label>
+                <p class="text-gray-900 h5">
+                  ฿<%= new Intl.NumberFormat('en-US').format(product.price_thb) %>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="font-weight-bold">Status:</label>
+                <p>
+                  <span class="badge <%= product.is_active ? 'badge-success' : 'badge-danger' %>">
+                    <i class="fas <%= product.is_active ? 'fa-check' : 'fa-times' %>"></i>
+                    <%= product.is_active ? 'Active' : 'Inactive' %>
+                  </span>
+                </p>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="font-weight-bold">Featured:</label>
+                <p>
+                  <% if (product.is_featured) { %>
+                    <span class="badge badge-warning">
+                      <i class="fas fa-star"></i> Featured
+                    </span>
+                    <% } else { %>
+                      <span class="badge badge-secondary">
+                        <i class="far fa-star"></i> Not Featured
+                      </span>
+                      <% } %>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="font-weight-bold">Sort Order:</label>
+            <p class="text-gray-900">#<%= product.sort_order %>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="card shadow mb-4">
+        <div class="card-header py-3">
+          <h6 class="m-0 font-weight-bold text-primary">
+            <i class="fas fa-cogs"></i> Actions
+          </h6>
+        </div>
+        <div class="card-body">
+          <div class="btn-group" role="group">
+            <a href="/admin/products/<%= product.id %>/edit" class="btn btn-primary">
+              <i class="fas fa-edit"></i> Edit Product
+            </a>
+            <button type="button" class="btn btn-warning" id="toggleStatusBtn" data-product-name="<%= product.name %>"
+              data-product-active="<%= product.is_active %>" data-product-id="<%= product.id %>">
+              <i class="fas fa-toggle-<%= product.is_active ? 'off' : 'on' %>"></i>
+              <%= product.is_active ? 'Deactivate' : 'Activate' %>
+            </button>
+            <a href="/admin/products" class="btn btn-secondary">
+              <i class="fas fa-arrow-left"></i> Back to Products
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Product Preview -->
+    <div class="col-lg-4">
+      <div class="card shadow mb-4">
+        <div class="card-header py-3">
+          <h6 class="m-0 font-weight-bold text-primary">
+            <i class="fas fa-eye"></i> Product Preview
+          </h6>
+        </div>
+        <div class="card-body">
+          <div class="text-center">
+            <div class="mb-3">
+              <% if (product.category==='DIAMOND' ) { %>
+                <i class="fas fa-gem fa-4x text-primary"></i>
+                <% } else if (product.category==='WEEKLY_PASS' ) { %>
+                  <i class="fas fa-calendar-week fa-4x text-success"></i>
+                  <% } else { %>
+                    <i class="fas fa-star fa-4x text-warning"></i>
+                    <% } %>
+            </div>
+
+            <h4 class="font-weight-bold text-gray-900">
+              <%= product.name %>
+            </h4>
+
+            <div class="mb-3">
+              <div class="h3 mb-0 text-primary">
+                <%= product.diamond_amount %> <small>Diamonds</small>
+              </div>
+            </div>
+
+            <div class="row text-center mb-3">
+              <div class="col-6">
+                <div class="border-right">
+                  <div class="h5 mb-0">
+                    <%= new Intl.NumberFormat('en-US').format(product.price_mmk) %>
+                  </div>
+                  <small class="text-muted">MMK</small>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="h5 mb-0">
+                  ฿<%= new Intl.NumberFormat('en-US').format(product.price_thb) %>
+                </div>
+                <small class="text-muted">THB</small>
+              </div>
+            </div>
+
+            <div class="mb-2">
+              <% if (product.category==='DIAMOND' ) { %>
+                <span class="badge badge-primary">Diamond Package</span>
+                <% } else if (product.category==='WEEKLY_PASS' ) { %>
+                  <span class="badge badge-success">Weekly Pass</span>
+                  <% } else { %>
+                    <span class="badge badge-warning">Other</span>
+                    <% } %>
+            </div>
+
+            <% if (product.is_featured) { %>
+              <div class="badge badge-warning mb-2">
+                <i class="fas fa-star"></i> Featured
+              </div>
+              <% } %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product Statistics -->
+      <div class="card shadow mb-4">
+        <div class="card-header py-3">
+          <h6 class="m-0 font-weight-bold text-info">
+            <i class="fas fa-chart-bar"></i> Statistics
+          </h6>
+        </div>
+        <div class="card-body">
+          <div class="text-center">
+            <small class="text-muted">
+              <strong>Created:</strong>
+              <%= new Date(product.created_at).toLocaleDateString() %><br>
+                <strong>Updated:</strong>
+                <%= new Date(product.updated_at).toLocaleDateString() %><br>
+                  <strong>Product ID:</strong> #<%= product.id %>
+            </small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- JavaScript for Actions -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // Toggle Status Button
+    const toggleStatusBtn = document.getElementById('toggleStatusBtn');
+    if (toggleStatusBtn) {
+      toggleStatusBtn.addEventListener('click', function () {
+        const productName = this.dataset.productName;
+        const currentStatus = this.dataset.productActive === 'true';
+        const productId = this.dataset.productId;
+        const action = currentStatus ? 'deactivate' : 'activate';
+
+        if (confirm(`Are you sure you want to ${action} "${productName}"?`)) {
+          fetch(`/admin/products/${productId}/toggle-status`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                showSuccessToast(data.message);
+                // Reload page to reflect changes
+                setTimeout(() => {
+                  window.location.reload();
+                }, 1000);
+              } else {
+                showErrorToast(data.message);
+              }
+            })
+            .catch(error => {
+              console.error('Error:', error);
+              showErrorToast('Failed to update product status');
+            });
+        }
+      });
+    }
+  });
+</script>

@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title><%= title || 'Admin' %></title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#fbbf24',
+            brand: {
+              50: '#fff7ed',
+              100: '#ffedd5',
+              200: '#fed7aa',
+              300: '#fdba74',
+              400: '#fb923c',
+              500: '#f59e0b',
+              600: '#d97706',
+              700: '#b45309',
+              800: '#92400e',
+              900: '#78350f',
+            },
+            surface: '#0b1220',
+            base: '#050b14',
+          },
+          fontFamily: {
+            sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+
+  <link href="/admin/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+  <link href="/admin/css/sb-admin-2.min.css" rel="stylesheet">
+  <link href="/admin/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script>
+    if (typeof jQuery === 'undefined') {
+      document.write('<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"><\\/script>');
+    }
+  </script>
+
+  <%- include('../partials/toast') %>
+  <%- typeof style !== 'undefined' ? style : '' %>
+
+  <style>
+    :root {
+      color-scheme: dark;
+      --base: #050b14;
+      --surface: #0b1220;
+      --surface-2: #0f172a;
+      --border: #233042;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --accent: #fbbf24;
+      --accent-2: #f59e0b;
+      --ring: rgba(251, 191, 36, 0.35);
+    }
+
+    html, body {
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: radial-gradient(1200px 600px at 20% -10%, rgba(251, 191, 36, 0.12), transparent 55%),
+                  radial-gradient(900px 500px at 90% 0%, rgba(59, 130, 246, 0.12), transparent 50%),
+                  var(--base);
+      color: var(--text);
+    }
+
+    a { color: var(--text); }
+    a:hover { color: var(--accent); }
+
+    .bg-gray-100 { background-color: transparent !important; }
+    .bg-gray-50 { background-color: transparent !important; }
+    .bg-white { background-color: var(--surface) !important; }
+
+    .text-gray-900,
+    .text-gray-800,
+    .text-gray-700 { color: var(--text) !important; }
+
+    .text-gray-600,
+    .text-gray-500,
+    .text-gray-400 { color: var(--muted) !important; }
+
+    .border-gray-200,
+    .border-gray-100 { border-color: var(--border) !important; }
+
+    input, select, textarea {
+      background-color: var(--surface-2) !important;
+      border-color: var(--border) !important;
+      color: var(--text) !important;
+    }
+
+    input::placeholder,
+    textarea::placeholder { color: rgba(156, 163, 175, 0.9) !important; }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none !important;
+      box-shadow: 0 0 0 3px var(--ring) !important;
+      border-color: rgba(251, 191, 36, 0.65) !important;
+    }
+
+    ::-webkit-calendar-picker-indicator {
+      filter: invert(1);
+      cursor: pointer;
+    }
+
+    .card, .modal-content, .dropdown-menu {
+      background-color: var(--surface) !important;
+      border-color: var(--border) !important;
+      color: var(--text) !important;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.35) !important;
+    }
+
+    .card-header, .modal-header {
+      background-color: rgba(15, 23, 42, 0.65) !important;
+      border-bottom-color: var(--border) !important;
+      color: var(--text) !important;
+    }
+
+    .table { color: var(--text) !important; }
+    .table thead th { background-color: rgba(15, 23, 42, 0.65) !important; border-color: var(--border) !important; }
+    .table td, .table th { border-color: var(--border) !important; }
+    .table tbody tr:hover { background-color: rgba(251, 191, 36, 0.06) !important; }
+
+    .btn-primary {
+      background-color: var(--accent) !important;
+      border-color: rgba(0, 0, 0, 0.15) !important;
+      color: #111827 !important;
+    }
+    .btn-primary:hover { background-color: var(--accent-2) !important; }
+    .btn-danger { box-shadow: 0 6px 14px rgba(220, 38, 38, 0.25) !important; }
+
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.6); }
+    ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.35); border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.55); }
+
+    .dataTables_wrapper,
+    .dataTables_wrapper .dataTables_length,
+    .dataTables_wrapper .dataTables_filter,
+    .dataTables_wrapper .dataTables_info,
+    .dataTables_wrapper .dataTables_paginate {
+      color: var(--text) !important;
+    }
+
+    .dataTables_wrapper .dataTables_filter label,
+    .dataTables_wrapper .dataTables_length label {
+      color: var(--text) !important;
+      font-weight: 600;
+    }
+
+    .dataTables_wrapper .dataTables_filter input,
+    .dataTables_wrapper .dataTables_length select {
+      background-color: var(--surface-2) !important;
+      border: 1px solid var(--border) !important;
+      color: var(--text) !important;
+      border-radius: 10px;
+      padding: 8px 12px;
+    }
+
+    .dataTables_wrapper .dataTables_filter input { margin-left: 10px; width: min(320px, 100%); }
+    .dataTables_wrapper .dataTables_length select { margin: 0 10px; }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+      color: var(--text) !important;
+      border: 1px solid var(--border) !important;
+      background: rgba(255, 255, 255, 0.04) !important;
+      border-radius: 10px;
+      margin: 0 3px;
+      padding: 6px 12px !important;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+      background: var(--accent) !important;
+      border-color: rgba(0, 0, 0, 0.15) !important;
+      color: #111827 !important;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
+    .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover {
+      opacity: 0.5;
+      cursor: not-allowed !important;
+    }
+
+    @media (max-width: 767px) {
+      #mobile-sidebar {
+        z-index: 9999 !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        isolation: auto !important;
+        transform: translateX(-100%) !important;
+      }
+      #mobile-sidebar.mobile-sidebar-open {
+        z-index: 9999 !important;
+        transform: translateX(0) !important;
+      }
+      #mobile-sidebar-overlay {
+        z-index: 9998 !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        isolation: auto !important;
+      }
+      #sidebar-toggle {
+        z-index: 9997 !important;
+        position: relative !important;
+      }
+      header, .bg-white, main, body {
+        font-size: 16px !important;
+        transform: none !important;
+        zoom: 1 !important;
+      }
+      html {
+        -webkit-text-size-adjust: 100% !important;
+        -moz-text-size-adjust: 100% !important;
+        text-size-adjust: 100% !important;
+      }
+      body > div:not(#mobile-sidebar):not(#mobile-sidebar-overlay),
+      main,
+      .bg-white,
+      header,
+      .overflow-x-auto,
+      .dataTables_wrapper,
+      .dataTables_wrapper *,
+      table,
+      thead,
+      tbody,
+      tr,
+      td,
+      th {
+        z-index: 1 !important;
+        position: relative !important;
+      }
+      .dataTables_wrapper {
+        position: relative !important;
+        z-index: 1 !important;
+      }
+      .overflow-x-auto {
+        position: relative !important;
+        z-index: 1 !important;
+      }
+      table,
+      table.dataTable {
+        min-width: 1000px !important;
+        width: auto !important;
+        table-layout: auto !important;
+        display: table !important;
+      }
+      table th,
+      table td {
+        white-space: nowrap !important;
+      }
+      body > div:not(#mobile-sidebar):not(#mobile-sidebar-overlay) {
+        isolation: auto !important;
+      }
+      main {
+        isolation: auto !important;
+        position: relative !important;
+        z-index: 1 !important;
+      }
+      body { isolation: auto !important; }
+    }
+  </style>
+
+  <script>
+    (function() {
+      function enforceMobileSidebar() {
+        if (window.innerWidth < 768) {
+          var sidebar = document.getElementById('mobile-sidebar');
+          var overlay = document.getElementById('mobile-sidebar-overlay');
+          if (sidebar) {
+            sidebar.style.setProperty('z-index', '9999', 'important');
+            sidebar.style.setProperty('position', 'fixed', 'important');
+            sidebar.style.setProperty('top', '0', 'important');
+            sidebar.style.setProperty('left', '0', 'important');
+            sidebar.style.setProperty('isolation', 'auto', 'important');
+            if (sidebar.parentElement && sidebar.parentElement.tagName !== 'BODY') {
+              document.body.appendChild(sidebar);
+            }
+          }
+          if (overlay) {
+            overlay.style.setProperty('z-index', '9998', 'important');
+            overlay.style.setProperty('position', 'fixed', 'important');
+            overlay.style.setProperty('isolation', 'auto', 'important');
+            if (overlay.parentElement && overlay.parentElement.tagName !== 'BODY') {
+              document.body.appendChild(overlay);
+            }
+          }
+        }
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+          enforceMobileSidebar();
+        });
+      } else {
+        enforceMobileSidebar();
+      }
+      window.addEventListener('resize', enforceMobileSidebar);
+    })();
+  </script>
+</head>
+<body class="bg-gray-100 text-gray-900">
+  <div class="min-h-screen flex w-full overflow-x-hidden">
+    <aside id="sidebar" class="hidden md:flex w-64 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 border-r border-white/10 p-4 shadow-2xl h-screen sticky top-0 flex-col">
+      <div class="mb-6 pb-4 border-b border-gray-700 flex-shrink-0">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="p-2 bg-gradient-to-br from-amber-300 to-yellow-500 rounded-lg shadow-md">
+            <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+          </div>
+          <div>
+            <div class="text-lg font-bold text-white">ATOM Admin</div>
+            <div class="text-xs text-gray-400">Control Panel</div>
+          </div>
+        </div>
+      </div>
+
+      <nav class="space-y-1 flex-1 overflow-y-auto pr-2">
+        <button type="button" data-parent-key="overview" class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-white hover:bg-opacity-10 transition-all duration-200 group">
+          <div class="flex items-center gap-3">
+            <svg class="h-5 w-5 text-gray-400 group-hover:text-amber-300 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+            <span class="text-sm font-semibold text-gray-300 group-hover:text-white">Overview</span>
+          </div>
+          <svg data-chevron xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 transition-transform group-hover:text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+        </button>
+        <div data-children-of="overview" class="ml-8 space-y-1 hidden">
+          <a href="/admin" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white hover:bg-opacity-10 text-sm text-gray-400 hover:text-white transition-all duration-200 group">
+            <svg class="h-4 w-4 group-hover:text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+            Dashboard
+          </a>
+          <a href="/admin/reports" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white hover:bg-opacity-10 text-sm text-gray-400 hover:text-white transition-all duration-200 group">
+            <svg class="h-4 w-4 group-hover:text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3v18m0 0l-4-4m4 4l4-4M4 7h7m0 0V3m0 4l-4 4m4-4l4 4" />
+            </svg>
+            Reports
+          </a>
+        </div>
+
+        <button type="button" data-parent-key="management" class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-white hover:bg-opacity-10 transition-all duration-200 group">
+          <div class="flex items-center gap-3">
+            <svg class="h-5 w-5 text-gray-400 group-hover:text-blue-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+            <span class="text-sm font-semibold text-gray-300 group-hover:text-white">Management</span>
+          </div>
+          <svg data-chevron xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 transition-transform group-hover:text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+        </button>
+        <div data-children-of="management" class="ml-8 space-y-1 hidden">
+          <a href="/admin/users" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white hover:bg-opacity-10 text-sm text-gray-400 hover:text-white transition-all duration-200 group">
+            <svg class="h-4 w-4 group-hover:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+            Users
+          </a>
+          <a href="/admin/product-management" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white hover:bg-opacity-10 text-sm text-gray-400 hover:text-white transition-all duration-200 group">
+            <svg class="h-4 w-4 group-hover:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+            </svg>
+            Products
+          </a>
+          <a href="/admin/product-types" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white hover:bg-opacity-10 text-sm text-gray-400 hover:text-white transition-all duration-200 group">
+            <svg class="h-4 w-4 group-hover:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+            </svg>
+            Product Types
+          </a>
+          <a href="/admin/payment-methods" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white hover:bg-opacity-10 text-sm text-gray-400 hover:text-white transition-all duration-200 group">
+            <svg class="h-4 w-4 group-hover:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+            </svg>
+            Payment Methods
+          </a>
+        </div>
+
+        <button type="button" data-parent-key="finance" class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-white hover:bg-opacity-10 transition-all duration-200 group">
+          <div class="flex items-center gap-3">
+            <svg class="h-5 w-5 text-gray-400 group-hover:text-blue-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+            </svg>
+            <span class="text-sm font-semibold text-gray-300 group-hover:text-white">Finance</span>
+          </div>
+          <svg data-chevron xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 transition-transform group-hover:text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+        </button>
+        <div data-children-of="finance" class="ml-8 space-y-1 hidden">
+          <a href="/admin/wallets" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white hover:bg-opacity-10 text-sm text-gray-400 hover:text-white transition-all duration-200 group">
+            <svg class="h-4 w-4 group-hover:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+            </svg>
+            Wallets
+          </a>
+          <a href="/admin/wallets/active" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white hover:bg-opacity-10 text-sm text-gray-400 hover:text-white transition-all duration-200 group">
+            <svg class="h-4 w-4 group-hover:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Active Wallets
+          </a>
+          <a href="/admin/transactions" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white hover:bg-opacity-10 text-sm text-gray-400 hover:text-white transition-all duration-200 group">
+            <svg class="h-4 w-4 group-hover:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Topup Transactions
+          </a>
+          <a href="/admin/game-purchase-transactions" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white hover:bg-opacity-10 text-sm text-gray-400 hover:text-white transition-all duration-200 group">
+            <svg class="h-4 w-4 group-hover:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+            </svg>
+            Game Purchase Tx
+          </a>
+        </div>
+
+        <button type="button" data-parent-key="settings" class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-white hover:bg-opacity-10 transition-all duration-200 group">
+          <div class="flex items-center gap-3">
+            <svg class="h-5 w-5 text-gray-400 group-hover:text-green-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <span class="text-sm font-semibold text-gray-300 group-hover:text-white">System</span>
+          </div>
+          <svg data-chevron xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 transition-transform group-hover:text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+        </button>
+        <div data-children-of="settings" class="ml-8 space-y-1 hidden">
+          <a href="/admin/settings" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white hover:bg-opacity-10 text-sm text-gray-400 hover:text-white transition-all duration-200 group">
+            <svg class="h-4 w-4 group-hover:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            Settings
+          </a>
+        </div>
+      </nav>
+
+      <div class="mt-auto pt-4 border-t border-gray-700 flex-shrink-0">
+        <form method="POST" action="/users/logout" class="m-0">
+          <button type="submit" class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg">
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+            <span>Logout</span>
+          </button>
+        </form>
+      </div>
+
+      <script>
+        (function() {
+          var path = window.location.pathname || '';
+          var groups = [
+            { key: 'overview', links: ['/admin', '/admin/reports'] },
+            { key: 'management', links: ['/admin/users', '/admin/product-management', '/admin/product-types', '/admin/payment-methods', '/admin/smile-sub-items', '/admin/g2bulk-items'] },
+            { key: 'finance', links: ['/admin/wallets', '/admin/wallets/active', '/admin/transactions', '/admin/game-purchase-transactions'] },
+            { key: 'settings', links: ['/admin/settings'] }
+          ];
+
+          var expandKey = '';
+          for (var i = 0; i < groups.length; i++) {
+            var g = groups[i];
+            for (var j = 0; j < g.links.length; j++) {
+              var h = g.links[j];
+              if (path === h || (path.startsWith(h) && h !== '/admin')) { expandKey = g.key; break; }
+            }
+            if (expandKey) break;
+          }
+          var saved = localStorage.getItem('sidebar.expanded') || '';
+          var defaultExpand = expandKey || saved || 'overview';
+
+          var parents = document.querySelectorAll('#sidebar [data-parent-key]');
+          for (var k = 0; k < parents.length; k++) {
+            var key = parents[k].getAttribute('data-parent-key');
+            var children = document.querySelector('#sidebar [data-children-of="' + key + '"]');
+            var chev = parents[k].querySelector('[data-chevron]');
+            if (key === defaultExpand && children) {
+              children.classList.remove('hidden');
+              if (chev) chev.classList.add('rotate-180');
+            }
+            parents[k].addEventListener('click', function(e) {
+              var p = e.currentTarget;
+              var kk = p.getAttribute('data-parent-key');
+              var c = document.querySelector('#sidebar [data-children-of="' + kk + '"]');
+              var ch = p.querySelector('[data-chevron]');
+              if (!c) return;
+              var hidden = c.classList.contains('hidden');
+              document.querySelectorAll('#sidebar [data-children-of]').forEach(function(el) { el.classList.add('hidden'); });
+              document.querySelectorAll('#sidebar [data-chevron]').forEach(function(el) { el.classList.remove('rotate-180'); });
+              if (hidden) {
+                c.classList.remove('hidden');
+                if (ch) ch.classList.add('rotate-180');
+                localStorage.setItem('sidebar.expanded', kk);
+              } else {
+                c.classList.add('hidden');
+                if (ch) ch.classList.remove('rotate-180');
+                localStorage.removeItem('sidebar.expanded');
+              }
+            });
+          }
+
+          var links = document.querySelectorAll('#sidebar nav a');
+          for (var x = 0; x < links.length; x++) {
+            var href = links[x].getAttribute('href');
+            if (href === path || (path.startsWith(href) && href !== '/admin')) {
+              links[x].classList.add('bg-gradient-to-r','from-blue-600','to-purple-600','font-semibold','text-white','shadow-md');
+              links[x].classList.remove('text-gray-400','hover:text-white');
+              var parent = links[x].closest('[data-children-of]');
+              if (parent) {
+                var parentKey = parent.getAttribute('data-children-of');
+                var parentBtn = document.querySelector('#sidebar [data-parent-key="' + parentKey + '"]');
+                if (parentBtn) {
+                  var span = parentBtn.querySelector('span');
+                  if (span) span.classList.add('text-white');
+                }
+              }
+            }
+            links[x].addEventListener('click', function() {
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+          }
+          if (window.scrollY > 0) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        })();
+      </script>
+    </aside>
+
+    <div class="min-h-screen flex-1 flex flex-col w-full min-w-0 overflow-x-hidden">
+      <header class="bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 border-b border-white/10 shadow-lg">
+        <div class="px-6 py-4 flex items-center justify-between">
+          <div class="flex items-center gap-4">
+            <button id="sidebar-toggle" type="button" class="md:hidden p-2 text-gray-300 hover:text-white hover:bg-white hover:bg-opacity-10 rounded-lg transition-colors" aria-label="Toggle sidebar">
+              <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+            <div class="flex items-center gap-3">
+              <div class="p-2 bg-gradient-to-br from-amber-300 to-yellow-500 rounded-lg shadow-md">
+                <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+              </div>
+              <div>
+                <h1 class="text-xl font-bold text-white"><%= title || 'Admin Dashboard' %></h1>
+                <p class="text-xs text-gray-400">Control Panel</p>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center gap-4">
+            <div class="hidden md:flex items-center gap-3 px-4 py-2 bg-white/5 rounded-lg backdrop-blur-sm border border-white/10">
+              <div class="flex items-center justify-center w-8 h-8 bg-gradient-to-br from-amber-300 to-yellow-500 rounded-full shadow-md">
+                <span class="text-white text-sm font-bold"><%= (user?.name || 'A').charAt(0).toUpperCase() %></span>
+              </div>
+              <div>
+                <div class="text-sm font-semibold text-white"><%= user?.name || 'Admin' %></div>
+                <div class="text-xs text-gray-300">Administrator</div>
+              </div>
+            </div>
+            <form method="POST" action="/users/logout" class="m-0 hidden md:block">
+              <button type="submit" class="inline-flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                <span>Logout</span>
+              </button>
+            </form>
+          </div>
+        </div>
+      </header>
+
+      <main class="min-h-screen p-4 md:p-6 w-full min-w-0 overflow-x-hidden bg-gray-50">
+        <%- body %>
+      </main>
+    </div>
+  </div>
+
+  <div id="mobile-sidebar-overlay" class="hidden md:hidden transition-opacity duration-300"></div>
+  <aside id="mobile-sidebar" class="md:hidden bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 border-r border-white/10 p-4 shadow-2xl overflow-y-auto flex flex-col">
+    <div class="mb-6 pb-4 border-b border-white/10 flex-shrink-0">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="p-2 bg-gradient-to-br from-amber-300 to-yellow-500 rounded-lg shadow-md">
+            <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+          </div>
+          <div>
+            <div class="text-lg font-bold text-white">ATOM Admin</div>
+            <div class="text-xs text-gray-400">Control Panel</div>
+          </div>
+        </div>
+        <button id="mobile-sidebar-close" type="button" class="p-2 text-gray-400 hover:text-white hover:bg-white hover:bg-opacity-10 rounded-lg transition-colors">
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <nav class="space-y-1 flex-1">
+      <button type="button" data-parent-key="overview" class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-white hover:bg-opacity-10 transition-all duration-200 group">
+        <div class="flex items-center gap-3">
+          <svg class="h-5 w-5 text-gray-400 group-hover:text-amber-300 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+          </svg>
+          <span class="text-sm font-semibold text-gray-300 group-hover:text-white">Overview</span>
+        </div>
+        <svg data-chevron xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 transition-transform group-hover:text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+      </button>
+      <div data-children-of="overview" class="ml-8 space-y-1 hidden">
+        <a href="/admin" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white hover:bg-opacity-10 text-sm text-gray-400 hover:text-white transition-all duration-200 group">
+          <svg class="h-4 w-4 group-hover:text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
+          Dashboard
+        </a>
+        <a href="/admin/reports" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white hover:bg-opacity-10 text-sm text-gray-400 hover:text-white transition-all duration-200 group">
+          <svg class="h-4 w-4 group-hover:text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3v18m0 0l-4-4m4 4l4-4M4 7h7m0 0V3m0 4l-4 4m4-4l4 4" />
+          </svg>
+          Reports
+        </a>
+      </div>
+
+      <button type="button" data-parent-key="management" class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-white hover:bg-opacity-10 transition-all duration-200 group">
+        <div class="flex items-center gap-3">
+          <svg class="h-5 w-5 text-gray-400 group-hover:text-blue-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+          <span class="text-sm font-semibold text-gray-300 group-hover:text-white">Management</span>
+        </div>
+        <svg data-chevron xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 transition-transform group-hover:text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+      </button>
+      <div data-children-of="management" class="ml-8 space-y-1 hidden">
+        <a href="/admin/users" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white hover:bg-opacity-10 text-sm text-gray-400 hover:text-white transition-all duration-200 group">
+          <svg class="h-4 w-4 group-hover:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+          Users
+        </a>
+        <a href="/admin/product-management" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white hover:bg-opacity-10 text-sm text-gray-400 hover:text-white transition-all duration-200 group">
+          <svg class="h-4 w-4 group-hover:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+          </svg>
+          Products
+        </a>
+        <a href="/admin/product-types" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white hover:bg-opacity-10 text-sm text-gray-400 hover:text-white transition-all duration-200 group">
+          <svg class="h-4 w-4 group-hover:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+          </svg>
+          Product Types
+        </a>
+        <a href="/admin/payment-methods" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white hover:bg-opacity-10 text-sm text-gray-400 hover:text-white transition-all duration-200 group">
+          <svg class="h-4 w-4 group-hover:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+          </svg>
+          Payment Methods
+        </a>
+        <a href="/admin/smile-sub-items" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white hover:bg-opacity-10 text-sm text-gray-400 hover:text-white transition-all duration-200 group">
+          <svg class="h-4 w-4 group-hover:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+          </svg>
+          Smile Sub Items
+        </a>
+        <a href="/admin/g2bulk-items" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white hover:bg-opacity-10 text-sm text-gray-400 hover:text-white transition-all duration-200 group">
+          <svg class="h-4 w-4 group-hover:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+          </svg>
+          G2Bulk Items
+        </a>
+      </div>
+
+      <button type="button" data-parent-key="finance" class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-white hover:bg-opacity-10 transition-all duration-200 group">
+        <div class="flex items-center gap-3">
+          <svg class="h-5 w-5 text-gray-400 group-hover:text-blue-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+          </svg>
+          <span class="text-sm font-semibold text-gray-300 group-hover:text-white">Finance</span>
+        </div>
+        <svg data-chevron xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 transition-transform group-hover:text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+      </button>
+      <div data-children-of="finance" class="ml-8 space-y-1 hidden">
+        <a href="/admin/wallets" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white hover:bg-opacity-10 text-sm text-gray-400 hover:text-white transition-all duration-200 group">
+          <svg class="h-4 w-4 group-hover:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+          </svg>
+          Wallets
+        </a>
+        <a href="/admin/transactions" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white hover:bg-opacity-10 text-sm text-gray-400 hover:text-white transition-all duration-200 group">
+          <svg class="h-4 w-4 group-hover:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          Topup Transactions
+        </a>
+        <a href="/admin/game-purchase-transactions" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white hover:bg-opacity-10 text-sm text-gray-400 hover:text-white transition-all duration-200 group">
+          <svg class="h-4 w-4 group-hover:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+          </svg>
+          Game Purchase Tx
+        </a>
+      </div>
+
+      <button type="button" data-parent-key="settings" class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-white hover:bg-opacity-10 transition-all duration-200 group">
+        <div class="flex items-center gap-3">
+          <svg class="h-5 w-5 text-gray-400 group-hover:text-green-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          <span class="text-sm font-semibold text-gray-300 group-hover:text-white">System</span>
+        </div>
+        <svg data-chevron xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 transition-transform group-hover:text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+      </button>
+      <div data-children-of="settings" class="ml-8 space-y-1 hidden">
+        <a href="/admin/settings" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white hover:bg-opacity-10 text-sm text-gray-400 hover:text-white transition-all duration-200 group">
+          <svg class="h-4 w-4 group-hover:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          Settings
+        </a>
+      </div>
+    </nav>
+
+    <div class="mt-auto pt-4 border-t border-gray-700 flex-shrink-0">
+      <form method="POST" action="/users/logout" class="m-0">
+        <button type="submit" class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg">
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+          </svg>
+          <span>Logout</span>
+        </button>
+      </form>
+    </div>
+  </aside>
+
+  <script>
+    (function() {
+      var mobileSidebar = document.getElementById('mobile-sidebar');
+      var mobileOverlay = document.getElementById('mobile-sidebar-overlay');
+      var mobileClose = document.getElementById('mobile-sidebar-close');
+
+      function openMobileSidebar() {
+        if (window.innerWidth < 768) {
+          mobileSidebar.classList.add('mobile-sidebar-open');
+          mobileOverlay.classList.remove('hidden');
+          document.body.style.overflow = 'hidden';
+          document.body.style.position = 'fixed';
+          document.body.style.width = '100%';
+        }
+      }
+
+      function closeMobileSidebar() {
+        if (window.innerWidth < 768) {
+          mobileSidebar.classList.remove('mobile-sidebar-open');
+          mobileOverlay.classList.add('hidden');
+          document.body.style.overflow = '';
+          document.body.style.position = '';
+          document.body.style.width = '';
+        }
+      }
+
+      closeMobileSidebar();
+
+      var toggle = document.getElementById('sidebar-toggle');
+      if (toggle) {
+        toggle.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          var isOpen = mobileSidebar.classList.contains('mobile-sidebar-open');
+          if (isOpen) closeMobileSidebar();
+          else openMobileSidebar();
+        });
+      }
+
+      if (mobileClose) {
+        mobileClose.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          closeMobileSidebar();
+        });
+      }
+
+      if (mobileOverlay) {
+        mobileOverlay.addEventListener('click', function(e) {
+          e.preventDefault();
+          closeMobileSidebar();
+        });
+      }
+
+      window.addEventListener('resize', function() {
+        if (window.innerWidth >= 768) {
+          closeMobileSidebar();
+        }
+      });
+
+      (function() {
+        var path = window.location.pathname || '';
+        var groups = [
+          { key: 'overview', links: ['/admin', '/admin/reports'] },
+          { key: 'management', links: ['/admin/users', '/admin/product-management', '/admin/product-types', '/admin/payment-methods', '/admin/smile-sub-items', '/admin/g2bulk-items'] },
+          { key: 'finance', links: ['/admin/wallets', '/admin/transactions', '/admin/game-purchase-transactions'] },
+          { key: 'settings', links: ['/admin/settings'] }
+        ];
+
+        var expandKey = '';
+        for (var i = 0; i < groups.length; i++) {
+          var g = groups[i];
+          for (var j = 0; j < g.links.length; j++) {
+            var h = g.links[j];
+            if (path === h || (path.startsWith(h) && h !== '/admin')) { expandKey = g.key; break; }
+          }
+          if (expandKey) break;
+        }
+        var saved = localStorage.getItem('sidebar.expanded') || '';
+        var defaultExpand = expandKey || saved || 'overview';
+
+        var parents = document.querySelectorAll('#mobile-sidebar [data-parent-key]');
+        for (var p = 0; p < parents.length; p++) {
+          var key = parents[p].getAttribute('data-parent-key');
+          var children = document.querySelector('#mobile-sidebar [data-children-of="' + key + '"]');
+          var chev = parents[p].querySelector('[data-chevron]');
+          if (key === defaultExpand && children) {
+            children.classList.remove('hidden');
+            if (chev) chev.classList.add('rotate-180');
+          }
+          parents[p].addEventListener('click', function(e) {
+            var btn = e.currentTarget;
+            var k = btn.getAttribute('data-parent-key');
+            var c = document.querySelector('#mobile-sidebar [data-children-of="' + k + '"]');
+            var ch = btn.querySelector('[data-chevron]');
+            if (!c) return;
+            var hidden = c.classList.contains('hidden');
+            document.querySelectorAll('#mobile-sidebar [data-children-of]').forEach(function(el) { el.classList.add('hidden'); });
+            document.querySelectorAll('#mobile-sidebar [data-chevron]').forEach(function(el) { el.classList.remove('rotate-180'); });
+            if (hidden) {
+              c.classList.remove('hidden');
+              if (ch) ch.classList.add('rotate-180');
+              localStorage.setItem('sidebar.expanded', k);
+            } else {
+              c.classList.add('hidden');
+              if (ch) ch.classList.remove('rotate-180');
+              localStorage.removeItem('sidebar.expanded');
+            }
+          });
+        }
+
+        var links = document.querySelectorAll('#mobile-sidebar nav a');
+        for (var x = 0; x < links.length; x++) {
+          var href = links[x].getAttribute('href');
+          if (href === path || (path.startsWith(href) && href !== '/admin')) {
+            links[x].classList.add('bg-gradient-to-r','from-blue-600','to-purple-600','font-semibold','text-white','shadow-md');
+            links[x].classList.remove('text-gray-400','hover:text-white');
+            var parent = links[x].closest('[data-children-of]');
+            if (parent) {
+              var parentKey = parent.getAttribute('data-children-of');
+              var parentBtn = document.querySelector('#mobile-sidebar [data-parent-key="' + parentKey + '"]');
+              if (parentBtn) {
+                var span = parentBtn.querySelector('span');
+                if (span) span.classList.add('text-white');
+              }
+            }
+          }
+          links[x].addEventListener('click', function() {
+            closeMobileSidebar();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          });
+        }
+      })();
+    })();
+  </script>
+
+  <script src="/admin/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="/admin/vendor/jquery-easing/jquery.easing.min.js"></script>
+  <script src="/admin/js/sb-admin-2.min.js"></script>
+  <script src="/admin/vendor/chart.js/Chart.min.js"></script>
+  <script src="/admin/vendor/datatables/jquery.dataTables.min.js"></script>
+  <script src="/admin/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+
+  <%- typeof script !== 'undefined' ? script : '' %>
+</body>
+</html>

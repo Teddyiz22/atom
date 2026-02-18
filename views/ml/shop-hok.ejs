@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shop - ATOM Game Shop</title>
+  <meta name="description" content="Buy Honor of Kings top-ups instantly with MMK and THB currency. Fast, secure, and affordable service.">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#38B6FF',
+            secondary: '#2493D4',
+            accent: '#353535',
+            post: '#94B4D3',
+            mlblue: '#38B6FF',
+            mlgold: '#2493D4',
+            mlpurple: '#353535',
+            theme: {
+              50: '#e6f7ff',
+              100: '#b3e9ff',
+              200: '#80dbff',
+              300: '#4dcdff',
+              400: '#38B6FF',
+              500: '#2493D4',
+              600: '#1f7db8',
+              700: '#1a679c',
+              800: '#155180',
+              900: '#353535',
+              950: '#2a2a2a'
+            }
+          },
+          backgroundImage: {
+            'ml-gradient': 'linear-gradient(135deg, #38B6FF 0%, #2493D4 50%, #353535 100%)',
+            'hero-ml': 'linear-gradient(135deg, rgba(56, 182, 255, 0.9) 0%, rgba(36, 147, 212, 0.8) 50%, rgba(53, 53, 53, 0.9) 100%)',
+            'hero-pattern': "url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%23ffffff\" fill-opacity=\"0.1\"%3E%3Ccircle cx=\"30\" cy=\"30\" r=\"2\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')"
+          },
+          animation: {
+            'float': 'float 6s ease-in-out infinite',
+            'glow': 'glow 2s ease-in-out infinite alternate',
+            'bounce-slow': 'bounce 3s infinite',
+            'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'fade-in': 'fadeIn 0.8s ease-out',
+            'slide-up': 'slideUp 0.6s ease-out',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-gray-50 font-sans overflow-x-hidden" data-is-logged-in="<%= user ? '1' : '0' %>">
+  <%- include('../partials/ml-nav') %>
+
+  <!-- Shop Section -->
+  <section class="relative min-h-screen pt-20 pb-16">
+    <!-- Modern Gradient Background -->
+    <div class="absolute inset-0 bg-gradient-to-br from-theme-900 via-theme-800 to-theme-950"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(148,180,211,0.3),rgba(255,255,255,0))]">
+    </div>
+    <div class="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]">
+    </div>
+
+    <!-- Content -->
+    <div class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <% if (typeof mode !== 'undefined' && mode === 'types') { %>
+      <!-- Product Type Cards View -->
+      <div class="text-center mb-10 animate-fade-in">
+        <h1 class="text-3xl md:text-5xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent mb-4">
+          Choose Game Or Product Type
+        </h1>
+        <p class="text-lg text-gray-300 max-w-2xl mx-auto">
+          Select the game or product type you want to top up.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <% if (productTypes && productTypes.length > 0) { %>
+        <% productTypes.forEach(function(type) { %>
+        <a href="/shop/<%= type.typeCode %>" class="group block bg-white/5 border border-white/10 rounded-2xl p-5 hover:bg-white/10 transition-all duration-300 hover:-translate-y-1 hover:border-theme-400/70">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <h2 class="text-xl font-semibold text-white mt-1">
+                <%= type.name %>
+              </h2>
+            </div>
+            <div class="w-12 h-12 rounded-full bg-ml-gradient flex items-center justify-center text-2xl">
+              💎
+            </div>
+          </div>
+          <div class="flex items-center justify-between text-sm text-gray-300">
+            <span>Tap to view packages</span>
+            <span class="text-theme-300 group-hover:translate-x-1 transform transition-transform duration-300">→</span>
+          </div>
+        </a>
+        <% }) %>
+        <% } else { %>
+        <div class="col-span-full text-center text-gray-300">
+          No product types available yet.
+        </div>
+        <% } %>
+      </div>
+
+      <% } else { %>
+      <!-- Header -->
+      <div class="text-center mb-8 animate-fade-in">
+        <h1 class="text-3xl md:text-5xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent mb-4">
+          Order Honor of Kings Top Up
+        </h1>
+        <p class="text-lg text-gray-300 max-w-2xl mx-auto">
+          Enter your User ID and select a package for instant delivery
+        </p>
+        <% if (user) { %>
+        <div class="mt-4 p-4 bg-green-500/20 border border-green-500/30 rounded-lg inline-block">
+          <p class="text-green-300">👋 Welcome back, <span class="font-bold text-white">
+              <%= user.name %>
+            </span>!</p>
+        </div>
+        <% } %>
+      </div>
+
+      <!-- Step 1: User ID Input -->
+      <div class="bg-white/10 backdrop-blur-md rounded-2xl p-6 mb-8 border border-white/20 animate-slide-up">
+        <h2 class="text-xl md:text-2xl font-bold text-white mb-6 flex items-center">
+          <span class="bg-gradient-to-r from-theme-400 to-theme-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3">1</span>
+          Enter Your Honor of Kings Account
+        </h2>
+
+        <form id="orderForm" method="POST" action="/shop/hok">
+          <div id="dynamicFields" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+
+          <div id="staticFields" class="grid grid-cols-1 gap-4">
+            <div>
+              <label for="userId" class="block text-white/90 text-sm font-medium mb-2">User ID *</label>
+              <input type="text" id="userId" name="userId" required class="w-full px-4 py-3 bg-white/10 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-theme-400 focus:border-transparent transition-all duration-300" placeholder="Enter your Player ID">
+            </div>
+          </div>
+          <p id="gameNotes" class="mt-3 text-sm text-gray-300"></p>
+
+          <!-- Auto-Verification Display -->
+          <div id="verificationStatus" class="mt-4">
+            <!-- Loading State -->
+            <div id="loadingState" class="hidden">
+              <div class="bg-blue-500/20 border border-blue-500/30 rounded-lg p-4">
+                <p class="text-blue-300 font-medium flex items-center">
+                  <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                    </path>
+                  </svg>
+                  Verifying user...
+                </p>
+              </div>
+            </div>
+
+            <!-- Success State -->
+            <div id="successState" class="hidden">
+              <div class="bg-green-500/20 border border-green-500/30 rounded-lg p-4">
+                <p class="text-green-300 font-medium">✓ User Found: <span id="username" class="text-white"></span></p>
+              </div>
+            </div>
+
+            <!-- Error State -->
+            <div id="errorState" class="hidden">
+              <div class="bg-red-500/20 border border-red-500/30 rounded-lg p-4">
+                <p class="text-red-300 font-medium">✗ <span id="errorMessage">User not found or invalid ID</span></p>
+              </div>
+            </div>
+
+            <!-- Info State -->
+            <div id="infoState" class="bg-gray-500/20 border border-gray-500/30 rounded-lg p-4">
+              <p class="text-gray-300 font-medium">💡 Enter your User ID to verify your account</p>
+            </div>
+          </div>
+      </div>
+
+      <!-- Step 2: Package Selection -->
+      <div class="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 animate-slide-up">
+        <h2 class="text-xl md:text-2xl font-bold text-white mb-6 flex items-center">
+          <span class="bg-gradient-to-r from-theme-400 to-theme-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3">2</span>
+          Select Package
+        </h2>
+
+        <!-- Currency Selection -->
+        <div class="mb-6">
+          <label class="block text-white/90 text-sm font-medium mb-2">Currency</label>
+          <div class="flex space-x-4">
+            <label class="flex items-center">
+              <input type="radio" name="currency" value="MMK" checked class="mr-2 text-theme-400">
+              <span class="text-white">MMK (Myanmar Kyat)</span>
+            </label>
+            <label class="flex items-center">
+              <input type="radio" name="currency" value="THB" class="mr-2 text-theme-400">
+              <span class="text-white">THB (Thai Baht)</span>
+            </label>
+          </div>
+        </div>
+
+        <%
+          const packageKeywords = [
+            "Weekly",
+            "Pass",
+            "Card",
+            "Pack",
+            "Package",
+            "Fund",
+            "Bundle",
+            "Offer",
+            "Double Token Lucky Bag"
+          ];
+
+          const packageItems = [];
+          const tokenItems = [];
+
+          (products || []).forEach(product => {
+            const name = product.name || '';
+            if (packageKeywords.some(k => name.includes(k))) {
+              packageItems.push(product);
+            } else {
+              tokenItems.push(product);
+            }
+          });
+        %>
+
+        <!-- Token Items -->
+        <% if (tokenItems.length > 0) { %>
+        <div class="mb-8">
+          <h3 class="text-lg md:text-xl font-bold text-white mb-4 flex items-center">
+            <div class="flex justify-between items-center mb-2">
+                <img src="/images/toiken.png" alt="HOK" class="w-12 h-auto rounded-lg">Token
+              </div>
+          </h3>
+          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <% tokenItems.forEach((product) => { %>
+            <div
+              class="package-card relative bg-white/5 hover:bg-white/10 border border-white/20 rounded-xl p-4 cursor-pointer transition-all duration-300 hover:scale-105 hover:border-theme-400/60 <%= product.is_featured ? 'ring-2 ring-yellow-400 shadow-lg shadow-yellow-400/20' : '' %>"
+              data-product-id="<%= String(product.id || '') %>"
+              data-product-name="<%= String(product.name || '') %>"
+              data-price-mmk="<%= product.price_mmk %>"
+              data-price-thb="<%= product.price_thb %>"
+              onclick="selectPackageEl(this)"
+            >
+              <% if (product.is_featured) { %>
+              <div class="absolute top-2 left-2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-black text-xs px-2 py-1 rounded-full font-bold shadow-lg z-10">
+                ⭐ FEATURED</div>
+              <% } %>
+
+              <div class="flex justify-center mt-3">
+                <div class="flex items-center gap-1 sm:gap-2 max-w-full">
+                  <img 
+                     src="/images/toiken.png" 
+                    alt="Toiken"
+                    class="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 
+                          object-contain drop-shadow-lg flex-shrink-0"
+                  />
+                  <p class="text-white font-bold 
+                             text-sm sm:text-base md:text-lg
+                            leading-snug line-clamp-2 break-words max-w-[140px] sm:max-w-[180px]">
+                    <%= product.name %>
+                  </p>
+                </div>
+              </div>
+
+              <div class="mt-3 text-center">
+                <p class="price-mmk text-blue-400 font-bold 
+                          text-sm sm:text-base md:text-xl">
+                  <%= new Intl.NumberFormat('en-US').format(product.price_mmk) %> MMK
+                </p>
+
+                <p class="price-thb text-blue-400 font-bold hidden 
+                          text-xs sm:text-sm md:text-base">
+                  ฿<%= new Intl.NumberFormat('en-US').format(product.price_thb) %>
+                </p>
+              </div>
+            </div>
+            <% }) %>
+          </div>
+        </div>
+        <% } %>
+
+        
+        <%
+        const specialPackageImages = {
+          "honor point value pack": "/images/honor-point.png",
+          "double token lucky bag": "/images/double-token-bag.png",
+          "standard purchase rebate pack": "/images/standard-rebate-pack.png",
+          "weekly card": "/images/weeklycard.png",
+          "premium purchase rebate pack": "/images/premium-rebate-pack.png",
+          "weekly card plus": "/images/weekly-card-plus.png"
+        };
+
+        function getSpecialPackageImage(name) {
+          const lower = name.toLowerCase();
+          if (specialPackageImages[lower]) {
+            return specialPackageImages[lower];
+          }
+          return "/images/pubgm.png"; // fallback
+        }
+        %>
+
+        <!-- Package Items -->
+        <% if (packageItems.length > 0) { %>
+        <div class="mb-8">
+          <h3 class="text-lg md:text-xl font-bold text-white mb-4 flex items-center">
+            <div class="flex justify-between items-center mb-2">
+                <img src="/images/double-token-bag.png" alt="HOK" class="w-12 h-auto rounded-lg">Packages
+              </div>
+          </h3>
+          <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <% packageItems.forEach((product) => { %>
+              <div
+                class="package-card relative bg-gradient-to-br from-purple-900/40 to-blue-900/40 
+                      hover:from-purple-900/60 hover:to-blue-900/60 border border-purple-500/30 
+                      rounded-xl p-4 cursor-pointer transition-all duration-300 
+                      hover:scale-105 hover:border-purple-400/60 
+                      <%= product.is_featured ? 'ring-2 ring-yellow-400 shadow-lg shadow-yellow-400/20' : '' %>"
+                data-product-id="<%= String(product.id || '') %>"
+                data-product-name="<%= String(product.name || '') %>"
+                data-price-mmk="<%= product.price_mmk %>"
+                data-price-thb="<%= product.price_thb %>"
+                onclick="selectPackageEl(this)"
+              >
+                <% if (product.is_featured) { %>
+                  <div class="absolute top-2 left-2 bg-gradient-to-r from-yellow-400 to-yellow-600 
+                              text-black text-xs px-2 py-1 rounded-full font-bold shadow-lg z-10">
+                    ⭐ FEATURED
+                  </div>
+                <% } %>
+
+                <!-- Image + Name -->
+                <div class="flex justify-center mt-3">
+                  <div class="flex items-center gap-1 sm:gap-2 max-w-full">
+                    <img 
+                      src="<%= getSpecialPackageImage(product.name) %>" 
+                      alt="<%= product.name %>"
+                      class="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 
+                            object-contain drop-shadow-lg flex-shrink-0"
+                    />
+                    <p class="text-white font-bold 
+                              text-xs sm:text-sm md:text-base 
+                              leading-snug line-clamp-2 break-words 
+                              max-w-[120px] sm:max-w-[140px] md:max-w-[160px]">
+                      <%= product.name %>
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Price -->
+                <div class="mt-3 text-center">
+                  <p class="price-mmk text-blue-400 font-bold 
+                            text-sm sm:text-base md:text-xl">
+                    <%= new Intl.NumberFormat('en-US').format(product.price_mmk) %> MMK
+                  </p>
+
+                  <p class="price-thb text-blue-400 font-bold hidden 
+                            text-xs sm:text-sm md:text-base">
+                    ฿<%= new Intl.NumberFormat('en-US').format(product.price_thb) %>
+                  </p>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+
+        </div>
+        <% } %>
+
+
+
+        <!-- Selected Package Display -->
+        <div id="selectedPackage" class="hidden bg-blue-500/20 border border-blue-500/30 rounded-lg p-4 mb-6">
+          <h3 class="text-blue-300 font-semibold mb-2">📦 Selected Package</h3>
+          <div class="flex justify-between items-center">
+            <span id="packageDetails" class="text-white"></span>
+            <span id="packagePrice" class="text-theme-400 font-bold text-lg"></span>
+          </div>
+          <input type="hidden" id="selectedProductId" name="product_id">
+          <input type="hidden" id="selectedCurrency" name="currency" value="MMK">
+        </div>
+
+        <!-- Order Button -->
+        <button type="submit" id="orderBtn" disabled class="w-full bg-gradient-to-r from-blue-800 to-purple-800 text-white font-bold py-4 px-6 rounded-lg hover:from-blue-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
+          <span class="flex items-center justify-center">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+            </svg>
+            <strong>Proceed to Payment</strong>
+          </span>
+        </button>
+        </form>
+      </div>
+      <% } %>
+    </div>
+  </section>
+
+  <div id="purchase-success-overlay" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 p-4">
+    <div class="purchase-success-card w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl outline-none" tabindex="-1" data-variant="success">
+      <div class="flex items-start justify-between gap-4">
+        <div class="flex items-start gap-3">
+          <div id="purchase-success-icon-wrap" class="flex h-10 w-10 items-center justify-center rounded-full bg-green-100">
+            <span id="purchase-success-icon" class="text-xl font-bold text-green-700">✓</span>
+          </div>
+          <div>
+            <h3 id="purchase-success-title" class="text-xl font-bold text-gray-900">Order Created</h3>
+            <p class="mt-1 text-sm text-gray-600">Status updates will be sent to your email.</p>
+          </div>
+        </div>
+        <button type="button" id="purchase-success-close" class="rounded-lg px-3 py-2 text-gray-600 hover:bg-gray-100">✕</button>
+      </div>
+
+      <div class="mt-5 rounded-xl bg-gray-50 p-4">
+        <div class="flex items-center justify-between gap-3">
+          <p class="text-sm font-medium text-gray-700">Status</p>
+          <p id="purchase-success-status" class="text-sm font-bold text-gray-900">PENDING</p>
+        </div>
+        <div id="purchase-success-text" class="mt-2 text-sm text-gray-700"></div>
+
+        <div id="purchase-success-orderid-wrap" class="mt-4">
+          <div class="flex items-center justify-between gap-3">
+            <p class="text-sm font-medium text-gray-700">Order ID</p>
+            <p id="purchase-success-orderid" class="text-sm font-mono font-semibold text-gray-900">—</p>
+          </div>
+        </div>
+
+        <div id="purchase-success-purchaseid-wrap" class="mt-2">
+          <div class="flex items-center justify-between gap-3">
+            <p class="text-sm font-medium text-gray-700">Purchase ID</p>
+            <p id="purchase-success-purchaseid" class="text-sm font-mono font-semibold text-gray-900">—</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 flex items-center justify-end gap-3">
+        <button type="button" id="purchase-success-buy-more" class="rounded-lg bg-gray-900 px-4 py-2 text-sm font-bold text-white hover:bg-gray-800">Buy More</button>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../partials/toast') %>
+
+  <!-- Shop-specific JavaScript -->
+  <script>
+    let selectedPackageData = null;
+    let verificationTimer = null;
+    let isVerifying = false;
+    let lastVerifiedFields = null;
+    const isLoggedIn = !!(document.body && document.body.dataset && document.body.dataset.isLoggedIn === '1');
+    const gameCode = 'hok';
+
+    const fieldsLabelMap = {
+      userid: 'User ID',
+      user_id: 'User ID',
+      zoneid: 'Zone ID',
+      zone_id: 'Zone ID',
+      serverid: 'Server ID',
+      server_id: 'Server ID',
+      player_id: 'Player ID',
+      uid: 'UID'
+    };
+
+    function normalizeFieldName(raw) {
+      return String(raw || '').trim();
+    }
+
+    function fieldIdFor(name) {
+      return 'g2f_' + String(name || '').replace(/[^\w-]/g, '_');
+    }
+
+    function fieldLabelFor(name) {
+      const key = String(name || '').toLowerCase();
+      if (fieldsLabelMap[key]) return fieldsLabelMap[key];
+      return key.replace(/_/g, ' ').replace(/\b\w/g, function(s) { return s.toUpperCase(); });
+    }
+
+    function extractPlayerName(raw) {
+      if (!raw || typeof raw !== 'object') return '';
+      const direct = raw.player_name || raw.username || raw.playerName || raw.nickname || raw.name;
+      if (direct) return String(direct);
+      const nested = raw.data && typeof raw.data === 'object' ? (raw.data.player_name || raw.data.username || raw.data.name) : '';
+      return nested ? String(nested) : '';
+    }
+
+    function requiredFieldNames(fields) {
+      const arr = Array.isArray(fields) ? fields : [];
+      return arr.map(function(f) {
+        if (typeof f === 'string') return String(f);
+        if (f && typeof f === 'object') return String(f.name || f.key || f.field || '');
+        return '';
+      }).filter(Boolean);
+    }
+
+    function renderDynamicFields(fields) {
+      const container = document.getElementById('dynamicFields');
+      const staticFields = document.getElementById('staticFields');
+      if (!container) return;
+
+      const names = requiredFieldNames(fields);
+      if (names.length === 0) {
+        if (staticFields) {
+          staticFields.classList.remove('hidden');
+          // Enable static inputs
+          const inputs = staticFields.querySelectorAll('input, select, textarea');
+          inputs.forEach(el => el.disabled = false);
+        }
+        return;
+      }
+
+      container.innerHTML = '';
+      names.forEach(function(n) {
+        const name = normalizeFieldName(n);
+        if (!name) return;
+        const id = fieldIdFor(name);
+
+        const wrap = document.createElement('div');
+        const label = document.createElement('label');
+        label.setAttribute('for', id);
+        label.className = 'block text-white/90 text-sm font-medium mb-2';
+        label.textContent = fieldLabelFor(name) + ' *';
+
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.id = id;
+        input.name = name;
+        input.required = true;
+        input.className = 'w-full px-4 py-3 bg-white/10 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-theme-400 focus:border-transparent transition-all duration-300';
+        input.placeholder = 'Enter ' + fieldLabelFor(name);
+
+        wrap.appendChild(label);
+        wrap.appendChild(input);
+        container.appendChild(wrap);
+      });
+
+      if (staticFields) {
+        staticFields.classList.add('hidden');
+        // Disable static inputs to prevent validation errors
+        const inputs = staticFields.querySelectorAll('input, select, textarea');
+        inputs.forEach(el => el.disabled = true);
+      }
+    }
+
+    function collectFields() {
+      const dynamicContainer = document.getElementById('dynamicFields');
+      const fields = {};
+      const fromInputs = function(root) {
+        const els = Array.from(root.querySelectorAll('input, select, textarea'));
+        els.forEach(function(el) {
+          const name = String(el.name || el.id || '').trim();
+          if (!name) return;
+          const value = String(el.value || '').trim();
+          if (!value) return;
+          fields[name] = value;
+        });
+      };
+
+      if (dynamicContainer && dynamicContainer.children.length > 0) {
+        fromInputs(dynamicContainer);
+      } else {
+        const userId = document.getElementById('userId') ? String(document.getElementById('userId').value || '').trim() : '';
+        if (userId) fields.player_id = userId;
+      }
+
+      const pid = String(fields.player_id || fields.user_id || fields.userid || fields.uid || '').trim();
+      if (pid) {
+        fields.player_id = pid;
+        fields.user_id = pid;
+      }
+      const sid = String(fields.server_id || fields.zone_id || fields.zoneid || '').trim();
+      if (sid) fields.server_id = sid;
+
+      return fields;
+    }
+
+    function setupAutoVerification() {
+      const dynamicContainer = document.getElementById('dynamicFields');
+      const inputs = (dynamicContainer && dynamicContainer.children.length > 0)
+        ? Array.from(dynamicContainer.querySelectorAll('input, select, textarea'))
+        : [document.getElementById('userId')].filter(Boolean);
+
+      if (inputs.length === 0) return;
+
+      inputs.forEach(function(input) {
+        input.addEventListener('input', function() {
+          clearTimeout(verificationTimer);
+          verificationTimer = setTimeout(function() {
+            const fields = collectFields();
+            const pid = String(fields.player_id || '').trim();
+            if (pid) {
+              verifyPlayer(fields);
+            } else {
+              showInfoState();
+            }
+          }, 800);
+        });
+      });
+    }
+
+    // Verification state functions
+    function showLoadingState() {
+      hideAllStates();
+      document.getElementById('loadingState').classList.remove('hidden');
+    }
+
+    function showSuccessState(username) {
+      hideAllStates();
+      document.getElementById('username').textContent = username;
+      document.getElementById('successState').classList.remove('hidden');
+
+      // Enable package selection
+      document.querySelectorAll('.package-card').forEach(card => {
+        card.style.pointerEvents = 'auto';
+        card.style.opacity = '1';
+      });
+    }
+
+    function showErrorState(message = 'User not found or invalid ID') {
+      hideAllStates();
+      document.getElementById('errorMessage').textContent = message;
+      document.getElementById('errorState').classList.remove('hidden');
+
+      // Disable package selection
+      document.querySelectorAll('.package-card').forEach(card => {
+        card.style.pointerEvents = 'none';
+        card.style.opacity = '0.5';
+      });
+    }
+
+    function showInfoState() {
+      hideAllStates();
+      document.getElementById('infoState').classList.remove('hidden');
+
+      // Disable package selection
+      document.querySelectorAll('.package-card').forEach(card => {
+        card.style.pointerEvents = 'none';
+        card.style.opacity = '0.5';
+      });
+    }
+
+    function hideAllStates() {
+      ['loadingState', 'successState', 'errorState', 'infoState'].forEach(id => {
+        document.getElementById(id).classList.add('hidden');
+      });
+    }
+
+    function verifyPlayer(fields) {
+      if (isVerifying) return;
+
+      isVerifying = true;
+      showLoadingState();
+
+      fetch('/api/g2bulk/games/' + encodeURIComponent(gameCode) + '/check-player', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            fields: fields || {}
+          })
+        })
+        .then(function(response) {
+          if (!response.ok) {
+            return response.json().then(err => { throw new Error(err.error || err.message || 'Server error ' + response.status); })
+              .catch(e => { throw new Error(e.message || 'Server error ' + response.status); });
+          }
+          return response.json();
+        })
+        .then(function(result) {
+          if (result && result.ok) {
+            const raw = result.data || {};
+            const playerName = extractPlayerName(raw);
+            const pid = String((fields && (fields.player_id || fields.user_id || fields.userid || '')) || '').trim();
+            lastVerifiedFields = fields || null;
+            showSuccessState(playerName || pid || 'Verified');
+            showSuccessToast('✓ Player verified successfully!');
+            return;
+          }
+          lastVerifiedFields = null;
+          const message = (result && (result.error || result.message)) ? String(result.error || result.message) : 'Player not found';
+          showErrorState(message);
+          showErrorToast('✗ ' + message);
+        })
+        .catch(function(error) {
+          console.error('Verification failed:', error);
+          const msg = error.message || 'Network error. Please try again.';
+          showErrorState(msg);
+          showErrorToast('Error: ' + msg);
+        })
+        .finally(function() {
+          isVerifying = false;
+        });
+    }
+
+    function loadFields() {
+      const notesEl = document.getElementById('gameNotes');
+      const url = '/api/g2bulk/games/' + encodeURIComponent(gameCode) + '/fields';
+      return fetch(url)
+        .then(function(r) { return r.json(); })
+        .then(function(j) {
+          if (j && j.ok) {
+            renderDynamicFields(j.fields || []);
+            if (notesEl) notesEl.textContent = j.notes ? String(j.notes) : '';
+          }
+          return j;
+        })
+        .catch(function() {
+          if (notesEl) notesEl.textContent = 'Unable to load required fields right now.';
+          return null;
+        });
+    }
+
+    // Initialize auto-verification when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      showInfoState(); // Show initial info state
+
+      loadFields().finally(function() {
+        setupAutoVerification();
+        autoFillHOKCredentials();
+      });
+    });
+
+    function selectPackage(element, productId, name, priceMMK, priceTHB) {
+      // Remove previous selection
+      document.querySelectorAll('.package-card').forEach(card => {
+        card.classList.remove('ring-2', 'ring-yellow-400', 'bg-yellow-400/10');
+      });
+
+      // Add selection to current package
+      element.classList.add('ring-2', 'ring-yellow-400', 'bg-yellow-400/10');
+
+      // Store selected package data
+      selectedPackageData = {
+        productId,
+        name,
+        priceMMK,
+        priceTHB,
+        diamonds: null
+      };
+
+      // Get current currency
+      const currency = document.querySelector('input[name="currency"]:checked').value;
+      const price = currency === 'MMK' ? priceMMK : priceTHB;
+      const currencySymbol = currency === 'MMK' ? 'MMK' : '฿';
+
+      // Show selected package
+      const selectedDiv = document.getElementById('selectedPackage');
+      const detailsSpan = document.getElementById('packageDetails');
+      const priceSpan = document.getElementById('packagePrice');
+
+      detailsSpan.textContent = name;
+      priceSpan.textContent = new Intl.NumberFormat('en-US').format(price) + ' ' + currencySymbol;
+
+      // Set hidden form fields
+      document.getElementById('selectedProductId').value = productId;
+      document.getElementById('selectedCurrency').value = currency;
+
+      selectedDiv.classList.remove('hidden');
+
+      // Enable order button
+      document.getElementById('orderBtn').disabled = false;
+    }
+
+    function selectPackageEl(element) {
+      if (!element || !element.dataset) return;
+      const productId = String(element.dataset.productId || '');
+      const name = String(element.dataset.productName || '');
+      const priceMMK = Number(element.dataset.priceMmk || 0);
+      const priceTHB = Number(element.dataset.priceThb || 0);
+      selectPackage(element, productId, name, priceMMK, priceTHB);
+    }
+
+
+    // Currency change handler
+    document.querySelectorAll('input[name="currency"]').forEach(radio => {
+      radio.addEventListener('change', function() {
+        const currency = this.value;
+        document.getElementById('selectedCurrency').value = currency;
+
+        // Toggle price display
+        if (currency === 'MMK') {
+          document.querySelectorAll('.price-mmk').forEach(el => el.classList.remove('hidden'));
+          document.querySelectorAll('.price-thb').forEach(el => el.classList.add('hidden'));
+        } else {
+          document.querySelectorAll('.price-mmk').forEach(el => el.classList.add('hidden'));
+          document.querySelectorAll('.price-thb').forEach(el => el.classList.remove('hidden'));
+        }
+
+        // Update selected package price if any
+        if (selectedPackageData) {
+          const price = currency === 'MMK' ? selectedPackageData.priceMMK : selectedPackageData.priceTHB;
+          const currencySymbol = currency === 'MMK' ? 'MMK' : '฿';
+          document.getElementById('packagePrice').textContent = new Intl.NumberFormat('en-US').format(price) + ' ' + currencySymbol;
+        }
+      });
+    });
+
+    function saveHOKCredentials(fields) {
+      try {
+        const payload = {
+          fields: fields || {},
+          savedAt: new Date().toISOString()
+        };
+        localStorage.setItem('hok_credentials', JSON.stringify(payload));
+      } catch (error) {
+      }
+    }
+
+    function loadHOKCredentials() {
+      try {
+        const saved = localStorage.getItem('hok_credentials');
+        if (saved) {
+          return JSON.parse(saved);
+        }
+      } catch (error) {
+      }
+      return null;
+    }
+
+    function autoFillHOKCredentials() {
+      const saved = loadHOKCredentials();
+      const savedFields = saved && saved.fields && typeof saved.fields === 'object' ? saved.fields : null;
+      if (!savedFields) return;
+
+      const dynamicContainer = document.getElementById('dynamicFields');
+      if (dynamicContainer && dynamicContainer.children.length > 0) {
+        Object.keys(savedFields).forEach(function(k) {
+          const id = fieldIdFor(k);
+          const el = document.getElementById(id);
+          if (el) el.value = String(savedFields[k] || '');
+        });
+      } else {
+        const pid = String(savedFields.player_id || savedFields.user_id || savedFields.userid || '').trim();
+        if (document.getElementById('userId') && pid) document.getElementById('userId').value = pid;
+      }
+
+      setTimeout(function() {
+        const fields = collectFields();
+        const pid = String(fields.player_id || '').trim();
+        if (pid) verifyPlayer(fields);
+      }, 500);
+    }
+
+    // Form submission handler with order processing
+    document.getElementById('orderForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const productId = document.getElementById('selectedProductId').value;
+      const currency = document.getElementById('selectedCurrency').value;
+
+      const fields = collectFields();
+      const pid = String(fields.player_id || '').trim();
+      if (!pid) {
+        showErrorToast('Please enter your account details first');
+        return;
+      }
+
+      if (!selectedPackageData || !productId) {
+        showErrorToast('Please select a package');
+        return;
+      }
+
+      if (!isLoggedIn) {
+        showErrorToast('Please login to place an order');
+        setTimeout(function() {
+          window.location.href = '/users/login';
+        }, 2000);
+        return;
+      }
+
+      if (!lastVerifiedFields) {
+        showErrorToast('Please verify your account first');
+        return;
+      }
+
+      processOrder(productId, currency);
+
+
+    });
+
+    // Global variable to prevent multiple simultaneous orders
+    let isProcessingOrder = false;
+    let lastOrderTime = 0;
+    const ORDER_COOLDOWN = 5000; // 5 second cooldown between orders
+
+    const successOverlay = document.getElementById('purchase-success-overlay');
+    const successCard = successOverlay ? successOverlay.querySelector('.purchase-success-card') : null;
+    const successIconWrap = document.getElementById('purchase-success-icon-wrap');
+    const successIconEl = document.getElementById('purchase-success-icon');
+    const successTitleEl = document.getElementById('purchase-success-title');
+    const successStatusEl = document.getElementById('purchase-success-status');
+    const successTextEl = document.getElementById('purchase-success-text');
+    const successOrderIdEl = document.getElementById('purchase-success-orderid');
+    const successOrderWrap = document.getElementById('purchase-success-orderid-wrap');
+    const successPurchaseIdEl = document.getElementById('purchase-success-purchaseid');
+    const successPurchaseWrap = document.getElementById('purchase-success-purchaseid-wrap');
+    const successCloseBtn = document.getElementById('purchase-success-close');
+    const successBuyMoreBtn = document.getElementById('purchase-success-buy-more');
+
+    function openResultModal(data) {
+      if (!successOverlay) return;
+      const variant = (data && data.variant) ? String(data.variant) : 'success';
+      const title = (data && data.title) ? String(data.title) : (variant === 'error' ? 'Order Failed' : 'Order Created');
+      const status = (data && data.status) ? String(data.status) : (variant === 'error' ? 'FAILED' : 'PENDING');
+      const text = (data && data.text) ? String(data.text) : '';
+      const orderId = (data && data.orderId) ? String(data.orderId) : '';
+      const purchaseId = (data && data.purchaseId) ? String(data.purchaseId) : '';
+
+      if (successCard) successCard.dataset.variant = variant === 'error' ? 'error' : 'success';
+      if (successTitleEl) successTitleEl.textContent = title;
+      if (successStatusEl) successStatusEl.textContent = status;
+      if (successTextEl) {
+        successTextEl.textContent = text;
+        successTextEl.style.display = text ? '' : 'none';
+      }
+
+      if (successOrderIdEl) successOrderIdEl.textContent = orderId || '—';
+      if (successOrderWrap) successOrderWrap.style.display = orderId ? '' : 'none';
+      if (successPurchaseIdEl) successPurchaseIdEl.textContent = purchaseId || '—';
+      if (successPurchaseWrap) successPurchaseWrap.style.display = purchaseId ? '' : 'none';
+
+      if (successIconWrap) {
+        successIconWrap.className = 'flex h-10 w-10 items-center justify-center rounded-full ' + (variant === 'error' ? 'bg-red-100' : 'bg-green-100');
+      }
+      if (successIconEl) {
+        successIconEl.textContent = variant === 'error' ? '✕' : '✓';
+        successIconEl.className = 'text-xl font-bold ' + (variant === 'error' ? 'text-red-700' : 'text-green-700');
+      }
+
+      successOverlay.classList.remove('hidden');
+      successOverlay.classList.add('flex');
+      document.body.style.overflow = 'hidden';
+      if (successCard && typeof successCard.focus === 'function') successCard.focus();
+    }
+
+    function closeResultModal() {
+      if (!successOverlay) return;
+      successOverlay.classList.add('hidden');
+      successOverlay.classList.remove('flex');
+      document.body.style.overflow = '';
+    }
+
+    if (successOverlay) {
+      successOverlay.addEventListener('click', function(e) {
+        if (e && e.target === successOverlay) closeResultModal();
+      });
+      document.addEventListener('keydown', function(e) {
+        if (e && e.key === 'Escape' && !successOverlay.classList.contains('hidden')) closeResultModal();
+      });
+    }
+    if (successCloseBtn) successCloseBtn.addEventListener('click', function() { closeResultModal(); });
+    if (successBuyMoreBtn) successBuyMoreBtn.addEventListener('click', function() { closeResultModal(); });
+
+    function processOrder(productId, currency) {
+      // Prevent multiple simultaneous orders
+      if (isProcessingOrder) {
+        showErrorToast('⚠️ Order already in progress. Please wait...');
+        return;
+      }
+
+      // Implement cooldown to prevent rapid successive orders
+      const now = Date.now();
+      if (now - lastOrderTime < ORDER_COOLDOWN) {
+        const remainingTime = Math.ceil((ORDER_COOLDOWN - (now - lastOrderTime)) / 1000);
+        showErrorToast(`⏳ Please wait ${remainingTime} seconds before placing another order`);
+        return;
+      }
+
+      isProcessingOrder = true;
+      lastOrderTime = now;
+
+      showInfoToast('Processing your order...');
+
+      // Disable the order button and all package cards to prevent double submission
+      var orderBtn = document.getElementById('orderBtn');
+      orderBtn.disabled = true;
+      orderBtn.innerHTML = '<span class="flex items-center justify-center"><svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Processing Order...</span>';
+
+      // Disable all package cards during processing
+      document.querySelectorAll('.package-card').forEach(card => {
+        card.style.pointerEvents = 'none';
+        card.style.opacity = '0.6';
+      });
+
+      const fields = collectFields();
+      const dynamicContainer = document.getElementById('dynamicFields');
+      if (dynamicContainer && dynamicContainer.children.length > 0) {
+        Array.from(dynamicContainer.querySelectorAll('input, select, textarea')).forEach(function(el) { el.disabled = true; });
+      } else {
+        if (document.getElementById('userId')) document.getElementById('userId').disabled = true;
+      }
+
+      fetch('/api/g2bulk/games/' + encodeURIComponent(gameCode) + '/order', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-csrf-token': '<%= csrfToken %>'
+          },
+          body: JSON.stringify({
+            product_id: productId,
+            currency: currency,
+            fields: fields
+          })
+        })
+        .then(function(response) {
+          return response.json()
+            .catch(function() { return {}; })
+            .then(function(j) {
+              j.__httpStatus = response.status;
+              return j;
+            });
+        })
+        .then(function(result) {
+          if (result && (result.__httpStatus === 401 || String(result.error || '').toLowerCase() === 'authentication required')) {
+            showErrorToast('Please login to place an order');
+            openResultModal({
+              variant: 'error',
+              title: 'Login Required',
+              status: 'FAILED',
+              text: 'Your session has expired. Please login again to continue.'
+            });
+            setTimeout(function() { window.location.href = '/users/login'; }, 1200);
+            return;
+          }
+
+          if (result.status === 200) {
+            showSuccessToast('✅ ' + result.message);
+
+            saveHOKCredentials(fields);
+
+            const orderId = result && result.data && result.data.order_id ? String(result.data.order_id) : '';
+            const purchaseId = result && result.data && result.data.purchaseId ? String(result.data.purchaseId) : '';
+            openResultModal({
+              variant: 'success',
+              title: 'Order Created',
+              status: 'PENDING',
+              text: String(result.message || 'Order created. Status updates will be sent to your email.'),
+              orderId: orderId,
+              purchaseId: purchaseId
+            });
+
+            // Reset form
+            document.getElementById('orderForm').reset();
+            document.getElementById('selectedPackage').classList.add('hidden');
+            selectedPackageData = null;
+            showInfoState();
+
+          } else {
+            showErrorToast('❌ ' + result.message);
+            openResultModal({
+              variant: 'error',
+              title: 'Order Failed',
+              status: 'FAILED',
+              text: String(result && result.message ? result.message : 'Order failed'),
+              orderId: result && result.data && result.data.order_id ? String(result.data.order_id) : '',
+              purchaseId: result && result.data && result.data.purchaseId ? String(result.data.purchaseId) : ''
+            });
+          }
+        })
+        .catch(function(error) {
+          console.error('Order error:', error);
+          showErrorToast('Network error. Please try again.');
+          openResultModal({
+            variant: 'error',
+            title: 'Order Failed',
+            status: 'FAILED',
+            text: 'Network error. Please try again.'
+          });
+        })
+        .finally(function() {
+          // Reset processing state
+          isProcessingOrder = false;
+
+          // Re-enable the order button
+          orderBtn.disabled = false;
+          orderBtn.innerHTML = '<span class="flex items-center justify-center"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>Proceed to Payment</span>'
+
+          // Re-enable package cards
+          document.querySelectorAll('.package-card').forEach(card => {
+            card.style.pointerEvents = 'auto';
+            card.style.opacity = '1';
+          });
+
+          // Re-enable form inputs
+          const dyn = document.getElementById('dynamicFields');
+          if (dyn && dyn.children.length > 0) {
+            Array.from(dyn.querySelectorAll('input, select, textarea')).forEach(function(el) { el.disabled = false; });
+          } else {
+            if (document.getElementById('userId')) document.getElementById('userId').disabled = false;
+          }
+
+        });
+    }
+  </script>
+  <%- include('../partials/ml-footer') %>
+  <%- include('../partials/ml-scripts') %>
+</body>
+
+</html>

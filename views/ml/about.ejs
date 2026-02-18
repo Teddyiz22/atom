@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <%- include('../partials/ml-head', { title: __('about.title'), description: __('about.meta_description'),
+    keywords: 'ATOM Game Shop, About Us, Diamond Store, Mobile Legends, PUBG, Gaming Top-up, March 2022, 5 Star Reviews, Affordable Prices, Balanced Service'
+    , openGraph: { title: __('about.title'), description: __('about.meta_description'), type: 'website' ,
+    url: 'https://atomgameshop.com/about' } }) %>
+</head>
+
+<body class="bg-gray-50 font-sans overflow-x-hidden">
+  <%- include('../partials/ml-nav') %>
+
+  <!-- About Us Hero Section -->
+  <section class="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <!-- Modern Gradient Background -->
+    <div class="absolute inset-0 bg-gradient-to-br from-theme-900 via-theme-800 to-theme-950"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(148,180,211,0.3),rgba(255,255,255,0))]">
+    </div>
+    <div class="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]">
+    </div>
+
+    <!-- Floating Particles -->
+    <div class="particle particle-1"></div>
+    <div class="particle particle-2"></div>
+    <div class="particle particle-3"></div>
+    <div class="particle particle-4"></div>
+    <div class="particle particle-5"></div>
+    <div class="particle particle-6"></div>
+
+    <!-- Animated Background Elements -->
+    <div class="absolute top-20 left-10 w-32 h-32 bg-gradient-to-br from-theme-400/10 to-transparent rounded-full animate-float-slow">
+    </div>
+    <div class="absolute bottom-20 right-20 w-24 h-24 bg-gradient-to-br from-theme-500/10 to-transparent rounded-full animate-float-delay">
+    </div>
+    <div class="absolute top-1/2 left-5 w-16 h-16 bg-gradient-to-br from-theme-300/10 to-transparent rounded-full animate-float">
+    </div>
+
+    <!-- Loading Bar -->
+    <div class="absolute top-0 left-0 right-0 z-50">
+      <div class="loading-bar"></div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
+      <!-- Main Heading with Advanced Animations -->
+      <div class="space-y-6">
+        <% if (currentLanguage==='mm' ) { %>
+        <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight myanmar-text text-white" style="text-shadow: 0 2px 8px #2563eb;">
+          <%= __('about.hero_title') %>
+        </h1>
+        <div class="mt-8 animate-fade-in-up stagger-5">
+          <p class="text-xl md:text-2xl myanmar-text text-gray-200 max-w-3xl mx-auto leading-relaxed" style="text-shadow: 0 1px 4px #2563eb;">
+            <%= __('about.hero_subtitle') %>
+          </p>
+        </div>
+        <% } else { %>
+        <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight text-white">
+          <span class="block gradient-text animate-text-reveal stagger-2 animate-glow-pulse">
+            <%= __('about.hero_title') %>
+          </span>
+        </h1>
+        <div class="mt-8 animate-fade-in-up stagger-5">
+          <p class="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+            <%= __('about.hero_subtitle') %>
+          </p>
+        </div>
+        <% } %>
+      </div>
+
+      <!-- Founded Badge -->
+      <div class="flex justify-center mt-12 animate-scale-in stagger-6">
+        <div class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-orange-500/20 to-orange-600/20 border-2 border-orange-500/30 rounded-2xl text-lg font-semibold text-orange-300 backdrop-blur-sm">
+          <svg class="w-5 h-5 mr-2 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+          </svg>
+          <%= __('about.subtitle') %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scroll Down Indicator -->
+    <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+      <svg class="w-6 h-6 text-theme-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+      </svg>
+    </div>
+  </section>
+
+  <!-- Our Story Section -->
+  <section class="py-20 bg-gradient-to-br from-gray-50 to-theme-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Section Header -->
+      <div class="text-center mb-16 scroll-reveal">
+        <h2 class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-theme-600 to-theme-500 bg-clip-text text-transparent mb-6">
+          <%= __('about.founded_title') %>
+        </h2>
+        <div class="mt-8 w-24 h-1 bg-gradient-to-r from-theme-600 to-theme-500 mx-auto rounded-full"></div>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-12 items-center">
+        <!-- Story Text -->
+        <div class="space-y-6 scroll-reveal stagger-1">
+          <p class="text-lg text-gray-600 leading-relaxed">
+            <%= __('about.founded_text') %>
+          </p>
+
+          <!-- Timeline -->
+          <div class="space-y-4 mt-8">
+            <div class="flex items-center space-x-4 p-4 bg-white rounded-xl shadow-sm border border-theme-100">
+              <div class="w-4 h-4 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full"></div>
+              <span class="text-orange-600 font-semibold">March 30, 2022</span>
+              <span class="text-gray-600">Founded on Facebook</span>
+            </div>
+            <div class="flex items-center space-x-4 p-4 bg-white rounded-xl shadow-sm border border-theme-100">
+              <div class="w-4 h-4 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full"></div>
+              <span class="text-blue-600 font-semibold">2022-2025</span>
+              <span class="text-gray-600">26.1k+ Happy Customers</span>
+            </div>
+            <div class="flex items-center space-x-4 p-4 bg-white rounded-xl shadow-sm border border-theme-100">
+              <div class="w-4 h-4 bg-gradient-to-br from-green-500 to-green-600 rounded-full"></div>
+              <span class="text-green-600 font-semibold">Present</span>
+              <span class="text-gray-600">5.0 Star Rating</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Story Visual -->
+        <div class="relative scroll-reveal stagger-2">
+          <div class="group bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 border border-theme-100 glass-hover relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-theme-400/10 to-transparent rounded-full transform translate-x-16 -translate-y-16">
+            </div>
+            <div class="text-center space-y-6 relative z-10">
+              <div class="w-16 h-16 bg-gradient-to-br from-theme-500 to-theme-600 rounded-xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 animate-glow-pulse">
+                <div class="text-3xl">🎮</div>
+              </div>
+              <h3 class="text-2xl font-bold text-gray-800 group-hover:text-theme-600 transition-colors duration-300">
+                Gaming Excellence</h3>
+              <p class="text-gray-600 group-hover:text-gray-700 transition-colors duration-300">Dedicated to providing
+                the best gaming experience since day one</p>
+            </div>
+            <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-theme-500 to-theme-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Mission & Values Section -->
+  <section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Mission -->
+      <div class="text-center mb-16 scroll-reveal">
+        <h2 class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-theme-600 to-theme-500 bg-clip-text text-transparent mb-6">
+          <%= __('about.mission_title') %>
+        </h2>
+        <p class="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
+          <%= __('about.mission_text') %>
+        </p>
+        <div class="mt-8 w-24 h-1 bg-gradient-to-r from-theme-600 to-theme-500 mx-auto rounded-full"></div>
+      </div>
+
+      <!-- Values Grid -->
+      <div class="mb-16">
+        <h3 class="text-3xl font-bold text-center text-gray-800 mb-12 scroll-reveal">
+          <%= __('about.values_title') %>
+        </h3>
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <!-- Value 1 -->
+          <div class="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 border border-theme-100 glass-hover scroll-reveal stagger-1 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-theme-400/10 to-transparent rounded-full transform translate-x-16 -translate-y-16">
+            </div>
+            <div class="text-center relative z-10">
+              <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 animate-glow-pulse">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1">
+                  </path>
+                </svg>
+              </div>
+              <h4 class="text-lg font-bold text-gray-800 mb-2 group-hover:text-theme-600 transition-colors duration-300">
+                <%= __('about.value_1_title') %>
+              </h4>
+              <p class="text-gray-600 text-sm group-hover:text-gray-700 transition-colors duration-300">
+                <%= __('about.value_1_desc') %>
+              </p>
+            </div>
+            <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-blue-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left">
+            </div>
+          </div>
+
+          <!-- Value 2 -->
+          <div class="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 border border-theme-100 glass-hover scroll-reveal stagger-2 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-theme-400/10 to-transparent rounded-full transform translate-x-16 -translate-y-16">
+            </div>
+            <div class="text-center relative z-10">
+              <div class="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 animate-glow-pulse">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                  </path>
+                </svg>
+              </div>
+              <h4 class="text-lg font-bold text-gray-800 mb-2 group-hover:text-theme-600 transition-colors duration-300">
+                <%= __('about.value_2_title') %>
+              </h4>
+              <p class="text-gray-600 text-sm group-hover:text-gray-700 transition-colors duration-300">
+                <%= __('about.value_2_desc') %>
+              </p>
+            </div>
+            <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 to-orange-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left">
+            </div>
+          </div>
+
+          <!-- Value 3 -->
+          <div class="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 border border-theme-100 glass-hover scroll-reveal stagger-3 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-theme-400/10 to-transparent rounded-full transform translate-x-16 -translate-y-16">
+            </div>
+            <div class="text-center relative z-10">
+              <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 animate-glow-pulse">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z">
+                  </path>
+                </svg>
+              </div>
+              <h4 class="text-lg font-bold text-gray-800 mb-2 group-hover:text-theme-600 transition-colors duration-300">
+                <%= __('about.value_3_title') %>
+              </h4>
+              <p class="text-gray-600 text-sm group-hover:text-gray-700 transition-colors duration-300">
+                <%= __('about.value_3_desc') %>
+              </p>
+            </div>
+            <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-green-500 to-green-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left">
+            </div>
+          </div>
+
+          <!-- Value 4 -->
+          <div class="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 border border-theme-100 glass-hover scroll-reveal stagger-4 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-theme-400/10 to-transparent rounded-full transform translate-x-16 -translate-y-16">
+            </div>
+            <div class="text-center relative z-10">
+              <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 animate-glow-pulse">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                  </path>
+                </svg>
+              </div>
+              <h4 class="text-lg font-bold text-gray-800 mb-2 group-hover:text-theme-600 transition-colors duration-300">
+                <%= __('about.value_4_title') %>
+              </h4>
+              <p class="text-gray-600 text-sm group-hover:text-gray-700 transition-colors duration-300">
+                <%= __('about.value_4_desc') %>
+              </p>
+            </div>
+            <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 to-purple-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Customer Experience -->
+      <div class="bg-gradient-to-r from-theme-50 to-orange-50 rounded-3xl p-8 border border-theme-100 scroll-reveal">
+        <div class="grid md:grid-cols-2 gap-8 items-center">
+          <div>
+            <h3 class="text-3xl font-bold bg-gradient-to-r from-theme-600 to-theme-500 bg-clip-text text-transparent mb-4">
+              <%= __('about.service_title') %>
+            </h3>
+            <p class="text-gray-600 leading-relaxed">
+              <%= __('about.service_text') %>
+            </p>
+          </div>
+          <div class="text-center">
+            <div class="w-16 h-16 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-xl flex items-center justify-center mx-auto mb-4 animate-glow-pulse">
+              <div class="text-3xl">⭐</div>
+            </div>
+            <p class="text-2xl font-bold text-gray-800">5.0 Star Rating</p>
+            <p class="text-gray-600">From 26.1k+ Customers</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <%- include('../partials/ml-scripts') %>
+
+  <!-- Schema.org JSON-LD -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "ATOM Game Shop",
+      "description": "<%= __('about.meta_description') %>",
+      "url": "https://atomgameshop.com",
+      "foundingDate": "2022-03-30",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "MM"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "5.0",
+        "reviewCount": "26100"
+      },
+      "sameAs": [
+        "https://www.facebook.com/atomgameshop"
+      ]
+    }
+  </script>
+  <%- include('../partials/ml-footer') %>
+  <%- include('../partials/ml-scripts') %>
+</body>
+
+</html>

@@ -1,0 +1,136 @@
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+  <div>
+    <h1 class="h3 mb-0 text-gray-800">
+      <i class="fas fa-list text-primary mr-2"></i>
+      G2Bulk Items
+    </h1>
+    <p class="text-muted mb-0">Manage G2Bulk product items mapping</p>
+  </div>
+  <a href="/admin" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+    <i class="fas fa-arrow-left fa-sm text-white-50"></i> Back to Dashboard
+  </a>
+</div>
+
+<% if (typeof success !== 'undefined' && success) { %>
+  <div class="alert alert-success">
+    <i class="fas fa-check-circle mr-2"></i>
+    Saved.
+  </div>
+<% } %>
+
+<% if (typeof error !== 'undefined' && error) { %>
+  <div class="alert alert-danger">
+    <i class="fas fa-exclamation-triangle mr-2"></i>
+    <%= error %>
+  </div>
+<% } %>
+
+<div class="row">
+  <div class="col-lg-5">
+    <div class="card shadow mb-4">
+      <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Add / Update</h6>
+      </div>
+      <div class="card-body">
+        <form method="POST" action="/admin/g2bulk-items/save">
+          <input type="hidden" name="id" value="<%= form?.id || '' %>">
+
+          <div class="form-group">
+            <label for="product_id">Product</label>
+            <select class="form-control" id="product_id" name="product_id" required>
+              <option value="">Select product</option>
+              <% (products || []).forEach(p => { %>
+                <option value="<%= p.id %>" <%= String(form?.product_id || '') === String(p.id) ? 'selected' : '' %>>
+                  #<%= p.id %> - <%= p.name %> (<%= p.price_mmk %> MMK)
+                </option>
+              <% }) %>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="g2bulk_product_id">G2Bulk Product ID</label>
+            <input type="text" class="form-control" id="g2bulk_product_id" name="g2bulk_product_id" required value="<%= form?.g2bulk_product_id || '' %>">
+            <small class="form-text text-muted">The exact product ID / catalogue name from G2Bulk.</small>
+          </div>
+
+          <div class="form-group">
+            <label for="status">Status</label>
+            <select class="form-control" id="status" name="status" required>
+              <option value="active" <%= (form?.status || 'active') === 'active' ? 'selected' : '' %>>active</option>
+              <option value="inactive" <%= form?.status === 'inactive' ? 'selected' : '' %>>inactive</option>
+            </select>
+          </div>
+
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-save mr-2"></i>
+            Save
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-7">
+    <div class="card shadow mb-4">
+      <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Item List</h6>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>G2Bulk ID</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% (g2bulkItems || []).forEach(item => { %>
+                <tr>
+                  <td>
+                    <% if (item.Product) { %>
+                      #<%= item.Product.id %> - <%= item.Product.name %>
+                      <br>
+                      <small><%= item.Product.price_mmk %> MMK</small>
+                    <% } else { %>
+                      <span class="text-danger">Product #<%= item.productId %> (Deleted)</span>
+                    <% } %>
+                  </td>
+                  <td><%= item.g2bulkProductId %></td>
+                  <td>
+                    <span class="badge badge-<%= item.status === 'active' ? 'success' : 'secondary' %>">
+                      <%= item.status %>
+                    </span>
+                  </td>
+                  <td>
+                    <button class="btn btn-sm btn-info" 
+                      onclick="editItem('<%= item.id %>', '<%= item.productId %>', '<%= item.g2bulkProductId %>', '<%= item.status %>')">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <form action="/admin/g2bulk-items/delete" method="POST" class="d-inline" onsubmit="return confirm('Are you sure?')">
+                      <input type="hidden" name="id" value="<%= item.id %>">
+                      <button type="submit" class="btn btn-sm btn-danger">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function editItem(id, productId, g2bulkProductId, status) {
+  document.querySelector('input[name="id"]').value = id;
+  document.querySelector('select[name="product_id"]').value = productId;
+  document.querySelector('input[name="g2bulk_product_id"]').value = g2bulkProductId;
+  document.querySelector('select[name="status"]').value = status;
+}
+</script>
