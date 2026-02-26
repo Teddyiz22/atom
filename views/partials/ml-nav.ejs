@@ -32,9 +32,6 @@
           <a href="/" class="<%= (typeof currentPath !== 'undefined' && (currentPath === '/' || currentPath === '')) ? 'bg-theme-400/20 text-theme-300' : 'text-white/80 hover:text-theme-300' %> px-3 py-2 rounded-md text-sm font-medium transition-colors duration-300 whitespace-nowrap">
             <%= __('nav.home') %>
           </a>
-          <a href="/shop" class="<%= (typeof currentPath !== 'undefined' && currentPath === '/shop') ? 'bg-theme-400/20 text-theme-300' : 'text-white/80 hover:text-theme-300' %> px-3 py-2 rounded-md text-sm font-medium transition-colors duration-300 whitespace-nowrap">
-            <%= __('nav.shop') %>
-          </a>
 
           <% if (user) { %>
           <!-- Logged in user menu -->
@@ -48,10 +45,15 @@
             <%= __('nav.wallet') %>
           </a>
           <a href="/guide" class="<%= (typeof currentPath !== 'undefined' && currentPath === '/guide') ? 'bg-theme-400/20 text-theme-300' : 'text-white/80 hover:text-theme-300' %> px-3 py-2 rounded-md text-sm font-medium transition-colors duration-300 whitespace-nowrap"><%= __('nav.guide') %></a>
-          <a href="/contact" class="<%= (typeof currentPath !== 'undefined' && currentPath === '/contact') ? 'bg-theme-400/20 text-theme-300' : 'text-white/80 hover:text-theme-300' %> px-3 py-2 rounded-md text-sm font-medium transition-colors duration-300 whitespace-nowrap">
+          <!-- <a href="/contact" class="<%= (typeof currentPath !== 'undefined' && currentPath === '/contact') ? 'bg-theme-400/20 text-theme-300' : 'text-white/80 hover:text-theme-300' %> px-3 py-2 rounded-md text-sm font-medium transition-colors duration-300 whitespace-nowrap">
             <%= __('nav.contact') %>
-          </a>
-
+          </a> -->
+           <a href="https://t.me/atomgameshop" target="_blank"
+          class="text-white/90 hover:text-theme-300 focus:outline-none focus:text-theme-300 p-2 transition-colors duration-300">
+            <img src="/images/tele.jpg"
+            alt="Home"
+            class="w-7 h-7 text-white/80 group-hover:opacity-100 opacity-80 transition" />
+        </a>
           <!-- Language Toggle Switch -->
           <div class="ml-4 flex items-center">
             <div class="bg-white/10 backdrop-blur-md rounded-xl border border-white/20 p-1 flex">
@@ -66,6 +68,8 @@
             </div>
           </div>
 
+         
+
           <!-- Logout -->
           <form method="POST" action="/users/logout" class="inline ml-2">
             <button type="submit" class="bg-red-500/20 backdrop-blur-sm border border-red-500/30 text-red-300 px-4 py-2 rounded-full text-sm font-medium hover:bg-red-500/30 hover:border-red-500/50 transition-all duration-300 whitespace-nowrap">
@@ -78,10 +82,15 @@
             <%= __('nav.about') %>
           </a>
           <a href="/guide" class="<%= (typeof currentPath !== 'undefined' && currentPath === '/guide') ? 'bg-theme-400/20 text-theme-300' : 'text-white/80 hover:text-theme-300' %> px-3 py-2 rounded-md text-sm font-medium transition-colors duration-300 whitespace-nowrap"><%= __('nav.guide') %></a>
-          <a href="/contact" class="<%= (typeof currentPath !== 'undefined' && currentPath === '/contact') ? 'bg-theme-400/20 text-theme-300' : 'text-white/80 hover:text-theme-300' %> px-3 py-2 rounded-md text-sm font-medium transition-colors duration-300 whitespace-nowrap">
+          <!-- <a href="/contact" class="<%= (typeof currentPath !== 'undefined' && currentPath === '/contact') ? 'bg-theme-400/20 text-theme-300' : 'text-white/80 hover:text-theme-300' %> px-3 py-2 rounded-md text-sm font-medium transition-colors duration-300 whitespace-nowrap">
             <%= __('nav.contact') %>
+          </a> -->
+          <a href="https://t.me/atomgameshop" target="_blank"
+          class="text-white/90 hover:text-theme-300 focus:outline-none focus:text-theme-300 p-2 transition-colors duration-300">
+            <img src="/images/tele.jpg"
+            alt="Home"
+            class="w-7 h-7 text-white/80 group-hover:opacity-100 opacity-80 transition" />
           </a>
-
           <!-- Language Toggle Switch for guests -->
           <div class="ml-4 flex items-center">
             <div class="bg-white/10 backdrop-blur-md rounded-xl border border-white/20 p-1 flex">
@@ -95,6 +104,7 @@
               </a>
             </div>
           </div>
+          
 
           <a href="/users/login" class="bg-theme-400/20 backdrop-blur-sm border border-theme-400/30 text-theme-300 px-4 py-2 rounded-full text-sm font-medium hover:bg-theme-400/30 hover:border-theme-400/50 transition-all duration-300 whitespace-nowrap ml-2">
             <%= __('nav.login') %>
@@ -106,17 +116,19 @@
       <!-- Mobile menu button and shop icon -->
       <div class="md:hidden flex items-center space-x-2">
         <!-- Shop Icon -->
-        <a href="/shop" class="text-white/90 hover:text-theme-300 focus:outline-none focus:text-theme-300 p-2 transition-colors duration-300">
-          <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-          </svg>
+
+        <a href="https://t.me/atomgameshop" target="_blank"
+          class="text-white/90 hover:text-theme-300 focus:outline-none focus:text-theme-300 p-2 transition-colors duration-300">
+            <img src="/images/tele.jpg"
+            alt="Home"
+            class="w-7 h-7 text-white/80 group-hover:opacity-100 opacity-80 transition" />
         </a>
 
         <!-- Hamburger Menu Button -->
         <button type="button" class="text-white/90 hover:text-theme-300 focus:outline-none focus:text-theme-300 p-2 transition-colors duration-300" onclick="toggleMobileMenu()">
-          <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
+          <img src="/images/menu.jpg"
+            alt="Home"
+            class="w-7 h-7 text-white/80 group-hover:opacity-100 opacity-80 transition" />
         </button>
       </div>
     </div>
@@ -159,6 +171,7 @@
       </a>
 
 
+
       <!-- Profile -->
       <a href="/profile" class="flex items-center gap-2 <%= (typeof currentPath !== 'undefined' && currentPath === '/profile') ? 'bg-theme-400/20 text-theme-300' : 'text-white/80 hover:bg-theme-400/20 hover:text-theme-300' %> block px-4 py-3 rounded-lg text-base font-medium transition-all duration-300">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
@@ -183,13 +196,6 @@
         </svg> <%= __('nav.guide') %>
       </a>
 
-      <!-- Contact -->
-      <a href="/contact" class="flex items-center gap-2 <%= (typeof currentPath !== 'undefined' && currentPath === '/contact') ? 'bg-theme-400/20 text-theme-300' : 'text-white/80 hover:bg-theme-400/20 hover:text-theme-300' %> block px-4 py-3 rounded-lg text-base font-medium transition-all duration-300">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
-          <!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
-          <path d="M376 32C504.1 32 608 135.9 608 264C608 277.3 597.3 288 584 288C570.7 288 560 277.3 560 264C560 162.4 477.6 80 376 80C362.7 80 352 69.3 352 56C352 42.7 362.7 32 376 32zM384 224C401.7 224 416 238.3 416 256C416 273.7 401.7 288 384 288C366.3 288 352 273.7 352 256C352 238.3 366.3 224 384 224zM352 152C352 138.7 362.7 128 376 128C451.1 128 512 188.9 512 264C512 277.3 501.3 288 488 288C474.7 288 464 277.3 464 264C464 215.4 424.6 176 376 176C362.7 176 352 165.3 352 152zM176.1 65.4C195.8 60 216.4 70.1 224.2 88.9L264.7 186.2C271.6 202.7 266.8 221.8 252.9 233.2L208.8 269.3C241.3 340.9 297.8 399.3 368.1 434.2L406.7 387C418 373.1 437.1 368.4 453.7 375.2L551 415.8C569.8 423.6 579.9 444.2 574.5 463.9L573 469.4C555.4 534.1 492.9 589.3 416.6 573.2C241.6 536.1 103.9 398.4 66.8 223.4C50.7 147.1 105.9 84.6 170.5 66.9L176 65.4z" />
-        </svg> <%= __('nav.contact') %>
-      </a>
 
       <!-- Language Section -->
       <div class="bg-white/5 rounded-lg p-3 mb-3">
@@ -230,6 +236,8 @@
         </svg> <%= __('nav.about') %>
       </a>
 
+
+
       <!-- Guide -->
       <a href="/guide" class="flex items-center gap-2 <%= (typeof currentPath !== 'undefined' && currentPath === '/guide') ? 'bg-theme-400/20 text-theme-300' : 'text-white/80 hover:bg-theme-400/20 hover:text-theme-300' %> block px-4 py-3 rounded-lg text-base font-medium transition-all duration-300">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
@@ -238,13 +246,7 @@
         </svg> <%= __('nav.guide') %>
       </a>
 
-      <!-- Contact -->
-      <a href="/contact" class="flex items-center gap-2 <%= (typeof currentPath !== 'undefined' && currentPath === '/contact') ? 'bg-theme-400/20 text-theme-300' : 'text-white/80 hover:bg-theme-400/20 hover:text-theme-300' %> block px-4 py-3 rounded-lg text-base font-medium transition-all duration-300">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
-          <!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
-          <path d="M376 32C504.1 32 608 135.9 608 264C608 277.3 597.3 288 584 288C570.7 288 560 277.3 560 264C560 162.4 477.6 80 376 80C362.7 80 352 69.3 352 56C352 42.7 362.7 32 376 32zM384 224C401.7 224 416 238.3 416 256C416 273.7 401.7 288 384 288C366.3 288 352 273.7 352 256C352 238.3 366.3 224 384 224zM352 152C352 138.7 362.7 128 376 128C451.1 128 512 188.9 512 264C512 277.3 501.3 288 488 288C474.7 288 464 277.3 464 264C464 215.4 424.6 176 376 176C362.7 176 352 165.3 352 152zM176.1 65.4C195.8 60 216.4 70.1 224.2 88.9L264.7 186.2C271.6 202.7 266.8 221.8 252.9 233.2L208.8 269.3C241.3 340.9 297.8 399.3 368.1 434.2L406.7 387C418 373.1 437.1 368.4 453.7 375.2L551 415.8C569.8 423.6 579.9 444.2 574.5 463.9L573 469.4C555.4 534.1 492.9 589.3 416.6 573.2C241.6 536.1 103.9 398.4 66.8 223.4C50.7 147.1 105.9 84.6 170.5 66.9L176 65.4z" />
-        </svg> <%= __('nav.contact') %>
-      </a>
+
 
       <!-- Language Section for guests -->
       <div class="bg-white/5 rounded-lg p-3 mb-3">

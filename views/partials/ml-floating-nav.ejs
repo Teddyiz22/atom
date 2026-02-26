@@ -1,0 +1,64 @@
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { font-family: 'Poppins', sans-serif; }
+</style>
+<div class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-md font-poppins">
+  <div class="backdrop-blur-3xl border border-white/10 rounded-2xl px-6 py-2">
+    <div class="flex justify-between items-center">
+
+      <!-- Home -->
+      <a href="/" class="flex flex-col items-center gap-1 group py-1">
+        <img src="/images/1.png"
+            alt="Home"
+            class="w-7 h-7 text-white/80 group-hover:opacity-100 opacity-80 transition" />
+
+        <span class="text-[10px] text-white/80 group-hover:text-white transition font-medium">Home</span>
+      </a>
+
+      <!-- Wallet -->
+      <a href="<%= user ? '/wallet' : '/users/login' %>" class="flex flex-col items-center gap-1 group py-1">
+        <img src="/images/wallet.png"
+            alt="Home"
+            class="w-7 h-7 text-white/80 group-hover:opacity-100 opacity-80 transition" />
+        <span class="text-[10px] text-white/80 group-hover:text-white transition font-medium">Wallet</span>
+      </a>
+
+      <!-- Orders -->
+      <a href="<%= user ? '/orderhistory' : '/users/login' %>" class="flex flex-col items-center gap-1 group py-1">
+  
+        <img src="/images/order.png"
+            alt="Home"
+            class="w-7 h-7 text-white/80 group-hover:opacity-100 opacity-80 transition" />
+
+        <span class="text-[10px] text-white/80 group-hover:text-white transition">
+            Orders
+        </span>
+        </a>
+
+      <!-- Account / Login -->
+      <% if (user) { %>
+        <a href="/profile" class="flex flex-col items-center gap-1 group py-1">
+          <img src="/images/user.png"
+            alt="Home"
+            class="w-7 h-7 text-white/80 group-hover:opacity-100 opacity-80 transition" />
+
+          <span class="text-[10px] text-white/80 group-hover:text-white transition font-medium">Account</span>
+        </a>
+      <% } else { %>
+        <a href="/users/login" class="flex flex-col items-center gap-1 group py-1">
+          <svg viewBox="0 0 1024 1024"
+               fill="currentColor"
+               class="w-7 h-7 text-white/80 group-hover:text-white transition"
+               xmlns="http://www.w3.org/2000/svg">
+            <path d="M684.764 521.786L491.989 329.011c-11.019-11.019-29.861-3.215-29.861 12.369v115.928H146.152c-28.821 0-52.188 32.546-52.188 72.686 0 40.141 23.367 72.687 52.188 72.687h315.977v124.248c0 15.584 18.841 23.388 29.861 12.369l192.775-192.775c6.83-6.831 6.83-17.906-0.001-24.737z"/>
+            <path d="M386.534 634.184H271.606V799.32c0 63.37 51.558 114.928 114.928 114.928h364.761c63.37 0 114.928-51.558 114.928-114.928V224.68c0-63.37-51.558-114.928-114.928-114.928H386.534c-63.37 0-114.928 51.558-114.928 114.928v201.124h114.928V224.68h364.593l0.168 574.639H386.534V634.184z"/>
+          </svg>
+          <span class="text-[10px] text-white/80 group-hover:text-white transition font-medium">Login</span>
+        </a>
+      <% } %>
+
+    </div>
+  </div>
+</div>
+
+

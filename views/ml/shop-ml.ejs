@@ -159,13 +159,8 @@
       <% } else { %>
       <!-- Mobile Legends Product View -->
       <!-- Header -->
+
       <div class="text-center mb-8 animate-fade-in">
-        <h1 class="text-3xl md:text-5xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent mb-4">
-          Order Mobile Legends Diamonds
-        </h1>
-        <p class="text-lg text-gray-300 max-w-2xl mx-auto">
-          Enter your Mobile Legends ID and select your diamond package for instant delivery
-        </p>
         <% if (user) { %>
         <div class="mt-4 p-4 bg-green-500/20 border border-green-500/30 rounded-lg inline-block">
           <p class="text-green-300">👋 Welcome back, <span class="font-bold text-white">
@@ -176,12 +171,44 @@
       </div>
 
       <!-- Step 1: User ID Input -->
-      <div class="bg-white/10 backdrop-blur-md rounded-2xl p-6 mb-8 border border-white/20 animate-slide-up">
-        <h2 class="text-xl md:text-2xl font-bold text-white mb-6 flex items-center">
-          <span class="bg-gradient-to-r from-theme-400 to-theme-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3">1</span>
-          Enter Your Mobile Legends ID
-        </h2>
+       
+       <div class="bg-white/10 backdrop-blur-md rounded-2xl p-6 mb-8 border border-white/20 animate-slide-up">
+              <div class="flex items-start gap-4">
+                <div class="relative shrink-0">
+                  <div class="w-20 h-20 rounded-2xl overflow-hidden shadow-2xl border-2 border-white/30">
+                    <img src="/images/mlbb_special.png" alt="Mobile Legends" class="w-full h-full object-cover">
+                  </div>
+                </div>
 
+                <div class="flex-1 min-w-0 flex flex-col gap-1">
+                  <h1 class="text-xl font-bold text-white truncate">Mobile Legends</h1>
+
+                  <div class="flex items-center justify-between gap-3">
+                    <p class="text-white/70 text-sm">Instant Delivery</p>
+
+                    <div
+                      class="inline-flex items-center p-0.5 bg-black/30 backdrop-blur-md rounded-full border border-white/10 shadow-inner">
+                      <label class="cursor-pointer">
+                        <input type="radio" name="currency" value="MMK" checked class="peer hidden">
+                        <div
+                          class="px-3 py-1 rounded-full text-[10px] font-bold text-white/50 peer-checked:bg-[#89CFF0] peer-checked:text-[white] transition-all">
+                          MMK</div>
+                      </label>
+                      <label class="cursor-pointer">
+                        <input type="radio" name="currency" value="THB" class="peer hidden">
+                        <div
+                          class="px-3 py-1 rounded-full text-[10px] font-bold text-white/50 peer-checked:bg-[#89CFF0] peer-checked:text-[white] transition-all">
+                          THB</div>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+        <h2 class="text-xl md:text-2xl font-bold text-white mt-8 mb-6 flex items-center">
+          <span class="bg-gradient-to-r from-theme-400 to-theme-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3">1</span>
+          Mobile Legends Account ID
+        </h2>
         <form id="orderForm" method="POST" action="/ml/order">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -238,20 +265,7 @@
           Select Diamond Package
         </h2>
 
-        <!-- Currency Selection -->
-        <div class="mb-6">
-          <label class="block text-white/90 text-sm font-medium mb-2">Currency</label>
-          <div class="flex space-x-4">
-            <label class="flex items-center">
-              <input type="radio" name="currency" value="MMK" checked class="mr-2 text-theme-400">
-              <span class="text-white">MMK (Myanmar Kyat)</span>
-            </label>
-            <label class="flex items-center">
-              <input type="radio" name="currency" value="THB" class="mr-2 text-theme-400">
-              <span class="text-white">THB (Thai Baht)</span>
-            </label>
-          </div>
-        </div>
+
 
         <!-- Pass Packages Section -->
         <div class="mb-8">
@@ -893,6 +907,7 @@
   <%- include('../partials/toast') %>
   <%- include('../partials/ml-footer') %>
   <%- include('../partials/ml-scripts') %>
+    <%- include('../partials/ml-floating-nav') %>
 </body>
 
 </html>

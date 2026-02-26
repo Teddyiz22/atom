@@ -138,12 +138,7 @@
       <!-- PUBG Mobile Product View -->
       <!-- Header -->
       <div class="text-center mb-8 animate-fade-in">
-        <h1 class="text-3xl md:text-5xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent mb-4">
-          Order PUBG Mobile UC
-        </h1>
-        <p class="text-lg text-gray-300 max-w-2xl mx-auto">
-          Top up PUBG Mobile UC instantly. Enter your Player ID and select your UC package for instant delivery.
-        </p>
+
         <% if (user) { %>
         <div class="mt-4 p-4 bg-green-500/20 border border-green-500/30 rounded-lg inline-block">
           <p class="text-green-300">👋 Welcome back, <span class="font-bold text-white">
@@ -154,59 +149,91 @@
       </div>
 
       <!-- Step 1: User ID Input -->
-      <div class="bg-white/10 backdrop-blur-md rounded-2xl p-6 mb-8 border border-white/20 animate-slide-up">
-        <h2 class="text-xl md:text-2xl font-bold text-white mb-6 flex items-center">
-          <span class="bg-gradient-to-r from-theme-400 to-theme-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3">1</span>
-          Enter Your PUBG Mobile Account Details
-        </h2>
 
-        <form id="orderForm" method="POST" action="/shop/pubgm">
-          <div id="dynamicFields" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+     <div class="relative bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/20 mb-10 shadow-lg">
+  
+  <!-- Game Header -->
+  <div class="flex items-start gap-4">
+  <div class="relative shrink-0">
+    <div class="w-20 h-20 rounded-2xl overflow-hidden shadow-2xl border-2 border-white/30">
+      <img src="/images/pubgm.png" alt="PUBG Mobile" class="w-full h-full object-cover">
+    </div>
+  </div>
 
-          <div id="staticFields" class="grid grid-cols-1 gap-4">
-            <div>
-              <label for="userId" class="block text-white/90 text-sm font-medium mb-2">Player ID *</label>
-              <input type="text" id="userId" name="userId" required class="w-full px-4 py-3 bg-white/10 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-theme-400 focus:border-transparent transition-all duration-300" placeholder="Enter your Player ID">
-            </div>
-          </div>
-          <p id="gameNotes" class="mt-3 text-sm text-gray-300"></p>
+  <div class="flex-1 min-w-0 flex flex-col gap-1">
+    <h1 class="text-xl font-bold text-white truncate">PUBG Mobile</h1>
+    
+    <div class="flex items-center justify-between gap-3">
+      <p class="text-white/70 text-sm">Instant Delivery</p>
+                  <div
+                   class="inline-flex items-center p-0.5 bg-black/30 backdrop-blur-md rounded-full border border-white/10 shadow-inner">
+                      <label class="cursor-pointer">
+                        <input type="radio" name="currency" value="MMK" checked class="peer hidden">
+                        <div
+                          class="px-3 py-1 rounded-full text-[10px] font-bold text-white/50 peer-checked:bg-[#89CFF0] peer-checked:text-[white] transition-all">
+                          MMK</div>
+                      </label>
+                      <label class="cursor-pointer">
+                        <input type="radio" name="currency" value="THB" class="peer hidden">
+                        <div
+                          class="px-3 py-1 rounded-full text-[10px] font-bold text-white/50 peer-checked:bg-[#89CFF0] peer-checked:text-[white] transition-all">
+                          THB</div>
+                      </label>
+                    </div>     
+      
+    </div>
+  </div>
+</div>
+  <!-- Account Details -->
+  <h2 class="text-xl md:text-2xl font-bold text-white mt-8 mb-6 flex items-center">
+    <span class="bg-gradient-to-r from-theme-400 to-theme-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3">1</span>
+    PUBG Mobile Account UID
+  </h2>
 
-          <!-- Auto-Verification Display -->
-          <div id="verificationStatus" class="mt-4">
-            <!-- Loading State -->
-            <div id="loadingState" class="hidden">
-              <div class="bg-blue-500/20 border border-blue-500/30 rounded-lg p-4">
-                <p class="text-blue-300 font-medium flex items-center">
-                  <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                    </path>
-                  </svg>
-                  Verifying user...
-                </p>
-              </div>
-            </div>
+  <form id="orderForm" method="POST" action="/shop/pubgm">
+    <div id="dynamicFields" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
 
-            <!-- Success State -->
-            <div id="successState" class="hidden">
-              <div class="bg-green-500/20 border border-green-500/30 rounded-lg p-4">
-                <p class="text-green-300 font-medium">✓ User Found: <span id="username" class="text-white"></span></p>
-              </div>
-            </div>
-
-            <!-- Error State -->
-            <div id="errorState" class="hidden">
-              <div class="bg-red-500/20 border border-red-500/30 rounded-lg p-4">
-                <p class="text-red-300 font-medium">✗ <span id="errorMessage">User not found or invalid ID</span></p>
-              </div>
-            </div>
-
-            <!-- Info State -->
-            <div id="infoState" class="bg-gray-500/20 border border-gray-500/30 rounded-lg p-4">
-              <p class="text-gray-300 font-medium">💡 Enter your Player ID and Server / Region to verify your account</p>
-            </div>
-          </div>
+    <div id="staticFields" class="grid grid-cols-1 gap-4">
+      <div>
+        <label for="userId" class="block text-white/90 text-sm font-medium mb-2">Player ID *</label>
+        <input type="text" id="userId" name="userId" required class="w-full px-4 py-3 bg-white/10 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-theme-400 focus:border-transparent transition-all duration-300" placeholder="Enter your Player ID">
       </div>
+    </div>
+    <p id="gameNotes" class="mt-3 text-sm text-gray-300"></p>
+
+    <!-- Verification -->
+    <div id="verificationStatus" class="mt-4">
+      <div id="loadingState" class="hidden">
+        <div class="bg-blue-500/20 border border-blue-500/30 rounded-lg p-4">
+          <p class="text-blue-300 font-medium flex items-center">
+            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Verifying user...
+          </p>
+        </div>
+      </div>
+
+      <div id="successState" class="hidden">
+        <div class="bg-green-500/20 border border-green-500/30 rounded-lg p-4">
+          <p class="text-green-300 font-medium">✓ User Found: <span id="username" class="text-white"></span></p>
+        </div>
+      </div>
+
+      <div id="errorState" class="hidden">
+        <div class="bg-red-500/20 border border-red-500/30 rounded-lg p-4">
+          <p class="text-red-300 font-medium">✗ <span id="errorMessage">User not found or invalid ID</span></p>
+        </div>
+      </div>
+
+      <div id="infoState" class="bg-gray-500/20 border border-gray-500/30 rounded-lg p-4">
+        <p class="text-gray-300 font-medium">💡 Enter your Player ID and Server / Region to verify your account</p>
+      </div>
+    </div>
+  </form>
+</div>
+
 
       <!-- Step 2: Package Selection -->
       <div class="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 animate-slide-up">
@@ -215,20 +242,6 @@
           Select UC Package
         </h2>
 
-        <!-- Currency Selection -->
-        <div class="mb-6">
-          <label class="block text-white/90 text-sm font-medium mb-2">Currency</label>
-          <div class="flex space-x-4">
-            <label class="flex items-center">
-              <input type="radio" name="currency" value="MMK" checked class="mr-2 text-theme-400">
-              <span class="text-white">MMK (Myanmar Kyat)</span>
-            </label>
-            <label class="flex items-center">
-              <input type="radio" name="currency" value="THB" class="mr-2 text-theme-400">
-              <span class="text-white">THB (Thai Baht)</span>
-            </label>
-          </div>
-        </div>
 
         <%
           const oneTimeKeywords = [
@@ -1291,6 +1304,7 @@
   </script>
   <%- include('../partials/ml-footer') %>
   <%- include('../partials/ml-scripts') %>
+   <%- include('../partials/ml-floating-nav') %>
 </body>
 
 </html>

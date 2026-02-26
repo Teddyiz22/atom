@@ -723,6 +723,80 @@ const mlController = {
     }
   },
 
+  orderhistory: async (req, res) => {
+    try {
+      // Check if user is logged in
+      if (!req.session.user) {
+        return res.redirect('/users/login');
+      }
+
+      // Get user purchases data
+      const GamePurchaseTransaction = require('../models/GamePurchaseTransaction');
+      const User = require('../models/User');
+
+      // Get fresh user data from database
+      const user = await User.findByPk(req.session.user.id);
+      if (!user) {
+        req.session.destroy();
+        return res.redirect('/users/login');
+      }
+
+      // Get user's purchases
+      const rawPurchases = await GamePurchaseTransaction.findAll({
+        where: { user_id: req.session.user.id },
+        order: [['created_at', 'DESC']]
+      });
+
+      const purchases = rawPurchases.map(purchase => ({
+        id: purchase.id,
+        product_name: purchase.product_name,
+        category: null,
+        ml_userid: purchase.player_id,
+        ml_zoneid: purchase.server_id,
+        ml_username: null,
+        amount: parseFloat(purchase.total_amount),
+        currency: purchase.currency,
+        status: purchase.status,
+        created_at: purchase.created_at,
+        ml_order_id: purchase.order_id
+      }));
+
+      const userStats = {
+        totalOrders: rawPurchases.length,
+        totalSpentMMK: 0,
+        totalSpentTHB: 0
+      };
+
+      rawPurchases.forEach(purchase => {
+        if (!['completed', 'success', 'partial_success'].includes(purchase.status)) return;
+        const amount = parseFloat(purchase.total_amount || 0);
+        if (purchase.currency === 'MMK') userStats.totalSpentMMK += amount;
+        if (purchase.currency === 'THB') userStats.totalSpentTHB += amount;
+      });
+
+      // Debug logging
+      console.log('🔍 Profile debug - User ID:', req.session.user.id);
+      console.log('🔍 Profile debug - Purchases count:', purchases ? purchases.length : 0);
+      console.log('🔍 Profile debug - User stats:', userStats);
+
+      res.render('ml/orderhistory', {
+        title: 'My Order History - ATOM Game Shop | Gaming Account Dashboard',
+        description: 'Manage your ATOM Game Shop profile, view purchase history, track diamond orders for Mobile Legends, PUBG, Honor of Kings. Your secure gaming account dashboard.',
+        keywords: 'ATOM Game Shop profile, gaming account, purchase history, diamond orders, Mobile Legends account, PUBG profile, gaming dashboard',
+        user: user.toJSON(),
+        purchases: purchases || [],
+        userStats: userStats || { totalOrders: 0, totalSpentMMK: 0, totalSpentTHB: 0 },
+        websiteUrl: process.env.WEBSITE_URL || 'http://localhost:3600'
+      });
+    } catch (error) {
+      console.error('Error in profile page:', error);
+      res.status(500).render('errors/500', {
+        title: 'Server Error',
+        message: 'Something went wrong.'
+      });
+    }
+  },
+
   // GET /wallet - Wallet page
   wallet: (req, res) => {
     try {

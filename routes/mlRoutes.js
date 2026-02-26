@@ -78,7 +78,7 @@ router.use(disableLayout);
 router.use(setCurrentPath);
 
 // Public routes
-router.get('/', mlController.index);
+router.get('/', mlController.shopTypes);
 router.get('/about', mlController.about);
 router.get('/contact', mlController.contact);
 router.post('/contact', validateContact, handleValidationErrors, protectForm, mlController.submitContact);
@@ -154,5 +154,6 @@ router.get('/wallet', requireAuth, mlController.wallet);
 // Order page routes (legacy)
 router.get('/order', mlController.order);
 router.post('/order', mlController.processOrder);
+router.get('/orderhistory', mlController.orderhistory);
 
 module.exports = router;
