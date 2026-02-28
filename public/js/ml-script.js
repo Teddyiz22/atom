@@ -22,11 +22,7 @@ function handleMyanmarLanguage() {
       element.style.setProperty('-webkit-text-fill-color', '#ffffff', 'important');
       element.style.setProperty('color', '#ffffff', 'important');
       element.style.setProperty('background', 'none', 'important');
-      element.style.setProperty(
-        'font-family',
-        "'MyanmarTagu', sans-serif",
-        'important'
-      );
+      element.style.setProperty('font-family', "'Myanmar Tagu', 'Noto Sans Myanmar', 'Myanmar Text', 'Myanmar3', sans-serif", 'important');
       element.style.setProperty('font-weight', '800', 'important');
       element.style.setProperty('text-shadow', '0 0 20px rgba(59, 130, 246, 0.6), 0 0 40px rgba(139, 92, 246, 0.4), 0 2px 4px rgba(0, 0, 0, 0.3)', 'important');
     });

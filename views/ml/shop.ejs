@@ -2,6 +2,9 @@
 <html lang="en">
 
 <head>
+  <%- include('../partials/ml-head', { title: 'ATOM Game Shop - Fast & Secure Mobile Legends Top Up' ,
+    description: 'Buy Mobile Legends diamonds instantly! Fast, secure, and affordable ML diamond top-up service. Get your diamonds in seconds!'
+    }) %>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Shop - ATOM Game Shop</title>
@@ -284,8 +287,14 @@
               <% } %>
         </div>
 
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-20">
-
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-64 md:mt-16">
+          <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-bold text-white">
+              <%= __('guide.title') || 'လမ်းညွှန်' %>
+            </h2>
+            
+            <div class="w-20 h-1 bg-theme-400 mx-auto mt-4 rounded-full"></div>
+          </div>
 
           <div class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 

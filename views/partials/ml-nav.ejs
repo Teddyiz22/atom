@@ -1,4 +1,5 @@
 <!-- Navigation -->
+ <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
   #mobile-menu svg {
     fill: white;
@@ -7,8 +8,43 @@
     width: 1.1rem;
     height: 1.1rem;
   }
+  .ml-nav-font,
+  .ml-nav-font * {
+    font-family: 'Poppins', sans-serif;
+  }
+
+    @font-face {
+    font-family: 'Myanmar Tagu';
+    src: url('/font/MyanmarTagu.ttf') format('truetype');
+    font-weight: 400 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+
+/* Font fallbacks for Myanmar */
+.myanmar-text {
+    font-family: 'Myanmar Tagu', 'Noto Sans Myanmar', 'Myanmar Text', 'Myanmar3', sans-serif !important;
+    font-weight: 700 !important;
+    letter-spacing: 0 !important;
+    background: none !important;
+    -webkit-background-clip: initial !important;
+    -webkit-text-fill-color: initial !important;
+}
 </style>
-<nav class="bg-black/10 backdrop-blur-md border-b border-white/10 fixed w-full top-0 z-50 transition-all duration-300">
+<script>
+  (function () {
+    const lang = '<%= currentLanguage === "mm" ? "my" : "en" %>';
+    const dataLang = '<%= currentLanguage || "en" %>';
+    document.documentElement.setAttribute('lang', lang);
+    if (document.body) {
+      document.body.setAttribute('data-lang', dataLang);
+    }
+  })();
+</script>
+
+
+<nav class="ml-nav-font bg-black/10 backdrop-blur-md border-b border-white/10 fixed w-full top-0 z-50 transition-all duration-300">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex justify-between items-center h-16">
       <div class="flex items-center">

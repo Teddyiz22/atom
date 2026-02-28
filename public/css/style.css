@@ -5,7 +5,24 @@ body {
     display: flex;
     flex-direction: column;
 }
+@font-face {
+    font-family: 'Myanmar Tagu';
+    src: url('/font/MyanmarTagu.ttf') format('truetype');
+    font-weight: 400 700;
+    font-style: normal;
+    font-display: swap;
+}
 
+
+/* Font fallbacks for Myanmar */
+.myanmar-text {
+    font-family: 'Myanmar Tagu', 'Noto Sans Myanmar', 'Myanmar Text', 'Myanmar3', sans-serif !important;
+    font-weight: 700 !important;
+    letter-spacing: 0 !important;
+    background: none !important;
+    -webkit-background-clip: initial !important;
+    -webkit-text-fill-color: initial !important;
+}
 main {
     flex: 1;
 }

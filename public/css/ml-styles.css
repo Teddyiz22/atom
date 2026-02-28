@@ -1,11 +1,35 @@
 /* Custom styles to complement Tailwind CSS - ML Diamonds Store */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
 /* Myanmar Font Support */
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Myanmar:wght@300;400;500;600;700;800;900&display=swap');
+@font-face {
+    font-family: 'Myanmar Tagu';
+    src: url('/font/MyanmarTagu.ttf') format('truetype');
+    font-weight: 400 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Global English mode */
+html[lang="en"] body,
+html[lang="en"] body *:not(.myanmar-text),
+body[data-lang="en"],
+body[data-lang="en"] *:not(.myanmar-text) {
+    font-family: 'Poppins', sans-serif !important;
+}
+
+/* Global Myanmar mode override */
+html[lang="my"] body,
+html[lang="my"] body * ,
+body[data-lang="mm"],
+body[data-lang="mm"] * {
+    font-family: 'Myanmar Tagu', 'Noto Sans Myanmar', 'Myanmar Text', 'Myanmar3', sans-serif !important;
+}
+
 
 /* Font fallbacks for Myanmar */
 .myanmar-text {
-    font-family: 'Noto Sans Myanmar', 'Myanmar Text', 'Padauk', 'Myanmar3', sans-serif !important;
+    font-family: 'Myanmar Tagu', 'Noto Sans Myanmar', 'Myanmar Text', 'Myanmar3', sans-serif !important;
     font-weight: 700 !important;
     letter-spacing: 0 !important;
     background: none !important;
@@ -57,7 +81,7 @@ html {
     
     /* Fallback for Myanmar fonts that don't support webkit-text-fill-color */
     color: #3b82f6;
-    font-family: 'Noto Sans Myanmar', 'Myanmar Text', 'Padauk', 'Myanmar3', sans-serif;
+    font-family: 'Myanmar Tagu', 'Noto Sans Myanmar', 'Myanmar Text', 'Myanmar3', sans-serif;
     font-weight: 700;
     text-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
 }
@@ -72,14 +96,14 @@ html {
         0 0 40px rgba(139, 92, 246, 0.4),
         0 2px 4px rgba(0, 0, 0, 0.3) !important;
     background: none !important;
-    font-family: 'Noto Sans Myanmar', 'Myanmar Text', 'Padauk', 'Myanmar3', sans-serif !important;
+    font-family: 'Myanmar Tagu', 'Noto Sans Myanmar', 'Myanmar Text', 'Myanmar3', sans-serif !important;
     font-weight: 800 !important;
     font-size: inherit !important;
 }
 
 /* Myanmar subtitle text styling */
 .myanmar-text[data-lang="mm"] {
-    font-family: 'Noto Sans Myanmar', 'Myanmar Text', 'Padauk', 'Myanmar3', sans-serif !important;
+    font-family: 'Myanmar Tagu', 'Noto Sans Myanmar', 'Myanmar Text', 'Myanmar3', sans-serif !important;
     font-weight: 500 !important;
     color: #d1d5db !important; /* text-gray-300 equivalent */
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
@@ -96,7 +120,7 @@ html[lang="my"] .gradient-text {
         0 0 40px rgba(139, 92, 246, 0.4),
         0 2px 4px rgba(0, 0, 0, 0.3) !important;
     background: none !important;
-    font-family: 'Noto Sans Myanmar', 'Myanmar Text', 'Padauk', 'Myanmar3', sans-serif !important;
+    font-family: 'Myanmar Tagu', 'Noto Sans Myanmar', 'Myanmar Text', 'Myanmar3', sans-serif !important;
     font-weight: 800 !important;
 }
 
@@ -110,7 +134,7 @@ html[lang="my"] .gradient-text {
         0 0 20px rgba(59, 130, 246, 0.6),
         0 0 40px rgba(139, 92, 246, 0.4),
         0 2px 4px rgba(0, 0, 0, 0.3);
-    font-family: 'Noto Sans Myanmar', 'Myanmar Text', 'Padauk', 'Myanmar3', sans-serif;
+    font-family: 'Myanmar Tagu', 'Noto Sans Myanmar', 'Myanmar Text', 'Myanmar3', sans-serif;
     font-weight: 800;
 }
 
