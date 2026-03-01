@@ -676,6 +676,8 @@ const mlController = {
       const purchases = rawPurchases.map(purchase => ({
         id: purchase.id,
         product_name: purchase.product_name,
+        product_type_code: purchase.product_type_code,
+        game_name: getGameNameFromTypeCode(purchase.product_type_code),
         category: null,
         ml_userid: purchase.player_id,
         ml_zoneid: purchase.server_id,
@@ -750,6 +752,8 @@ const mlController = {
       const purchases = rawPurchases.map(purchase => ({
         id: purchase.id,
         product_name: purchase.product_name,
+        product_type_code: purchase.product_type_code,
+        game_name: getGameNameFromTypeCode(purchase.product_type_code),
         category: null,
         ml_userid: purchase.player_id,
         ml_zoneid: purchase.server_id,
@@ -2040,6 +2044,19 @@ function getTransactionType(paymentType) {
     'UAB Bank': '🏦 UAB Bank'
   };
   return typeMap[paymentType] || '💰 ' + paymentType;
+}
+
+function getGameNameFromTypeCode(typeCode) {
+  const key = String(typeCode || '').trim().toLowerCase();
+  const gameMap = {
+    ml: 'Mobile Legends',
+    mlphp: 'Mobile Legends (PH)',
+    mlbb_special: 'Mobile Legends (SG/MY)',
+    pubgm: 'PUBG Mobile',
+    hok: 'Honor of Kings',
+    mcgg: 'Magic Chess: Go Go'
+  };
+  return gameMap[key] || (typeCode ? String(typeCode).toUpperCase() : 'Unknown');
 }
 
 module.exports = mlController;

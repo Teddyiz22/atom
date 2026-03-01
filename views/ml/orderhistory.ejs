@@ -196,7 +196,7 @@
                   </td>
                   <td class="py-3 px-4">
                     <span class="text-white font-semibold">
-                      <%= purchase.product_type_code ||  'Unknown' %>
+                        <%= purchase.game_name || purchase.product_type_code ||  'Unknown' %>
 
                     </span>
                   </td>
@@ -294,7 +294,7 @@
                 <p class="text-gray-400 text-sm">Game</p>
                 <p class="text-white font-semibold">
                   <span>
-                  🎮 <%= purchase.product_type_code ||  'Unknown' %>
+                     <%= purchase.game_name || purchase.product_type_code ||  'Unknown' %>
                  </span>
                 </p>
               </div>
