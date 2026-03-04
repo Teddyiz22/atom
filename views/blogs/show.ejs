@@ -1,97 +1,190 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= blog.title %> - ATOM Game Shop</title>
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Bootstrap Icons -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-  <!-- Custom CSS -->
-  <link rel="stylesheet" href="/css/style.css">
+  <%- include('../partials/ml-head', { title: blog.title + ' - ATOM Game Shop' ,
+    description: blog.content.substring(0, 160).replace(/<[^>]*>?/gm, '') }) %>
   <style>
+    .blog-content {
+      color: #e5e7eb; /* text-gray-200 */
+      font-size: 1.125rem; /* text-lg */
+      line-height: 1.75;
+    }
+    .blog-content p {
+      margin-bottom: 1.5rem;
+    }
+    .blog-content h1, .blog-content h2, .blog-content h3, .blog-content h4, .blog-content h5, .blog-content h6 {
+      color: white;
+      font-weight: 700;
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+    }
+    .blog-content h1 { font-size: 2.25rem; }
+    .blog-content h2 { font-size: 1.875rem; }
+    .blog-content h3 { font-size: 1.5rem; }
+    .blog-content a {
+      color: #38B6FF;
+      text-decoration: underline;
+    }
+    .blog-content ul, .blog-content ol {
+      margin-bottom: 1.5rem;
+      padding-left: 1.5rem;
+    }
+    .blog-content ul { list-style-type: disc; }
+    .blog-content ol { list-style-type: decimal; }
     .blog-content img {
+      border-radius: 0.75rem;
+      margin: 2rem 0;
       max-width: 100%;
       height: auto;
     }
+    .blog-content blockquote {
+      border-left: 4px solid #38B6FF;
+      padding-left: 1rem;
+      font-style: italic;
+      color: #9ca3af; /* text-gray-400 */
+      margin: 1.5rem 0;
+    }
   </style>
 </head>
-<body>
-  <!-- Navigation -->
-  <%- include('../partials/navbar') %>
 
-  <!-- Main Content -->
-  <main class="container mt-5">
-    <div class="row">
-      <!-- Blog Content -->
-      <div class="col-lg-8">
-        <article>
-          <% if (blog.image_path) { %>
-            <img src="<%= blog.image_path %>" class="img-fluid rounded mb-4 w-100" alt="<%= blog.title %>" style="max-height: 400px; object-fit: cover;">
-          <% } %>
-          
-          <h1 class="display-4 mb-3"><%= blog.title %></h1>
-          
-          <div class="d-flex align-items-center mb-4 text-muted">
-            <span class="me-3"><i class="bi bi-calendar"></i> <%= new Date(blog.created_at).toLocaleDateString() %></span>
-            <span><i class="bi bi-eye"></i> <%= blog.views %> views</span>
-          </div>
-          
-          <div class="blog-content">
-            <%- blog.content %>
-          </div>
-        </article>
+<body class="bg-gray-50 font-sans overflow-x-hidden">
+  <%- include('../partials/ml-nav') %>
 
-        <hr class="my-5">
+  <section class="relative min-h-screen pt-24 pb-16">
+    <!-- Modern Gradient Background -->
+    <div class="absolute inset-0 bg-gradient-to-br from-theme-900 via-theme-800 to-theme-950"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(148,180,211,0.3),rgba(255,255,255,0))]">
+    </div>
+    <div class="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]">
+    </div>
 
-        <div class="text-center">
-          <a href="/blogs" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left"></i> Back to Blogs
-          </a>
-        </div>
-      </div>
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- Breadcrumb -->
+      <nav class="flex mb-8 text-sm text-gray-400 animate-slide-up">
+        <a href="/" class="hover:text-blue-400 transition-colors">Home</a>
+        <span class="mx-2">/</span>
+        <a href="/blogs" class="hover:text-blue-400 transition-colors">Blog</a>
+        <span class="mx-2">/</span>
+        <span class="text-white truncate max-w-[200px] md:max-w-md"><%= blog.title %></span>
+      </nav>
 
-      <!-- Sidebar -->
-      <div class="col-lg-4 mt-5 mt-lg-0">
-        <div class="card shadow-sm sticky-top" style="top: 80px; z-index: 10;">
-          <div class="card-header bg-primary text-white">
-            <h5 class="card-title mb-0">Recent Posts</h5>
-          </div>
-          <div class="list-group list-group-flush">
-            <% if (recentBlogs.length > 0) { %>
-              <% recentBlogs.forEach(recent => { %>
-                <a href="/blogs/<%= recent.slug %>" class="list-group-item list-group-item-action d-flex align-items-center">
-                  <% if (recent.image_path) { %>
-                    <img src="<%= recent.image_path %>" alt="<%= recent.title %>" class="rounded me-3" style="width: 50px; height: 50px; object-fit: cover;">
-                  <% } else { %>
-                    <div class="rounded me-3 bg-secondary d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
-                      <i class="bi bi-image text-white"></i>
-                    </div>
-                  <% } %>
-                  <div>
-                    <h6 class="mb-0 text-truncate" style="max-width: 200px;"><%= recent.title %></h6>
-                    <small class="text-muted"><%= new Date(recent.created_at).toLocaleDateString() %></small>
-                  </div>
-                </a>
-              <% }); %>
-            <% } else { %>
-              <div class="list-group-item text-center text-muted">
-                No recent posts
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+        <!-- Main Content -->
+        <div class="lg:col-span-8 animate-slide-up">
+          <article class="bg-white/10 backdrop-blur-md rounded-3xl border border-white/20 overflow-hidden shadow-xl">
+            <!-- Cover Image -->
+            <% if (blog.image_path) { %>
+              <div class="relative h-64 md:h-96 w-full">
+                <img src="<%= blog.image_path %>" alt="<%= blog.title %>" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
               </div>
             <% } %>
+
+            <div class="p-6 md:p-10">
+              <!-- Meta Info -->
+              <div class="flex items-center gap-6 text-sm text-blue-300 mb-6">
+                <span class="flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <%= new Date(blog.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) %>
+                </span>
+                <span class="flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                  <%= blog.views %> views
+                </span>
+              </div>
+
+              <!-- Title -->
+              <h1 class="text-3xl md:text-4xl font-bold text-white mb-8 leading-tight">
+                <%= blog.title %>
+              </h1>
+
+              <!-- Content Body -->
+              <div class="blog-content">
+                <%- blog.content %>
+              </div>
+
+              <!-- Share/Actions -->
+              <div class="mt-12 pt-8 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <a href="/blogs" class="inline-flex items-center gap-2 text-gray-300 hover:text-white transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                  </svg>
+                  Back to All Posts
+                </a>
+                
+                <!-- Social Share (Static for now) -->
+                <div class="flex items-center gap-3">
+                  <span class="text-gray-400 text-sm">Share:</span>
+                  <a href="#" class="p-2 rounded-full bg-white/5 hover:bg-blue-600 hover:text-white transition-all text-gray-300">
+                    <i class="fab fa-facebook-f"></i>
+                  </a>
+                  <a href="#" class="p-2 rounded-full bg-white/5 hover:bg-sky-500 hover:text-white transition-all text-gray-300">
+                    <i class="fab fa-twitter"></i>
+                  </a>
+                  <a href="#" class="p-2 rounded-full bg-white/5 hover:bg-blue-700 hover:text-white transition-all text-gray-300">
+                    <i class="fab fa-linkedin-in"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="lg:col-span-4 space-y-8 animate-slide-up" style="animation-delay: 0.1s;">
+          <!-- Recent Posts Widget -->
+          <div class="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 p-6 sticky top-24">
+            <h3 class="text-xl font-bold text-white mb-6 border-b border-white/10 pb-4">
+              Recent Posts
+            </h3>
+            
+            <div class="space-y-6">
+              <% if (recentBlogs.length > 0) { %>
+                <% recentBlogs.forEach(recent => { %>
+                  <a href="/blogs/<%= recent.slug %>" class="flex gap-4 group">
+                    <div class="w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-white/5">
+                      <% if (recent.image_path) { %>
+                        <img src="<%= recent.image_path %>" alt="<%= recent.title %>" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-300">
+                      <% } else { %>
+                        <div class="w-full h-full flex items-center justify-center text-gray-500">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                        </div>
+                      <% } %>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <h4 class="text-white font-medium text-sm mb-1 line-clamp-2 group-hover:text-blue-400 transition-colors">
+                        <%= recent.title %>
+                      </h4>
+                      <p class="text-xs text-gray-400">
+                        <%= new Date(recent.created_at).toLocaleDateString() %>
+                      </p>
+                    </div>
+                  </a>
+                <% }); %>
+              <% } else { %>
+                <div class="text-center py-8 text-gray-400">
+                  No recent posts
+                </div>
+              <% } %>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </main>
+  </section>
 
-  <footer class="bg-dark text-white text-center py-3 mt-5">
-    <div class="container">
-      <p class="mb-0">&copy; <%= new Date().getFullYear() %> ATOM Game Shop. All rights reserved.</p>
-    </div>
-  </footer>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <%- include('../partials/ml-footer') %>
+  
+  <!-- FontAwesome for share icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </body>
 </html>
