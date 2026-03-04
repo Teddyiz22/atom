@@ -41,6 +41,7 @@ const adminRoutes = require('./routes/adminRoutes');
 const walletRoutes = require('./routes/walletRoutes');
 const languageRoutes = require('./routes/languageRoutes');
 const authRoutes = require('./routes/authRoutes');
+const blogRoutes = require('./routes/blogRoutes');
 
 // Import services
 const telegramService = require('./services/telegramService');
@@ -143,6 +144,7 @@ app.use('/', mlRoutes);
 app.use('/users', userRoutes);
 app.use('/admin', adminRoutes);
 app.use('/wallet', walletRoutes);
+app.use('/blogs', blogRoutes);
 app.use('/language', languageRoutes);
 app.use('/auth', authRoutes);
 

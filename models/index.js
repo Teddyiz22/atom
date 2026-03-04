@@ -2,7 +2,9 @@ const { sequelize } = require('../config/database');// Import all models
 const User = require('./User');
 const Product = require('./Product');
 const Transaction = require('./Transaction');
-const Wallet = require('./Wallet');const UserActivityLog = require('./UserActivityLog');
+const Wallet = require('./Wallet');
+const Blog = require('./Blog');
+const UserActivityLog = require('./UserActivityLog');
 const ProductType = require('./ProductType');
 const PaymentMethod = require('./PaymentMethod');
 const SmileSubItem = require('./SmileSubItem');
@@ -14,6 +16,7 @@ const SystemSetting = require('./SystemSetting');
 const models = {
     User,
     Product,
+    Blog,
     ProductType,
     Transaction,
     Wallet,

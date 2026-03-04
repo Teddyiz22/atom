@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> - ATOM Game Shop</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <%- include('../partials/navbar') %>
+
+  <!-- Main Content -->
+  <main class="container mt-5">
+    <div class="row mb-4">
+      <div class="col-12 text-center">
+        <h1 class="display-4">Our Blog</h1>
+        <p class="lead">Latest news, updates, and stories from ATOM Game Shop</p>
+      </div>
+    </div>
+
+    <!-- Blog Grid -->
+    <div class="row">
+      <% if (blogs.length > 0) { %>
+        <% blogs.forEach(blog => { %>
+          <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+              <% if (blog.image_path) { %>
+                <img src="<%= blog.image_path %>" class="card-img-top" alt="<%= blog.title %>" style="height: 200px; object-fit: cover;">
+              <% } else { %>
+                <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px;">
+                  <i class="bi bi-image" style="font-size: 3rem;"></i>
+                </div>
+              <% } %>
+              <div class="card-body d-flex flex-column">
+                <h5 class="card-title"><%= blog.title %></h5>
+                <p class="card-text text-muted small">
+                  <i class="bi bi-calendar"></i> <%= new Date(blog.created_at).toLocaleDateString() %>
+                  &nbsp;|&nbsp;
+                  <i class="bi bi-eye"></i> <%= blog.views %> views
+                </p>
+                <div class="mt-auto">
+                  <a href="/blogs/<%= blog.slug %>" class="btn btn-outline-primary stretched-link">Read More</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% }); %>
+      <% } else { %>
+        <div class="col-12 text-center py-5">
+          <i class="bi bi-journal-x" style="font-size: 4rem; color: #ccc;"></i>
+          <p class="mt-3 text-muted">No blog posts found.</p>
+        </div>
+      <% } %>
+    </div>
+
+    <!-- Pagination -->
+    <% if (pagination.totalPages > 1) { %>
+      <nav aria-label="Blog pagination" class="mt-4">
+        <ul class="pagination justify-content-center">
+          <li class="page-item <%= !pagination.hasPrevPage ? 'disabled' : '' %>">
+            <a class="page-link" href="/blogs?page=<%= pagination.page - 1 %>">Previous</a>
+          </li>
+          <% for(let i = 1; i <= pagination.totalPages; i++) { %>
+            <li class="page-item <%= pagination.page === i ? 'active' : '' %>">
+              <a class="page-link" href="/blogs?page=<%= i %>"><%= i %></a>
+            </li>
+          <% } %>
+          <li class="page-item <%= !pagination.hasNextPage ? 'disabled' : '' %>">
+            <a class="page-link" href="/blogs?page=<%= pagination.page + 1 %>">Next</a>
+          </li>
+        </ul>
+      </nav>
+    <% } %>
+  </main>
+
+  <footer class="bg-dark text-white text-center py-3 mt-5">
+    <div class="container">
+      <p class="mb-0">&copy; <%= new Date().getFullYear() %> ATOM Game Shop. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

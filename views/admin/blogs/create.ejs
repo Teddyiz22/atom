@@ -1,0 +1,54 @@
+<div class="container-fluid">
+  <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Create New Blog Post</h1>
+  </div>
+
+  <div class="card shadow mb-4">
+    <div class="card-body">
+      <form action="/admin/blogs/create" method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="title">Title</label>
+          <input type="text" class="form-control" id="title" name="title" required>
+        </div>
+
+        <div class="form-group">
+          <label for="image">Cover Image</label>
+          <input type="file" class="form-control-file" id="image" name="image" accept="image/*">
+        </div>
+
+        <div class="form-group">
+          <label for="content">Content</label>
+          <textarea class="form-control" id="content" name="content" rows="10" required></textarea>
+        </div>
+
+        <div class="form-group d-none">
+          <input type="checkbox" class="form-check-input" id="is_published" name="is_published">
+          <label class="form-check-label" for="is_published">Publish immediately</label>
+        </div>
+
+        <button type="submit" class="btn btn-secondary mr-2" onclick="document.getElementById('is_published').checked = false;">Save as Draft</button>
+        <button type="submit" class="btn btn-success" onclick="document.getElementById('is_published').checked = true;">Publish</button>
+        <a href="/admin/blogs" class="btn btn-light ml-2">Cancel</a>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- TinyMCE or similar could be added here for rich text editing -->
+<script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+<script>
+  tinymce.init({
+    selector: '#content',
+    height: 500,
+    plugins: [
+      'advlist autolink lists link image charmap print preview anchor',
+      'searchreplace visualblocks code fullscreen',
+      'insertdatetime media table paste code help wordcount'
+    ],
+    toolbar: 'undo redo | formatselect | ' +
+    'bold italic backcolor | alignleft aligncenter ' +
+    'alignright alignjustify | bullist numlist outdent indent | ' +
+    'removeformat | help',
+    content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+  });
+</script>

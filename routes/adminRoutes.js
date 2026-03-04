@@ -4,6 +4,7 @@ const adminController = require('../controllers/adminController');
 const { adminAuth, adminApiAuth } = require('../middleware/adminAuth');
 const adminLayout = require('../middleware/adminLayout');
 const productController = require('../controllers/productController');
+const blogController = require('../controllers/blogController');
 
 // Admin Dashboard (requires auth + layout)
 router.get('/', adminAuth, adminLayout, adminController.dashboard);
@@ -108,5 +109,14 @@ const noCache = (req, res, next) => {
 };
 
 router.get('/reports', adminAuth, adminLayout, noCache, adminController.reports);
+
+// Blog Management
+router.get('/blogs', adminAuth, adminLayout, blogController.adminIndex);
+router.get('/blogs/create', adminAuth, adminLayout, blogController.create);
+router.post('/blogs/create', adminAuth, blogController.store);
+router.get('/blogs/edit/:id', adminAuth, adminLayout, blogController.edit);
+router.post('/blogs/update/:id', adminAuth, blogController.update);
+router.post('/blogs/toggle-status/:id', adminAuth, blogController.toggleStatus);
+router.delete('/blogs/:id', adminAuth, blogController.destroy);
 
 module.exports = router; 

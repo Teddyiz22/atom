@@ -1,0 +1,65 @@
+<div class="container-fluid">
+  <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Edit Blog Post</h1>
+  </div>
+
+  <div class="card shadow mb-4">
+    <div class="card-body">
+      <form action="/admin/blogs/update/<%= blog.id %>" method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="title">Title</label>
+          <input type="text" class="form-control" id="title" name="title" value="<%= blog.title %>" required>
+        </div>
+
+        <div class="form-group">
+          <label for="image">Cover Image</label>
+          <% if (blog.image_path) { %>
+            <div class="mb-2">
+              <img src="<%= blog.image_path %>" alt="Current Image" class="img-thumbnail" style="max-height: 200px;">
+            </div>
+          <% } %>
+          <input type="file" class="form-control-file" id="image" name="image" accept="image/*">
+        </div>
+
+        <div class="form-group">
+          <label for="content">Content</label>
+          <textarea class="form-control" id="content" name="content" rows="10" required><%= blog.content %></textarea>
+        </div>
+
+        <div class="form-group d-none">
+          <input type="checkbox" class="form-check-input" id="is_published" name="is_published" <%= blog.is_published ? 'checked' : '' %>>
+          <label class="form-check-label" for="is_published">Published</label>
+        </div>
+
+        <button type="submit" class="btn btn-primary mr-2">Update</button>
+        <button type="button" class="btn btn-info mr-2" onclick="window.open('/blogs/<%= blog.slug %>', '_blank')">Preview</button>
+        
+        <% if (blog.is_published) { %>
+            <button type="submit" class="btn btn-warning" onclick="document.getElementById('is_published').checked = false;">Unpublish</button>
+        <% } else { %>
+            <button type="submit" class="btn btn-success" onclick="document.getElementById('is_published').checked = true;">Publish</button>
+        <% } %>
+
+        <a href="/admin/blogs" class="btn btn-light ml-2">Cancel</a>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+<script>
+  tinymce.init({
+    selector: '#content',
+    height: 500,
+    plugins: [
+      'advlist autolink lists link image charmap print preview anchor',
+      'searchreplace visualblocks code fullscreen',
+      'insertdatetime media table paste code help wordcount'
+    ],
+    toolbar: 'undo redo | formatselect | ' +
+    'bold italic backcolor | alignleft aligncenter ' +
+    'alignright alignjustify | bullist numlist outdent indent | ' +
+    'removeformat | help',
+    content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+  });
+</script>
