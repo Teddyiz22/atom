@@ -239,9 +239,9 @@ function normalizeCallbackBaseUrl(req) {
 function normalizeG2BulkStatus(raw) {
   const s = String(raw || '').trim().toUpperCase();
   if (s === 'PENDING') return 'pending';
-  if (s === 'PROCESSING') return 'processing';
-  if (s === 'COMPLETED') return 'completed';
-  if (s === 'FAILED') return 'fail';
+  if (s === 'PROCESSING' || s === 'IN_PROGRESS' || s === 'IN PROGRESS') return 'processing';
+  if (s === 'COMPLETED' || s === 'SUCCESS' || s === 'SUCCESSFUL' || s === 'COMPLETE' || s === 'DONE' || s === 'DELIVERED') return 'completed';
+  if (s === 'FAILED' || s === 'FAIL' || s === 'ERROR' || s === 'CANCELLED' || s === 'CANCELED' || s === 'REJECTED') return 'fail';
   return null;
 }
 
@@ -678,6 +678,7 @@ const mlController = {
         product_name: purchase.product_name,
         product_type_code: purchase.product_type_code,
         game_name: getGameNameFromTypeCode(purchase.product_type_code),
+        provider: purchase.provider,
         category: null,
         ml_userid: purchase.player_id,
         ml_zoneid: purchase.server_id,
@@ -754,6 +755,7 @@ const mlController = {
         product_name: purchase.product_name,
         product_type_code: purchase.product_type_code,
         game_name: getGameNameFromTypeCode(purchase.product_type_code),
+        provider: purchase.provider,
         category: null,
         ml_userid: purchase.player_id,
         ml_zoneid: purchase.server_id,
@@ -777,11 +779,6 @@ const mlController = {
         if (purchase.currency === 'MMK') userStats.totalSpentMMK += amount;
         if (purchase.currency === 'THB') userStats.totalSpentTHB += amount;
       });
-
-      // Debug logging
-      console.log('🔍 Profile debug - User ID:', req.session.user.id);
-      console.log('🔍 Profile debug - Purchases count:', purchases ? purchases.length : 0);
-      console.log('🔍 Profile debug - User stats:', userStats);
 
       res.render('ml/orderhistory', {
         title: 'My Order History - ATOM Game Shop | Gaming Account Dashboard',
@@ -1642,7 +1639,7 @@ const mlController = {
       let idempotencyKey = String(body.idempotencyKey || '').trim() || `g2bulk:${userId}:${code}:${productId}:${playerId}:${serverId || ''}:${currency}`;
       const GamePurchaseTransaction = require('../models/GamePurchaseTransaction');
       
-      // Allow up to 4 duplicate requests
+      // Allow up to 6 duplicate requests
       const recentDuplicates = await GamePurchaseTransaction.count({
         where: {
           user_id: userId,
@@ -1656,7 +1653,7 @@ const mlController = {
         }
       });
 
-      if (recentDuplicates >= 4) {
+      if (recentDuplicates >= 6) {
         await transaction.rollback();
         releaseUserLock(userId);
         return res.status(429).json({ status: 429, message: 'Too many requests. Please wait a moment.' });
@@ -1716,6 +1713,7 @@ const mlController = {
       const orderPayload = {
         catalogue_name: productName,
         player_id: playerId,
+        order_id: String(purchase.id),
         ...(serverId ? { server_id: serverId } : {}),
         ...(remark ? { remark } : {}),
         ...(callback_url ? { callback_url } : {})
@@ -1730,6 +1728,7 @@ const mlController = {
       }
 
       const od = orderRes?.raw || {};
+      console.log('[G2Bulk] Order response for purchase', purchase.id, ':', JSON.stringify(od));
       if (!od || od.success !== true) {
         const failureReason = String(od?.message || od?.error || 'Order creation failed');
         await wallet.update({ [balanceField]: currentBalance }, { transaction: transaction });
@@ -1753,10 +1752,12 @@ const mlController = {
       }
 
       const order = od.order && typeof od.order === 'object' ? od.order : {};
-      const providerStatus = normalizeG2BulkStatus(order.status) || 'pending';
+      const providerStatus = normalizeG2BulkStatus(order.status) || normalizeG2BulkStatus(od.status) || 'pending';
+      const resolvedOrderId = order.order_id || od.order_id || order.orderId || od.orderId || String(purchase.id);
+      console.log('[G2Bulk] Resolved status:', providerStatus, 'order_id:', resolvedOrderId, 'for purchase', purchase.id);
       await purchase.update({
         status: providerStatus,
-        order_id: order.order_id ? String(order.order_id) : null,
+        order_id: String(resolvedOrderId),
         delivery_items: null,
         updated_at: new Date()
       }, { transaction: transaction });
@@ -1792,20 +1793,29 @@ const mlController = {
     const body = req.body && typeof req.body === 'object' ? req.body : {};
     const orderId = String(body.order_id || body.orderId || '').trim();
     const statusRaw = body.status;
+    console.log('[G2Bulk Callback] Received:', JSON.stringify(body));
     if (!orderId) {
       return res.status(400).json({ ok: false, error: 'order_id is required' });
     }
 
     const normalized = normalizeG2BulkStatus(statusRaw);
     if (!normalized) {
+      console.log('[G2Bulk Callback] Invalid status:', statusRaw, 'for order_id:', orderId);
       return res.status(400).json({ ok: false, error: 'invalid status' });
     }
 
     const GamePurchaseTransaction = require('../models/GamePurchaseTransaction');
-    const tx = await GamePurchaseTransaction.findOne({ where: { provider: 'g2bulk', order_id: orderId } }).catch(() => null);
+    let tx = await GamePurchaseTransaction.findOne({ where: { provider: 'g2bulk', order_id: orderId } }).catch(() => null);
     if (!tx) {
+      // Fallback: try matching by purchase id (we send purchase.id as order_id to G2Bulk)
+      tx = await GamePurchaseTransaction.findByPk(orderId).catch(() => null);
+      if (tx && tx.provider !== 'g2bulk') tx = null;
+    }
+    if (!tx) {
+      console.log('[G2Bulk Callback] No transaction found for order_id:', orderId);
       return res.json({ ok: true });
     }
+    console.log('[G2Bulk Callback] Found transaction:', tx.id, 'current status:', tx.status, '-> new status:', normalized);
 
     const { sequelize } = require('../models');
     const t = await sequelize.transaction();
@@ -1933,7 +1943,7 @@ const mlController = {
         amount: parseFloat(purchase.total_amount),
         currency: purchase.currency,
         status: purchase.status,
-        date: new Date(purchase.created_at).toLocaleDateString(),
+        date: new Date(purchase.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Yangon' }),
         ml_order_id: purchase.order_id
       }));
 

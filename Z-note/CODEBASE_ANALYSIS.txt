@@ -1,0 +1,321 @@
+================================================================================
+ATOM Game Shop — Codebase Architecture Analysis
+================================================================================
+
+1. CUSTOMER-SIDE FRONTEND
+================================================================================
+
+All customer-facing pages use EJS templates with the ml-layout.ejs layout,
+served from the root "/" path via mlRoutes.js.
+
+Views (EJS Templates)
+---------------------
+Located in: views/ml/
+
+  index.ejs              — Home/landing page
+  shop.ejs               — Game type selection page
+  shop-ml.ejs            — Mobile Legends (Smile) shop
+  shop-mlphp.ejs         — Mobile Legends PH (Smile) shop
+  shop-mcgg.ejs          — Magic Chess Go Go (Smile) shop
+  shop-hok.ejs           — Honor of Kings (G2Bulk) shop
+  shop-pubgm.ejs         — PUBG Mobile (G2Bulk) shop
+  shop-mlbb_special.ejs  — ML Special/SG/MY (G2Bulk) shop
+  profile.ejs            — User profile page
+  orderhistory.ejs       — Order history
+  wallet.ejs             — Wallet page
+  about.ejs              — About us
+  contact.ejs            — Contact page
+  faq.ejs                — FAQ
+  guide.ejs              — Guide
+  privacy-policy.ejs     — Privacy policy
+  terms-and-conditions.ejs — Terms & conditions
+  disclaimer.ejs         — Disclaimer
+
+Shared Partials (views/partials/)
+---------------------------------
+  ml-nav.ejs             — Customer navbar
+  ml-footer.ejs          — Customer footer
+  ml-head.ejs            — Head/meta tags
+  ml-scripts.ejs         — Shared JS scripts
+  ml-floating-nav.ejs    — Mobile floating nav
+  toast.ejs              — Toast notifications
+  messages.ejs           — Flash messages
+
+Static Assets (Customer)
+------------------------
+  public/css/ml-styles.css   — Customer CSS
+  public/js/ml-script.js     — Customer JS
+
+Routes
+------
+  routes/mlRoutes.js         — Mounted at "/" in app.js
+
+Controller
+----------
+  controllers/mlController.js
+
+
+================================================================================
+2. ADMIN-SIDE CODE
+================================================================================
+
+Views (views/admin/)
+--------------------
+  dashboard.ejs              — Admin dashboard
+  users.ejs                  — User management
+  invalidUsers.ejs           — Unverified users
+  products/                  — Product CRUD views
+  productManagement/         — Product management views
+  g2bulkItems.ejs            — G2Bulk item mapping management
+  smileSubItems.ejs          — Smile sub-item mapping management
+  productTypes.ejs           — Game/product type management
+  paymentMethods.ejs         — Payment method config
+  transactions.ejs           — Transaction management
+  wallets.ejs                — Wallet management
+  active_wallets.ejs         — Active wallets
+  reports.ejs                — Reports & analytics
+  settings.ejs               — System settings
+  gamePurchaseTransactions.ejs — Game purchase transaction viewer
+  blogs/                     — Blog management views
+
+Layout
+------
+  views/layouts/admin-layout.ejs
+
+Static Assets (Admin)
+---------------------
+  public/admin/css/
+  public/admin/js/
+  public/admin/img/
+  public/admin/vendor/
+
+Routes
+------
+  routes/adminRoutes.js      — Mounted at "/admin"
+
+Controller
+----------
+  controllers/adminController.js  (105KB — largest file)
+
+
+================================================================================
+3. G2BULK — PRODUCT PURCHASE FLOW & API
+================================================================================
+
+Which games use G2Bulk?
+-----------------------
+Defined in routes/mlRoutes.js (lines 92-121):
+  - hok          (Honor of Kings)       → provider = 'g2bulk'
+  - pubgm        (PUBG Mobile)          → provider = 'g2bulk'
+  - mlbb_special (ML Special SG/MY)     → provider = 'g2bulk'
+
+API Configuration (from .env)
+-----------------------------
+  G2BULK_API_URL   — Base URL of the G2Bulk API
+  G2BULK_API_KEY   — API key, sent as X-API-Key header + Authorization: Bearer
+
+Client created in: controllers/mlController.js, function getG2BulkClientOrThrow()
+(lines 182-195)
+
+G2Bulk API Endpoints Called
+---------------------------
+  Function                  | G2Bulk API Endpoint              | Purpose
+  ------------------------- | -------------------------------- | ---------------------------
+  g2bulkFetchFields()       | POST /games/fields               | Get required input fields
+  g2bulkCheckPlayerId()     | POST /games/checkPlayerId        | Validate player ID/server
+  g2bulkCreateOrder()       | POST /games/{code}/order         | Create a purchase order
+  shop() controller         | GET  /games/{code}/catalogue     | Fetch product catalogue
+
+G2Bulk Purchase Flow (end-to-end)
+---------------------------------
+1. Customer visits shop page (e.g. /shop/hok)
+   → mlController.shop() calls GET /games/hok/catalogue to list products,
+     matched against locally-stored Product records for pricing.
+
+2. Customer verifies player ID
+   → Frontend calls POST /api/g2bulk/games/:code/check-player
+   → mlController.g2bulkCheckPlayer()
+   → calls POST /games/checkPlayerId on G2Bulk API.
+
+3. Customer places order
+   → Frontend calls POST /api/g2bulk/games/:code/order
+   → mlController.g2bulkPlaceOrder() (line 1515):
+     - Looks up G2BulkItem mapping to get fixed price from Product table
+     - Re-verifies player ID via G2Bulk API
+     - Re-fetches catalogue to get USD price
+     - Applies fixed price (from admin) or dynamic pricing (USD × exchange rate)
+     - Deducts wallet balance (with row-level locking)
+     - Calls POST /games/{code}/order on G2Bulk API
+     - Creates GamePurchaseTransaction record with provider: 'g2bulk'
+     - Sends status email
+
+4. Callback
+   → G2Bulk calls POST /api/g2bulk/order-callback
+   → mlController.g2bulkOrderCallback() (line 1791)
+   → Updates status (processing → completed / fail)
+   → Handles refunds on failure
+
+Data Models
+-----------
+  G2BulkItem (models/G2BulkItem.js)
+    — Maps local Product.id → g2bulkProductId (ID on G2Bulk's side)
+
+  Product (models/Product.js)
+    — Stores local pricing (price_mmk, price_thb) set by admin
+
+  GamePurchaseTransaction (models/GamePurchaseTransaction.js)
+    — Stores all orders with provider = 'g2bulk'
+
+
+================================================================================
+4. SMILE (SmileOne) — API DEFINITION & INTEGRATION
+================================================================================
+
+Which games use Smile?
+----------------------
+Defined in routes/mlRoutes.js (lines 97-116):
+  - ml     (Mobile Legends Global)     → provider = 'smile'
+  - mlphp  (Mobile Legends PH)         → provider = 'smile'
+  - mcgg   (Magic Chess Go Go)         → provider = 'smile'
+
+API Configuration (from .env)
+-----------------------------
+  ML_API_URL     = https://www.smile.one  (base URL)
+  ML_API_EMAIL   — SmileOne account email
+  ML_API_UID     — SmileOne account UID
+  ML_API_KEY     — SmileOne API key (used for MD5 signature generation)
+  ML_API_PRODUCT = mobilelegends  (default product slug)
+
+Smile API Endpoints Called
+--------------------------
+Defined in controllers/mlController.js (lines 58-150):
+
+  Function                  | Smile API Endpoint                           | Purpose
+  ------------------------- | -------------------------------------------- | -------------------------
+  smileOneGetRoleInfo()     | POST {ML_API_URL}/smilecoin/api/getrole      | Verify player account
+                            | (or /ph/smilecoin/api/getrole for PH region) |
+  smileOneCreateOrder()     | POST {ML_API_URL}/smilecoin/api/createorder  | Place diamond top-up order
+                            | (or /ph/smilecoin/api/createorder for PH)    |
+
+Both use MD5 double-hash signature generated by generateSign() (line 45).
+
+Smile Purchase Flow
+-------------------
+1. Customer visits shop (e.g. /shop/ml)
+   → Products loaded from local Product table (no external API call for catalogue).
+
+2. Customer verifies player
+   → Frontend calls POST /api/verify-user
+   → mlController.verifyUser() (line 960)
+   → calls smileOneGetRoleInfo() with appropriate productSlug and region.
+
+3. Customer places order
+   → Frontend calls POST /api/place-order
+   → mlController.placeOrder() (line 1011):
+     - Loads SmileSubItem records linked to chosen Product
+       (or falls back to smileIDCombination field)
+     - Deducts wallet balance (with row-level locking)
+     - Loops through each SmileSubItem, calls smileOneCreateOrder() for each
+     - Supports partial success — if some sub-orders fail, only successful
+       portion is charged
+     - Creates GamePurchaseTransaction with provider: 'smile'
+     - Sends confirmation email
+
+Data Models
+-----------
+  SmileSubItem (models/SmileSubItem.js)
+    — Maps Product.id → one or more smileProductId values
+    — Has region field: 'b' (global) or 'ph' (Philippines)
+
+  Product (models/Product.js)
+    — Also has legacy smileIDCombination field as fallback
+
+
+================================================================================
+5. OTHER KEY FILES
+================================================================================
+
+Controllers
+-----------
+  controllers/mlController.js       — Customer shop + purchase logic
+  controllers/adminController.js    — Admin panel logic (largest file)
+  controllers/userController.js     — Auth, registration, login
+  controllers/walletController.js   — Wallet top-up
+  controllers/productController.js  — Product CRUD
+  controllers/blogController.js     — Blog management
+  controllers/homeController.js     — Legacy home
+  controllers/languageController.js — Language switching
+
+Services
+--------
+  services/emailService.js          — Email sending (purchase confirmation, etc.)
+  services/loggingService.js        — Activity & error logging
+  services/telegramService.js       — Telegram bot notifications
+
+Models
+------
+  models/User.js                    — User accounts
+  models/Wallet.js                  — Wallet balances (MMK + THB)
+  models/Transaction.js             — Wallet top-up transactions
+  models/Product.js                 — Products with local pricing
+  models/ProductType.js             — Game/product types (ml, hok, pubgm, etc.)
+  models/G2BulkItem.js              — G2Bulk product ID mapping
+  models/SmileSubItem.js            — Smile product ID mapping
+  models/GamePurchaseTransaction.js — All game purchase orders
+  models/PaymentMethod.js           — Payment methods
+  models/Blog.js                    — Blog posts
+  models/SystemSetting.js           — System settings
+  models/UserActivityLog.js         — User activity logs
+
+Middleware
+----------
+  middleware/authMiddleware.js       — Customer auth (requireAuth)
+  middleware/adminAuth.js            — Admin auth (adminAuth)
+  middleware/csrfMiddleware.js       — CSRF protection
+  middleware/sessionMiddleware.js    — Session config + security
+  middleware/maintenanceMiddleware.js — Maintenance mode
+  middleware/validationMiddleware.js — Input validation
+  middleware/adminLayout.js          — Admin layout middleware
+
+Entry Point
+------------
+  app.js                            — Express app setup, route mounting, startup
+
+
+================================================================================
+6. ARCHITECTURE DIAGRAM
+================================================================================
+
+CUSTOMER FRONTEND                          ADMIN PANEL
+-----------------                          -----------
+views/ml/*.ejs                             views/admin/*.ejs
+routes/mlRoutes.js (at /)                  routes/adminRoutes.js (at /admin)
+controllers/mlController.js                controllers/adminController.js
+public/css/ml-styles.css                   public/admin/
+public/js/ml-script.js                     views/layouts/admin-layout.ejs
+
+                    +----------------+
+                    |    Product     |  (local DB pricing)
+                    +-------+--------+
+                            |
+               +------------+------------+
+               |                         |
+      +--------+--------+     +---------+---------+
+      |   SmileSubItem  |     |    G2BulkItem     |
+      |  (smile mapping)|     |  (g2bulk mapping) |
+      +--------+--------+     +---------+---------+
+               |                         |
+      +--------+--------+     +---------+---------+
+      |  SmileOne API   |     |    G2Bulk API     |
+      | smile.one       |     |  G2BULK_API_URL   |
+      |  /getrole       |     |  /games/catalogue |
+      |  /createorder   |     |  /games/checkPlayer|
+      +-----------------+     |  /games/{code}/order|
+                              |  /games/fields     |
+       Games: ml, mlphp,     +--------------------+
+              mcgg           Games: hok, pubgm,
+                                    mlbb_special
+
+================================================================================
+Generated: March 12, 2026
+================================================================================

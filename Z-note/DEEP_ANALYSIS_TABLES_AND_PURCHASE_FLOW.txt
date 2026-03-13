@@ -1,0 +1,709 @@
+================================================================================
+DEEP ANALYSIS: Database Tables, Relationships & Purchase Flows
+================================================================================
+Generated: March 12, 2026
+
+
+================================================================================
+PART 1: DATABASE TABLES & THEIR RELATIONSHIPS
+================================================================================
+
+There are 4 core tables that work together for the game top-up system:
+
+  1. product_types     (model: ProductType)
+  2. products           (model: Product)
+  3. smile_sub_items    (model: SmileSubItem)
+  4. g2bulk_items       (model: G2BulkItem)
+
+Plus 1 transaction table:
+  5. game_purchase_transactions  (model: GamePurchaseTransaction)
+
+
+--------------------------------------------------------------------------------
+TABLE 1: product_types
+--------------------------------------------------------------------------------
+File: models/ProductType.js
+DB Table: product_types
+
+Columns:
+  id          INTEGER (PK, auto-increment)
+  typeCode    STRING(32)    — e.g. 'ml', 'hok', 'pubgm', 'mcgg', 'mlphp', 'mlbb_special'
+  name        STRING(64)    — e.g. 'Mobile Legends', 'Honor of Kings'
+  provider    ENUM('smile', 'g2bulk')   — which external API this game uses
+  type        ENUM('game', 'voucher')   — default 'game'
+  status      ENUM('active', 'inactive') — default 'active'
+
+Unique Index: (provider, type_code)
+
+PURPOSE:
+  This is the "parent category" table. Each row represents one game/product type.
+  It tells the system WHICH external API provider to use (Smile or G2Bulk).
+
+EXAMPLE DATA:
+  +----+----------+----------------------------+----------+------+--------+
+  | id | typeCode | name                       | provider | type | status |
+  +----+----------+----------------------------+----------+------+--------+
+  |  1 | ml       | Mobile Legends             | smile    | game | active |
+  |  2 | mlphp    | Mobile Legend Philippines   | smile    | game | active |
+  |  3 | mcgg     | Magic Chess: Go Go         | smile    | game | active |
+  |  4 | hok      | Honor of Kings             | g2bulk   | game | active |
+  |  5 | pubgm    | PUBG Mobile                | g2bulk   | game | active |
+  |  6 | mlbb_special | Mobile Legends (SG/MY) | g2bulk   | game | active |
+  +----+----------+----------------------------+----------+------+--------+
+
+
+--------------------------------------------------------------------------------
+TABLE 2: products
+--------------------------------------------------------------------------------
+File: models/Product.js
+DB Table: products
+
+Columns:
+  id               INTEGER (PK, auto-increment)
+  product_type_id  INTEGER       — FK → product_types.id
+  name             STRING(255)   — e.g. '86 Diamonds', '172 Diamonds', 'Weekly Pass'
+  diamond_amount   DECIMAL(12,2) — e.g. 86, 172, 344
+  price_mmk        DECIMAL(15,2) — selling price in Myanmar Kyat
+  price_thb        DECIMAL(15,2) — selling price in Thai Baht
+  category         ENUM('DIAMOND','DOUBLE_DIAMOND','WEEKLY_PASS','TWILIGHT_PASS')
+  smile_id_combination STRING(256) — legacy field: e.g. '13+14' (Smile product IDs)
+  region           ENUM('b','ph') — 'b' = global, 'ph' = Philippines
+  is_active        BOOLEAN       — default true
+  is_featured      BOOLEAN       — default false
+  image_path       STRING(500)   — optional product image
+  sort_order       INTEGER       — display ordering
+
+PURPOSE:
+  This is the main product/package table. Each row is one purchasable item
+  (e.g. "86 Diamonds for 3,500 MMK"). The admin sets the local selling price.
+
+  The product_type_id links it to a ProductType, which determines which game
+  and which provider (Smile or G2Bulk) this product belongs to.
+
+RELATIONSHIP:
+  product_types (1) ──→ (many) products
+  "One game type has many products/packages"
+
+EXAMPLE DATA:
+  +----+-----------------+----------------+----------------+-----------+-----------+----------+--------+
+  | id | product_type_id | name           | diamond_amount | price_mmk | price_thb | category | region |
+  +----+-----------------+----------------+----------------+-----------+-----------+----------+--------+
+  |  1 |       1         | 86 Diamonds    |      86        |   3500    |    30     | DIAMOND  |   b    |
+  |  2 |       1         | 172 Diamonds   |     172        |   6800    |    58     | DIAMOND  |   b    |
+  |  3 |       1         | Weekly Pass    |      50        |   3200    |    27     | WEEKLY   |   b    |
+  |  4 |       4         | 60 Tokens      |      60        |   2500    |    22     | NULL     |   b    |
+  |  5 |       4         | Weekly Card    |       0        |   4000    |    35     | NULL     |   b    |
+  +----+-----------------+----------------+----------------+-----------+-----------+----------+--------+
+
+  Product id=1,2,3 belong to ProductType id=1 (ML, provider=smile)
+  Product id=4,5 belong to ProductType id=4 (HOK, provider=g2bulk)
+
+
+--------------------------------------------------------------------------------
+TABLE 3: smile_sub_items
+--------------------------------------------------------------------------------
+File: models/SmileSubItem.js
+DB Table: smile_sub_items
+
+Columns:
+  id               INTEGER (PK, auto-increment)
+  product_id       INTEGER       — FK → products.id
+  smile_product_id STRING(32)    — the Smile API's product ID (e.g. '13', '14', '213')
+  name             STRING(128)   — optional display name
+  amount           DECIMAL(12,2) — weight for price distribution in partial refunds
+  region           ENUM('b','ph') — 'b' = global, 'ph' = Philippines
+  status           ENUM('active','inactive')
+  sort_order       INTEGER       — ordering within the product
+
+Unique Index: (product_id, smile_product_id, region)
+
+PURPOSE:
+  This table maps ONE local Product to ONE OR MORE Smile API product IDs.
+  
+  WHY MULTIPLE?  Because Smile's API sells individual small items (e.g. "50 Diamonds",
+  "100 Diamonds"). If your shop sells "172 Diamonds", there is no single Smile product
+  for 172. So the system combines MULTIPLE Smile products:
+    - Smile product "13" = 86 Diamonds
+    - Smile product "14" = 86 Diamonds
+    - Total = 172 Diamonds
+  
+  When a customer buys "172 Diamonds", the system loops through all SmileSubItems
+  for that product and places a separate Smile API order for EACH one.
+
+RELATIONSHIP:
+  products (1) ──→ (many) smile_sub_items
+  "One product can be fulfilled by multiple Smile API calls"
+
+EXAMPLE DATA:
+  +----+------------+------------------+----------------+--------+--------+--------+
+  | id | product_id | smile_product_id | name           | amount | region | status |
+  +----+------------+------------------+----------------+--------+--------+--------+
+  |  1 |     1      |       13         | 86 Diamonds    |   1    |   b    | active |
+  |  2 |     2      |       13         | 86 Diamonds #1 |   1    |   b    | active |
+  |  3 |     2      |       14         | 86 Diamonds #2 |   1    |   b    | active |
+  |  4 |     3      |       42         | Weekly Pass    |   1    |   b    | active |
+  +----+------------+------------------+----------------+--------+--------+--------+
+
+  In this example:
+  - Product id=1 ("86 Diamonds") → 1 Smile call (smile_product_id=13)
+  - Product id=2 ("172 Diamonds") → 2 Smile calls (smile_product_id=13 AND 14)
+  - Product id=3 ("Weekly Pass") → 1 Smile call (smile_product_id=42)
+
+  FALLBACK: If no SmileSubItem rows exist for a product, the system falls back
+  to the Product.smile_id_combination field (e.g. "13+14") and parses it.
+
+
+--------------------------------------------------------------------------------
+TABLE 4: g2bulk_items
+--------------------------------------------------------------------------------
+File: models/G2BulkItem.js
+DB Table: g2bulk_items
+
+Columns:
+  id                INTEGER (PK, auto-increment)
+  product_id        INTEGER       — FK → products.id
+  g2bulk_product_id STRING(64)    — the G2Bulk API's product ID/code
+  status            ENUM('active','inactive')
+
+Unique Index: (product_id, g2bulk_product_id)
+
+PURPOSE:
+  This table maps ONE local Product to ONE G2Bulk API product ID.
+  Unlike Smile, G2Bulk orders are 1-to-1 (one product = one API call).
+
+  The admin creates a Product with a fixed MMK/THB price, then links it
+  to a G2Bulk catalogue item using this mapping table.
+
+RELATIONSHIP:
+  products (1) ──→ (1) g2bulk_items
+  "One product maps to one G2Bulk catalogue item"
+
+EXAMPLE DATA:
+  +----+------------+-------------------+--------+
+  | id | product_id | g2bulk_product_id | status |
+  +----+------------+-------------------+--------+
+  |  1 |     4      | hok_60_tokens     | active |
+  |  2 |     5      | hok_weekly_card   | active |
+  +----+------------+-------------------+--------+
+
+
+--------------------------------------------------------------------------------
+TABLE 5: game_purchase_transactions
+--------------------------------------------------------------------------------
+File: models/GamePurchaseTransaction.js
+DB Table: game_purchase_transactions
+
+Columns:
+  id                INTEGER (PK, auto-increment)
+  user_id           INTEGER       — FK → users.id
+  user_name         STRING(100)
+  provider          ENUM('g2bulk','smile')  — which API was used
+  product_type_code STRING(64)    — e.g. 'ml', 'hok', 'pubgm'
+  product_id        STRING(64)    — the local Product.id
+  product_name      STRING(128)
+  player_id         STRING(64)    — the game user ID
+  server_id         STRING(64)    — the game server/zone ID
+  quantity          INTEGER
+  callback_url      TEXT          — G2Bulk callback URL
+  idempotency_key   STRING(128)   — prevents duplicate orders
+  total_amount      DECIMAL(15,2) — amount charged
+  currency          ENUM('MMK','THB')
+  status            ENUM('pending','processing','completed','fail','success','partial_success')
+  order_id          STRING(64)    — external API order ID
+  transaction_id    STRING(64)    — external API transaction ID
+  delivery_items    TEXT (JSON)   — details of delivered items
+  refunded_amount   DECIMAL(15,2) — amount refunded on partial/full failure
+  refund_items      TEXT (JSON)   — details of refunded items
+  failure_reason    TEXT          — error message if failed
+
+
+================================================================================
+PART 2: COMPLETE RELATIONSHIP DIAGRAM
+================================================================================
+
+  product_types (game categories)
+       |
+       | 1-to-many (product_type_id)
+       |
+       v
+  products (purchasable packages with local pricing)
+       |
+       +————————————————+————————————————+
+       |                |                |
+       | 1-to-many      | 1-to-1         | 1-to-many
+       |                |                |
+       v                v                v
+  smile_sub_items   g2bulk_items    game_purchase_transactions
+  (Smile API IDs)   (G2Bulk ID)    (order records)
+
+
+  FULL CHAIN EXAMPLE (Smile — Mobile Legends):
+
+    ProductType: id=1, typeCode='ml', provider='smile'
+         |
+         +--→ Product: id=2, name='172 Diamonds', price_mmk=6800
+                  |
+                  +--→ SmileSubItem: smile_product_id='13' (86 Dia)
+                  +--→ SmileSubItem: smile_product_id='14' (86 Dia)
+                  |
+                  +--→ GamePurchaseTransaction: provider='smile', status='completed'
+
+
+  FULL CHAIN EXAMPLE (G2Bulk — Honor of Kings):
+
+    ProductType: id=4, typeCode='hok', provider='g2bulk'
+         |
+         +--→ Product: id=4, name='60 Tokens', price_mmk=2500
+                  |
+                  +--→ G2BulkItem: g2bulk_product_id='hok_60_tokens'
+                  |
+                  +--→ GamePurchaseTransaction: provider='g2bulk', status='completed'
+
+
+================================================================================
+PART 3: HOW G2BULK GAMES WORK (UI → API → External API → DB)
+================================================================================
+
+GAMES: hok (Honor of Kings), pubgm (PUBG Mobile), mlbb_special (ML SG/MY)
+VIEW FILE: views/ml/shop-hok.ejs (example for HOK, others are similar)
+
+Step-by-step flow:
+
+───────────────────────────────────────────────────────────────────────────────
+STEP A: User visits /shop/hok
+───────────────────────────────────────────────────────────────────────────────
+
+  1. ROUTE: mlRoutes.js line 93-97
+     router.get('/shop/hok', ..., (req, res, next) => {
+       req.params.typeCode = 'hok';
+       req.query.provider = 'g2bulk';    ← forced to g2bulk
+       next();
+     }, mlController.shop);
+
+  2. CONTROLLER: mlController.shop() detects provider = 'g2bulk'
+
+  3. FETCH PRODUCTS FROM G2BULK API:
+     API Call: GET {G2BULK_API_URL}/games/hok/catalogue
+     Headers: { 'X-API-Key': G2BULK_API_KEY, 'Authorization': 'Bearer {key}' }
+     
+     Response example:
+     {
+       "status": 200,
+       "products": [
+         { "id": "hok_60_tokens", "name": "60 Tokens", "amount": 0.89 },
+         { "id": "hok_weekly_card", "name": "Weekly Card", "amount": 1.50 },
+         ...
+       ]
+     }
+
+  4. MATCH WITH LOCAL DB PRODUCTS:
+     The controller fetches local Product rows where productTypeId = hok's id
+     Then MATCHES by name:
+       - API product name "60 Tokens" → DB Product name "60 Tokens" → use DB price
+       - If no match found → product is NOT shown (only admin-configured products appear)
+
+  5. RENDER VIEW: shop-hok.ejs receives the `products` array
+     Each product card shows:
+       - product.name (from DB)
+       - product.price_mmk / product.price_thb (from DB)
+       - data attributes: data-product-id, data-product-name, data-price-mmk, data-price-thb
+
+  UI DISPLAY (shop-hok.ejs):
+     Products are split into "Token" items and "Package" items by keywords.
+     Each card shows the product image, name, and price in the selected currency.
+
+───────────────────────────────────────────────────────────────────────────────
+STEP B: User loads form fields (automatic on page load)
+───────────────────────────────────────────────────────────────────────────────
+
+  1. ON PAGE LOAD: JavaScript calls loadFields()
+     
+  2. FRONTEND API CALL:
+     fetch('/api/g2bulk/games/hok/fields')
+     
+  3. BACKEND (mlController.g2bulkFields):
+     API Call: POST {G2BULK_API_URL}/games/fields
+     Body: { game: 'hok' }
+     
+     Response: { ok: true, fields: ['player_id'], notes: 'Enter your UID' }
+
+  4. RENDER: JavaScript dynamically creates input fields based on response
+     - If API returns ['player_id'] → shows 1 input: "Player ID"
+     - If API returns ['player_id', 'server_id'] → shows 2 inputs
+
+───────────────────────────────────────────────────────────────────────────────
+STEP C: User enters Player ID → Auto-verification (800ms debounce)
+───────────────────────────────────────────────────────────────────────────────
+
+  1. USER TYPES: Player ID in the input field
+     After 800ms of no typing, auto-verification triggers.
+
+  2. FRONTEND API CALL:
+     fetch('/api/g2bulk/games/hok/check-player', {
+       method: 'POST',
+       body: JSON.stringify({ fields: { player_id: '12345' } })
+     })
+
+  3. BACKEND (mlController.g2bulkCheckPlayer):
+     API Call: POST {G2BULK_API_URL}/games/checkPlayerId
+     Body: { game: 'hok', user_id: '12345', player_id: '12345' }
+
+  4. RESPONSE → UI:
+     Success: Shows green box "✓ User Found: PlayerName"
+              Enables package selection cards
+     Failure: Shows red box "✗ Player not found"
+              Disables package selection cards
+
+───────────────────────────────────────────────────────────────────────────────
+STEP D: User selects package → clicks "Proceed to Payment"
+───────────────────────────────────────────────────────────────────────────────
+
+  1. USER CLICKS a package card → selectPackageEl(this)
+     - Highlights the card with yellow ring
+     - Shows "Selected Package" summary with price
+     - Sets hidden fields: selectedProductId, selectedCurrency
+     - Enables the "Proceed to Payment" button
+
+  2. USER CLICKS "Proceed to Payment" → form submit handler fires
+
+  3. FRONTEND API CALL:
+     fetch('/api/g2bulk/games/hok/order', {
+       method: 'POST',
+       headers: { 'x-csrf-token': csrfToken },
+       body: JSON.stringify({
+         product_id: '4',          ← local Product.id
+         currency: 'MMK',
+         fields: { player_id: '12345' }
+       })
+     })
+
+  4. BACKEND (mlController.g2bulkPlaceOrder, line 1515):
+
+     a) LOOK UP G2BulkItem mapping:
+        G2BulkItem.findOne({ where: { productId: 4, status: 'active' } })
+        → Gets g2bulkProductId = 'hok_60_tokens'
+        → Gets fixedPriceProduct = Product row (price_mmk=2500)
+
+     b) RE-VERIFY PLAYER:
+        POST {G2BULK_API_URL}/games/checkPlayerId
+        → Must pass or order is rejected
+
+     c) RE-FETCH CATALOGUE:
+        GET {G2BULK_API_URL}/games/hok/catalogue
+        → Find the item matching g2bulkProductId
+        → Get USD unit price (e.g. $0.89)
+
+     d) CALCULATE PRICE:
+        If fixedPriceProduct exists → use admin-set price (2500 MMK)
+        If not → dynamic: USD price × exchange rate
+
+     e) CHECK WALLET BALANCE:
+        Wallet.findOne({ where: { userId }, lock: UPDATE })
+        → If balance < price → reject "Insufficient balance"
+
+     f) DEDUCT WALLET:
+        wallet.update({ balance_mmk: currentBalance - 2500 })
+
+     g) CREATE TRANSACTION RECORD:
+        GamePurchaseTransaction.create({
+          provider: 'g2bulk',
+          product_type_code: 'hok',
+          product_id: '4',
+          product_name: '60 Tokens',
+          player_id: '12345',
+          total_amount: 2500,
+          currency: 'MMK',
+          status: 'pending'
+        })
+
+     h) PLACE ORDER ON G2BULK:
+        POST {G2BULK_API_URL}/games/hok/order
+        Body: {
+          catalogue_name: '60 Tokens',
+          player_id: '12345',
+          callback_url: 'https://atomgameshop.com/api/g2bulk/order-callback'
+        }
+
+     i) UPDATE TRANSACTION:
+        If success → status = order.status (pending/processing/completed)
+        If failure → status = 'fail', refund wallet
+
+  5. FRONTEND RESPONSE:
+     Success → Opens modal: "Order Created" with order ID, purchase ID
+     Failure → Opens modal: "Order Failed" with error message
+
+───────────────────────────────────────────────────────────────────────────────
+STEP E: G2Bulk Callback (asynchronous, later)
+───────────────────────────────────────────────────────────────────────────────
+
+  G2Bulk calls: POST /api/g2bulk/order-callback
+  Body: { order_id: 'xxx', status: 'completed' | 'processing' | 'failed' }
+
+  BACKEND (mlController.g2bulkOrderCallback, line 1791):
+    - Finds the GamePurchaseTransaction by order_id
+    - If status = 'completed' → marks transaction as completed
+    - If status = 'fail' → marks as fail + REFUNDS wallet balance
+    - If status = 'processing' → updates to processing
+    - Sends status email to user
+
+
+================================================================================
+PART 4: HOW SMILE GAMES WORK (UI → API → External API → DB)
+================================================================================
+
+GAMES: ml (MLBB Global), mlphp (MLBB Philippines), mcgg (Magic Chess Go Go)
+VIEW FILE: views/ml/shop-ml.ejs (example for ML, others similar)
+
+Step-by-step flow:
+
+───────────────────────────────────────────────────────────────────────────────
+STEP A: User visits /shop/ml
+───────────────────────────────────────────────────────────────────────────────
+
+  1. ROUTE: mlRoutes.js line 108-112
+     router.get('/shop/ml', ..., (req, res, next) => {
+       req.params.typeCode = 'ml';
+       req.query.provider = 'smile';    ← forced to smile
+       next();
+     }, mlController.shop);
+
+  2. CONTROLLER: mlController.shop() detects provider = 'smile' (NOT g2bulk)
+
+  3. FETCH PRODUCTS FROM LOCAL DB ONLY (no external API call!):
+     Product.findAll({
+       where: { is_active: true, productTypeId: productType.id },
+       order: [['is_featured','DESC'], ['sort_order','ASC'], ['diamond_amount','ASC']]
+     })
+
+     KEY DIFFERENCE FROM G2BULK:
+     - G2Bulk: fetches catalogue from external API, then matches with DB
+     - Smile: fetches ONLY from local DB (all product info is in the DB)
+
+  4. RENDER VIEW: shop-ml.ejs receives the `products` array
+     Products are displayed in 3 sections:
+       a) Pass Packages (Weekly Pass, Twilight Pass, Bundles)
+       b) Diamond Packages (regular diamonds: 86, 172, 344, etc.)
+       c) Double Diamond Packages (first-time purchase 2x)
+
+  UI DISPLAY (shop-ml.ejs):
+     Each product card shows:
+       - Product image (diamond icon, pass icon, etc.)
+       - product.name (cleaned: removes "diamond"/"dia" text)
+       - product.price_mmk or product.price_thb based on currency toggle
+       - onclick calls selectPackage(this, id, name, priceMMK, priceTHB, diamonds)
+
+───────────────────────────────────────────────────────────────────────────────
+STEP B: User enters User ID + Server ID → Auto-verification (800ms debounce)
+───────────────────────────────────────────────────────────────────────────────
+
+  NOTE: Smile games require BOTH User ID AND Server ID (Zone ID).
+  G2Bulk games may only need Player ID (depends on the game fields API).
+
+  1. USER TYPES: User ID and Server ID in 2 input fields
+     After 800ms of no typing in either field, auto-verification triggers.
+
+  2. FRONTEND API CALL:
+     fetch('/api/verify-user', {
+       method: 'POST',
+       headers: { 'x-csrf-token': csrfToken },
+       body: JSON.stringify({
+         userid: '123456789',
+         zoneid: '2345'
+       })
+     })
+
+     NOTE: No gameCode is sent for ML global (defaults to 'ml').
+           For mlphp, gameCode='mlphp'. For mcgg, gameCode='mcgg'.
+
+  3. BACKEND (mlController.verifyUser, line 960):
+     
+     Determines Smile config based on gameCode:
+       ml (default): smileProductId='13', productSlug='mobilelegends'
+       mcgg:         smileProductId='23825', productSlug='magicchessgogo'
+       mlphp:        smileProductId='213', productSlug='mobilelegends', region='ph'
+
+     API Call: POST https://www.smile.one/smilecoin/api/getrole
+     (or /ph/smilecoin/api/getrole for PH region)
+     
+     Body (form-encoded):
+       uid     = ML_API_UID (from .env)
+       email   = ML_API_EMAIL (from .env)
+       userid  = '123456789'
+       zoneid  = '2345'
+       productid = '13'
+       product = 'mobilelegends'
+       time    = unix timestamp
+       sign    = MD5(MD5(uid+email+apikey) + time + userid + zoneid + productid)
+
+  4. RESPONSE → UI:
+     Success (status=200, has username):
+       Shows green box "✓ User Found: Nay Myo"
+       Enables package selection
+     Failure:
+       Shows red box "✗ User not found or invalid ID"
+       Disables package selection
+
+───────────────────────────────────────────────────────────────────────────────
+STEP C: User selects package → clicks "Proceed to Payment"
+───────────────────────────────────────────────────────────────────────────────
+
+  1. USER CLICKS a package card → selectPackage(...)
+     - Same UI behavior as G2Bulk: highlights card, shows summary, enables button
+
+  2. USER CLICKS "Proceed to Payment" → form submit handler fires
+
+  3. FRONTEND API CALL:
+     fetch('/api/place-order', {
+       method: 'POST',
+       headers: { 'x-csrf-token': csrfToken },
+       body: JSON.stringify({
+         userid: '123456789',
+         zoneid: '2345',
+         product_id: '2',           ← local Product.id
+         currency: 'MMK'
+       })
+     })
+
+  4. BACKEND (mlController.placeOrder, line 1011):
+
+     a) LOOK UP PRODUCT:
+        Product.findByPk(2)
+        → name='172 Diamonds', price_mmk=6800
+
+     b) DETERMINE PRODUCT SLUG:
+        Looks up ProductType → typeCode='ml' → productSlug='mobilelegends'
+
+     c) CHECK WALLET BALANCE:
+        Wallet.findOne({ where: { userId }, lock: UPDATE })
+        → If balance < 6800 → reject "Insufficient balance"
+
+     d) LOAD SMILE SUB-ITEMS:
+        SmileSubItem.findAll({ where: { productId: 2, status: 'active' } })
+        → Returns: [
+            { smileProductId: '13', amount: 1, region: 'b' },
+            { smileProductId: '14', amount: 1, region: 'b' }
+          ]
+        
+        FALLBACK: If no SmileSubItems found, parses Product.smile_id_combination
+        e.g. "13+14" → splits to ['13', '14']
+
+     e) CALCULATE SHARE PER SUB-ITEM:
+        totalSubAmount = 1 + 1 = 2
+        Sub-item 1 share = (1/2) × 6800 = 3400 MMK
+        Sub-item 2 share = (1/2) × 6800 = 3400 MMK
+
+     f) LOOP: CALL SMILE API FOR EACH SUB-ITEM:
+
+        ORDER 1:
+          POST https://www.smile.one/smilecoin/api/createorder
+          Body: uid, email, userid='123456789', zoneid='2345',
+                productid='13', product='mobilelegends',
+                time, sign=MD5(...)
+
+        ORDER 2:
+          POST https://www.smile.one/smilecoin/api/createorder
+          Body: same but productid='14'
+
+     g) HANDLE PARTIAL SUCCESS:
+        - If both succeed → status='completed', charge full 6800
+        - If order 1 succeeds, order 2 fails → status='partial_success'
+          charge 3400 (only successful share), refund 3400
+        - If both fail → status='fail', charge 0
+
+     h) DEDUCT WALLET (only successful amount):
+        wallet.update({ balance_mmk: currentBalance - successfulAmount })
+
+     i) CREATE TRANSACTION RECORD:
+        GamePurchaseTransaction.create({
+          provider: 'smile',
+          product_type_code: 'ml',
+          product_id: '2',
+          product_name: '172 Diamonds',
+          player_id: '123456789',
+          server_id: '2345',
+          total_amount: successfulAmount,
+          currency: 'MMK',
+          status: 'completed' | 'partial_success' | 'fail',
+          delivery_items: JSON of all order results,
+          refunded_amount: refundedAmount,
+          refund_items: JSON of failed items
+        })
+
+     j) SEND EMAIL:
+        Sends order confirmation email to user
+
+  5. FRONTEND RESPONSE:
+     Success → Toast: "✅ Order placed successfully!"
+               After 3 seconds → page reloads
+     Failure → Toast: "❌ " + error message
+
+
+================================================================================
+PART 5: KEY DIFFERENCES BETWEEN G2BULK AND SMILE
+================================================================================
+
+  Feature               | G2Bulk                        | Smile
+  ----------------------|-------------------------------|-----------------------------
+  Games                 | hok, pubgm, mlbb_special      | ml, mlphp, mcgg
+  Product Catalogue     | Fetched from G2Bulk API       | Stored in local DB only
+  Product Display       | API catalogue matched with DB | Directly from DB
+  Verification API      | /api/g2bulk/games/:code/      | /api/verify-user
+                        |   check-player                |
+  Verification Input    | Dynamic fields from API       | Fixed: User ID + Server ID
+  Order API (frontend)  | /api/g2bulk/games/:code/order | /api/place-order
+  Order API (external)  | POST /games/{code}/order      | POST /smilecoin/api/
+                        |                               |   createorder
+  Auth Method           | API Key in headers            | MD5 signature
+  Items per Order       | 1 API call per product        | N API calls (1 per sub-item)
+  Partial Success       | Not applicable (1 call)       | Yes (some sub-items can fail)
+  Callback              | Yes (async order-callback)    | No (immediate response)
+  Price Source          | Fixed from DB, or dynamic     | Always fixed from DB
+                        | (USD × exchange rate)         |
+  Refund on Failure     | Via callback handler          | Immediate in placeOrder
+
+
+================================================================================
+PART 6: DATA FLOW SUMMARY (for quick reference)
+================================================================================
+
+G2BULK FLOW:
+  User visits /shop/hok
+    → Controller calls GET G2Bulk /games/hok/catalogue
+    → Matches API products with DB products by NAME
+    → Renders shop-hok.ejs with merged products (API data + DB prices)
+  
+  User enters Player ID
+    → JS calls POST /api/g2bulk/games/hok/check-player
+    → Controller calls POST G2Bulk /games/checkPlayerId
+    → Shows verification result
+  
+  User buys
+    → JS calls POST /api/g2bulk/games/hok/order
+    → Controller: looks up G2BulkItem mapping
+    → Controller: deducts wallet
+    → Controller calls POST G2Bulk /games/hok/order
+    → Creates GamePurchaseTransaction (status=pending)
+    → Later: G2Bulk callback updates status to completed/fail
+
+
+SMILE FLOW:
+  User visits /shop/ml
+    → Controller queries DB for active products
+    → Renders shop-ml.ejs with products from DB
+  
+  User enters User ID + Server ID
+    → JS calls POST /api/verify-user
+    → Controller calls POST smile.one /smilecoin/api/getrole
+    → Shows verification result (player name)
+  
+  User buys
+    → JS calls POST /api/place-order
+    → Controller: looks up SmileSubItems for the product
+    → Controller: deducts wallet
+    → Controller: loops through sub-items, calls POST smile.one /smilecoin/api/createorder for EACH
+    → Creates GamePurchaseTransaction (status=completed/partial/fail)
+    → Sends email immediately
+
+================================================================================
+END OF ANALYSIS
+================================================================================

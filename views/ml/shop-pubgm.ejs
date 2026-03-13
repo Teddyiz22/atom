@@ -414,6 +414,7 @@
               data-product-id="<%= String(productLeft.id || '') %>"
               data-product-name="<%= String(productLeft.name || '') %>"
               data-price-mmk="<%= productLeft.price_mmk %>"
+              data-price-thb="<%= productLeft.price_thb %>"
               onclick="selectPackageEl(this)"
             >
               <% if (productLeft.is_featured) { %>
@@ -465,6 +466,7 @@
               data-product-id="<%= String(productRight.id || '') %>"
               data-product-name="<%= String(productRight.name || '') %>"
               data-price-mmk="<%= productRight.price_mmk %>"
+              data-price-thb="<%= productRight.price_thb %>"
               onclick="selectPackageEl(this)"
             >
               <% if (productRight.is_featured) { %>
@@ -1051,44 +1053,46 @@
     }
 
     // Form submission handler with order processing
-    document.getElementById('orderForm').addEventListener('submit', function(e) {
-      e.preventDefault();
+    const orderForm = document.getElementById('orderForm');
+    if (orderForm) {
+      orderForm.addEventListener('submit', function(e) {
+        e.preventDefault();
 
-      const productId = document.getElementById('selectedProductId').value;
-      const currency = document.getElementById('selectedCurrency').value;
+        const productId = document.getElementById('selectedProductId').value;
+        const currency = document.getElementById('selectedCurrency').value;
 
-      const fields = collectFields();
-      const pid = String(fields.player_id || '').trim();
-      if (!pid) {
-        showErrorToast('Please enter your account details first');
-        return;
-      }
+        const fields = collectFields();
+        const pid = String(fields.player_id || '').trim();
+        if (!pid) {
+          showErrorToast('Please enter your account details first');
+          return;
+        }
 
-      if (!selectedPackageData || !productId) {
-        showErrorToast('Please select a UC package');
-        return;
-      }
+        if (!selectedPackageData || !productId) {
+          showErrorToast('Please select a UC package');
+          return;
+        }
 
-      if (!isLoggedIn) {
-        showErrorToast('Please login to place an order');
-        setTimeout(function() {
-          window.location.href = '/users/login';
-        }, 2000);
-        return;
-      }
+        if (!isLoggedIn) {
+          showErrorToast('Please login to place an order');
+          setTimeout(function() {
+            window.location.href = '/users/login';
+          }, 2000);
+          return;
+        }
 
-      if (!lastVerifiedFields) {
-        showErrorToast('Please verify your account first');
-        return;
-      }
+        if (!lastVerifiedFields) {
+          showErrorToast('Please verify your account first');
+          return;
+        }
 
-      processOrder(productId, currency);
-
-
-    });
+        processOrder(productId, currency);
+      });
+    }
 
     // Global variable to prevent multiple simultaneous orders
     let isProcessingOrder = false;
+    let orderSucceeded = false;
     let lastOrderTime = 0;
     const ORDER_COOLDOWN = 5000; // 5 second cooldown between orders
 
@@ -1248,14 +1252,18 @@
               purchaseId: purchaseId
             });
 
-            // Reset form
-            document.getElementById('orderForm').reset();
+            // Clear package selection (user must pick a new one)
+            document.querySelectorAll('.package-card').forEach(function(card) {
+              card.classList.remove('ring-2', 'ring-yellow-400', 'bg-yellow-400/10');
+            });
             document.getElementById('selectedPackage').classList.add('hidden');
+            document.getElementById('selectedProductId').value = '';
             selectedPackageData = null;
-            showInfoState();
+            lastVerifiedFields = null;
+            orderSucceeded = true;
 
           } else {
-            showErrorToast('❌ ' + result.message);
+            showErrorToast('❌ ' + (result.message || 'Order failed. Please try again.'));
             openResultModal({
               variant: 'error',
               title: 'Order Failed',
@@ -1277,27 +1285,36 @@
           });
         })
         .finally(function() {
-          // Reset processing state
           isProcessingOrder = false;
 
-          // Re-enable the order button
-          orderBtn.disabled = false;
-          orderBtn.innerHTML = '<span class="flex items-center justify-center"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>Proceed to Payment</span>'
-
-          // Re-enable package cards
-          document.querySelectorAll('.package-card').forEach(card => {
-            card.style.pointerEvents = 'auto';
-            card.style.opacity = '1';
-          });
+          // Restore the button text
+          orderBtn.innerHTML = '<span class="flex items-center justify-center"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg><strong>Proceed to Payment</strong></span>';
 
           // Re-enable form inputs
-          const dyn = document.getElementById('dynamicFields');
+          var dyn = document.getElementById('dynamicFields');
           if (dyn && dyn.children.length > 0) {
             Array.from(dyn.querySelectorAll('input, select, textarea')).forEach(function(el) { el.disabled = false; });
           } else {
             if (document.getElementById('userId')) document.getElementById('userId').disabled = false;
           }
 
+          // Re-enable package cards
+          document.querySelectorAll('.package-card').forEach(function(card) {
+            card.style.pointerEvents = 'auto';
+            card.style.opacity = '1';
+          });
+
+          if (orderSucceeded) {
+            // After success: button stays disabled until user re-verifies + selects new package
+            orderBtn.disabled = true;
+
+            // Auto-refill credentials and re-verify so user can buy again quickly
+            autoFillPUBGMCredentials();
+            orderSucceeded = false;
+          } else {
+            // After failure: re-enable button so user can retry immediately
+            orderBtn.disabled = false;
+          }
         });
     }
   </script>

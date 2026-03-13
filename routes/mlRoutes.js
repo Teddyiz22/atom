@@ -15,7 +15,7 @@ const { protectAPI, protectForm, generateCSRFSecret, generateCSRFToken } = requi
 // Rate limiting for purchase endpoint to prevent abuse
 const purchaseRateLimit = rateLimit({
   windowMs: 60 * 1000, // 1 minute window
-  max: 3, // Reduced from 5 to 3 purchase attempts per minute for better security
+  max: 6, // Allow up to 6 purchase attempts per minute (matches backend duplicate-check limit)
   message: {
     status: 429,
     message: 'Too many purchase attempts. Please wait before trying again.'
