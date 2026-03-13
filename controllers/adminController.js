@@ -1544,24 +1544,50 @@ const adminController = {
       });
 
       // Format data for DataTables
-      const data = transactions.map(t => [
-        t.id,
-        `
+      const data = transactions.map(t => {
+        const isG2BulkPending = t.provider === 'g2bulk' && t.status === 'pending';
+        const isG2BulkProcessing = t.provider === 'g2bulk' && t.status === 'processing';
+        const isG2BulkCompleted = t.provider === 'g2bulk' && (t.status === 'completed' || t.status === 'success');
+
+        let statusLabel = t.status;
+        if (isG2BulkPending) statusLabel = 'success (p)';
+        else if (isG2BulkProcessing) statusLabel = 'success (n)';
+        else if (isG2BulkCompleted) statusLabel = 'success';
+
+        const isSuccessStyle = isG2BulkPending || isG2BulkProcessing || isG2BulkCompleted || t.status === 'success' || t.status === 'completed';
+        const isWarningStyle = !isSuccessStyle && (t.status === 'pending' || t.status === 'processing');
+        const badgeClass = isSuccessStyle ? 'success' : (isWarningStyle ? 'warning' : 'danger');
+
+        return [
+          t.id,
+          `
         <div class="font-weight-bold">${t.user_name || 'Unknown'}</div>
         <div class="text-muted small">#${t.user_id}</div>
         `,
-        t.player_id || '-',
-        t.server_id || '-',
-        t.provider,
-        t.product_type_code,
-        `
+          t.player_id || '-',
+          t.server_id || '-',
+          t.provider,
+          t.product_type_code,
+          `
         <div class="font-weight-bold">${t.product_name}</div>
         <div class="text-muted small">${t.product_id}</div>
         `,
-        `<div class="text-right">${Number(t.total_amount || 0).toLocaleString()} ${t.currency}</div>`,
-        `<span class="badge badge-${t.status === 'success' || t.status === 'completed' ? 'success' : (t.status === 'pending' ? 'warning' : 'danger')}">${t.status}</span>`,
-        t.created_at ? new Date(t.created_at).toLocaleString() : ''
-      ]);
+          `<div class="text-right">${Number(t.total_amount || 0).toLocaleString()} ${t.currency}</div>`,
+          `<span class="badge badge-${badgeClass}">${statusLabel}</span>`,
+          t.created_at
+            ? new Date(t.created_at).toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true,
+                timeZone: 'Asia/Yangon'
+              })
+            : ''
+        ];
+      });
 
       res.json({
         draw: draw,
