@@ -149,8 +149,19 @@
                       <%= parseFloat(purchase.total_amount).toLocaleString() %> <%= purchase.currency %>
                     </td>
                     <td class="px-3 py-3">
-                      <span class="inline-flex items-center px-2 py-1 rounded-md text-xs font-semibold <%= ['completed', 'success', 'partial_success'].includes(purchase.status) ? 'bg-emerald-600/25 text-emerald-200 border border-emerald-500/30' : (purchase.status === 'pending' ? 'bg-amber-600/25 text-amber-200 border border-amber-500/30' : 'bg-red-600/25 text-red-200 border border-red-500/30') %>">
-                        <%= purchase.status %>
+                      <% const isG2BulkPending = purchase.provider === 'g2bulk' && purchase.status === 'pending'; %>
+                      <% const isG2BulkProcessing = purchase.provider === 'g2bulk' && purchase.status === 'processing'; %>
+                      <% const isG2BulkCompleted = purchase.provider === 'g2bulk' && (purchase.status === 'completed' || purchase.status === 'success'); %>
+                      <span class="inline-flex items-center px-2 py-1 rounded-md text-xs font-semibold <%= (isG2BulkPending || isG2BulkProcessing || isG2BulkCompleted || ['completed', 'success', 'partial_success'].includes(purchase.status)) ? 'bg-emerald-600/25 text-emerald-200 border border-emerald-500/30' : (purchase.status === 'pending' || purchase.status === 'processing' ? 'bg-amber-600/25 text-amber-200 border border-amber-500/30' : 'bg-red-600/25 text-red-200 border border-red-500/30') %>">
+                        <% if (isG2BulkPending) { %>
+                          success (p)
+                        <% } else if (isG2BulkProcessing) { %>
+                          success (n)
+                        <% } else if (isG2BulkCompleted) { %>
+                          success
+                        <% } else { %>
+                          <%= purchase.status %>
+                        <% } %>
                       </span>
                     </td>
                   </tr>

@@ -210,7 +210,9 @@
                   </td>
                   <td class="py-3 px-4">
                     <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold
-                    <% if (purchase.status === 'completed') { %>
+                    <% if (purchase.provider === 'g2bulk' && (purchase.status === 'pending' || purchase.status === 'processing' || purchase.status === 'completed')) { %>
+                      bg-green-500/20 text-green-300 border border-green-500/30
+                    <% } else if (purchase.status === 'completed') { %>
                       bg-green-500/20 text-green-300 border border-green-500/30
                     <% } else if (purchase.status === 'pending') { %>
                       bg-yellow-500/20 text-yellow-300 border border-yellow-500/30
@@ -222,7 +224,13 @@
                       bg-gray-500/20 text-gray-300 border border-gray-500/30
                     <% } %>
                     ">
-                      <% if (purchase.status === 'completed') { %>
+                      <% if (purchase.provider === 'g2bulk' && purchase.status === 'pending') { %>
+                        Success (P)
+                      <% } else if (purchase.provider === 'g2bulk' && purchase.status === 'processing') { %>
+                        Success (N)
+                      <% } else if (purchase.provider === 'g2bulk' && purchase.status === 'completed') { %>
+                        Success
+                      <% } else if (purchase.status === 'completed') { %>
                         ✅ Completed
                       <% } else if (purchase.status === 'pending') { %>
                         ⏳ Pending
@@ -273,7 +281,9 @@
                 </div>
 
                 <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium
-                <% if (purchase.status === 'completed') { %>
+                <% if (purchase.provider === 'g2bulk' && (purchase.status === 'pending' || purchase.status === 'processing' || purchase.status === 'completed')) { %>
+                  bg-green-500/20 text-green-300 border border-green-500/30
+                <% } else if (purchase.status === 'completed') { %>
                   bg-green-500/20 text-green-300 border border-green-500/30
                 <% } else if (purchase.status === 'pending') { %>
                   bg-yellow-500/20 text-yellow-300 border border-yellow-500/30
@@ -285,7 +295,13 @@
                   bg-gray-500/20 text-gray-300 border border-gray-500/30
                 <% } %>">
 
-                  <% if (purchase.status === 'completed') { %>
+                  <% if (purchase.provider === 'g2bulk' && purchase.status === 'pending') { %>
+                    Success (P)
+                  <% } else if (purchase.provider === 'g2bulk' && purchase.status === 'processing') { %>
+                    Success (N)
+                  <% } else if (purchase.provider === 'g2bulk' && purchase.status === 'completed') { %>
+                    Success
+                  <% } else if (purchase.status === 'completed') { %>
                     ✅ Completed
                   <% } else if (purchase.status === 'pending') { %>
                     ⏳ Pending
