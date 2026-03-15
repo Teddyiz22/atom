@@ -1775,7 +1775,7 @@ const mlController = {
       return res.status(200).json({
         status: 200,
         message: 'Order created. Status updates will be sent to your email.',
-        data: { purchaseId: purchase.id, order_id: purchase.order_id || null, newBalance: newBalance }
+        data: { purchaseId: purchase.id, order_id: purchase.order_id || null, newBalance: newBalance, status: providerStatus }
       });
     } catch (error) {
       try { await transaction.rollback(); } catch (_) {}

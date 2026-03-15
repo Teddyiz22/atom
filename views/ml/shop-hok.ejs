@@ -939,14 +939,20 @@
       if (!successOverlay) return;
       const variant = (data && data.variant) ? String(data.variant) : 'success';
       const title = (data && data.title) ? String(data.title) : (variant === 'error' ? 'Order Failed' : 'Order Created');
-      const status = (data && data.status) ? String(data.status) : (variant === 'error' ? 'FAILED' : 'PENDING');
+      let statusDisplay = (data && data.status) ? String(data.status) : (variant === 'error' ? 'FAILED' : 'PENDING');
+      if (variant === 'success') {
+        const s = statusDisplay.toLowerCase();
+        if (s === 'pending') statusDisplay = 'success (p)';
+        else if (s === 'processing') statusDisplay = 'success (n)';
+        else if (s === 'completed' || s === 'success') statusDisplay = 'success';
+      }
       const text = (data && data.text) ? String(data.text) : '';
       const orderId = (data && data.orderId) ? String(data.orderId) : '';
       const purchaseId = (data && data.purchaseId) ? String(data.purchaseId) : '';
 
       if (successCard) successCard.dataset.variant = variant === 'error' ? 'error' : 'success';
       if (successTitleEl) successTitleEl.textContent = title;
-      if (successStatusEl) successStatusEl.textContent = status;
+      if (successStatusEl) successStatusEl.textContent = statusDisplay;
       if (successTextEl) {
         successTextEl.textContent = text;
         successTextEl.style.display = text ? '' : 'none';
@@ -1068,10 +1074,11 @@
 
             const orderId = result && result.data && result.data.order_id ? String(result.data.order_id) : '';
             const purchaseId = result && result.data && result.data.purchaseId ? String(result.data.purchaseId) : '';
+            const orderStatus = result && result.data && result.data.status ? String(result.data.status) : 'pending';
             openResultModal({
               variant: 'success',
               title: 'Order Created',
-              status: 'PENDING',
+              status: orderStatus,
               text: String(result.message || 'Order created. Status updates will be sent to your email.'),
               orderId: orderId,
               purchaseId: purchaseId
