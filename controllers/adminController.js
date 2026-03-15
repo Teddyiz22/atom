@@ -2919,7 +2919,16 @@ const adminController = {
         }</span>
         ${transaction.updated_by ? `<br><small class="text-muted">by ${transaction.updated_by}</small>` : ''}
         ${transaction.reason ? `<br><small class="text-danger">Reason: ${transaction.reason}</small>` : ''}`,
-        `<small>${new Date(transaction.created_at).toLocaleString()}</small>`,
+        `<small>${transaction.created_at ? new Date(transaction.created_at).toLocaleString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: true,
+          timeZone: 'Asia/Yangon'
+        }) : ''}</small>`,
         transaction.status === 'pending' ?
           `<button class="btn btn-sm btn-success mr-1" onclick="approveTransaction(${transaction.id})" title="Approve Transaction">
             <i class="fas fa-check"></i> Approve
