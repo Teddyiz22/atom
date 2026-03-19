@@ -1636,7 +1636,10 @@ const mlController = {
         });
       }
 
-      let idempotencyKey = String(body.idempotencyKey || '').trim() || `g2bulk:${userId}:${code}:${productId}:${playerId}:${serverId || ''}:${currency}`;
+      const incomingIdempotencyKey = String(body.idempotencyKey || '').trim();
+      // Always generate a unique key for normal purchases so old completed orders
+      // do not get reused as "already completed" on new buy attempts.
+      let idempotencyKey = incomingIdempotencyKey || `g2bulk:${userId}:${code}:${productId}:${playerId}:${serverId || ''}:${currency}:${Date.now()}:${Math.random().toString(36).slice(2, 8)}`;
       const GamePurchaseTransaction = require('../models/GamePurchaseTransaction');
       
       // Allow up to 6 duplicate requests
