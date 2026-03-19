@@ -887,7 +887,9 @@
     }
 
     // Form submission handler with order processing
-    document.getElementById('orderForm').addEventListener('submit', function(e) {
+    const orderForm = document.getElementById('orderForm');
+    if (orderForm) {
+      orderForm.addEventListener('submit', function(e) {
       e.preventDefault();
 
       const productId = document.getElementById('selectedProductId').value;
@@ -919,12 +921,12 @@
       }
 
       processOrder(productId, currency);
-
-
-    });
+      });
+    }
 
     // Global variable to prevent multiple simultaneous orders
     let isProcessingOrder = false;
+    let orderSucceeded = false;
     let lastOrderTime = 0;
     const ORDER_COOLDOWN = 5000; // 5 second cooldown between orders
 
@@ -1092,14 +1094,17 @@
               purchaseId: purchaseId
             });
 
-            // Reset form
-            document.getElementById('orderForm').reset();
+            // Reset form and clear stale verification/package state
+            if (orderForm) orderForm.reset();
             document.getElementById('selectedPackage').classList.add('hidden');
+            document.getElementById('selectedProductId').value = '';
             selectedPackageData = null;
+            lastVerifiedFields = null;
+            orderSucceeded = true;
             showInfoState();
 
           } else {
-            showErrorToast('❌ ' + result.message);
+            showErrorToast('❌ ' + (result.message || 'Order failed. Please try again.'));
             openResultModal({
               variant: 'error',
               title: 'Order Failed',
@@ -1124,8 +1129,7 @@
           // Reset processing state
           isProcessingOrder = false;
 
-          // Re-enable the order button
-          orderBtn.disabled = false;
+          // Restore the button text
           orderBtn.innerHTML = '<span class="flex items-center justify-center"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>Proceed to Payment</span>'
 
           // Re-enable package cards
@@ -1141,6 +1145,16 @@
           } else {
             if (document.getElementById('userId')) document.getElementById('userId').disabled = false;
             if (document.getElementById('zoneId')) document.getElementById('zoneId').disabled = false;
+          }
+
+          if (orderSucceeded) {
+            // Keep disabled after success until user verifies/selects again
+            orderBtn.disabled = true;
+            autoFillMLCredentials();
+            orderSucceeded = false;
+          } else {
+            // Allow immediate retry after failures
+            orderBtn.disabled = false;
           }
 
         });
