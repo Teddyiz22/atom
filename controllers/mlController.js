@@ -3,6 +3,18 @@ const G2BulkItem = require('../models/G2BulkItem');
 const SmileSubItem = require('../models/SmileSubItem');
 const ProductType = require('../models/ProductType');
 const axios = require('axios');
+
+/**
+ * Customer-facing shops: if a product_types row exists for provider+typeCode and it is
+ * inactive, hide/disable that game. If no row exists (legacy), allow (do not block).
+ */
+async function isProductTypeActiveForCustomer(provider, typeCode) {
+  const tc = String(typeCode || '').trim().toLowerCase();
+  if (!tc) return false;
+  const row = await ProductType.findOne({ where: { provider, typeCode: tc } });
+  if (!row) return true;
+  return row.status === 'active';
+}
 const crypto = require('crypto');
 const loggingService = require('../services/loggingService');
 const { logUserActivity } = require('../services/loggingService');
@@ -451,6 +463,13 @@ const mlController = {
         return res.status(404).render('errors/404', {
           title: 'Page Not Found',
           message: 'The selected game or product type was not found.'
+        });
+      }
+
+      if (productType.status !== 'active') {
+        return res.status(404).render('errors/404', {
+          title: 'Page Not Found',
+          message: 'This game or product type is not available at the moment.'
         });
       }
 
@@ -982,6 +1001,14 @@ const mlController = {
         smileProductId = '213'; // Use a valid PH product ID for verification (e.g., 5 Diamonds)
       }
 
+      const smileTypeCode = code === 'mcgg' ? 'mcgg' : (code === 'mlphp' ? 'mlphp' : 'ml');
+      if (!(await isProductTypeActiveForCustomer('smile', smileTypeCode))) {
+        return res.status(404).json({
+          status: 404,
+          message: 'This game is not available at the moment.'
+        });
+      }
+
       console.log('🛠️ Using Smile Configuration:', { smileProductId, productSlug, code });
 
       const result = await smileOneGetRoleInfo({
@@ -1093,6 +1120,14 @@ const mlController = {
         if (product.productTypeId) {
           const pType = await ProductType.findByPk(product.productTypeId);
           if (pType) {
+            if (pType.status !== 'active') {
+              await transaction.rollback();
+              releaseUserLock(userId);
+              return res.status(403).json({
+                status: 403,
+                message: 'This game is not available at the moment.'
+              });
+            }
              typeCodeForDb = pType.typeCode;
              if (pType.typeCode === 'mcgg') {
                 productSlug = 'magicchessgogo';
@@ -1454,6 +1489,9 @@ const mlController = {
       if (!code) {
         return res.status(400).json({ ok: false, error: 'code is required' });
       }
+      if (!(await isProductTypeActiveForCustomer('g2bulk', code))) {
+        return res.status(404).json({ ok: false, error: 'This game is not available at the moment.' });
+      }
       const result = await g2bulkFetchFields(code);
       return res.json({ ok: true, fields: result.fields, notes: result.notes });
     } catch (error) {
@@ -1466,6 +1504,9 @@ const mlController = {
       const code = String(req.params.code || '').trim().toLowerCase();
       if (!code) {
         return res.status(400).json({ ok: false, error: 'code is required' });
+      }
+      if (!(await isProductTypeActiveForCustomer('g2bulk', code))) {
+        return res.status(404).json({ ok: false, error: 'This game is not available at the moment.' });
       }
       const body = req.body && typeof req.body === 'object' ? req.body : {};
       const fields = body.fields && typeof body.fields === 'object' ? body.fields : body;
@@ -1532,6 +1573,13 @@ const mlController = {
     const { playerId, serverId } = g2bulkExtractPlayerFields(fields);
     if (!playerId) {
       return res.status(400).json({ status: 400, message: 'Player ID is required' });
+    }
+
+    if (!(await isProductTypeActiveForCustomer('g2bulk', code))) {
+      return res.status(404).json({
+        status: 404,
+        message: 'This game is not available at the moment.'
+      });
     }
 
     const userId = req.session.user.id;
