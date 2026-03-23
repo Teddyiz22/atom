@@ -212,6 +212,130 @@ const adminController = {
     }
   },
 
+  // GET /admin/register-user - Admin creates user account
+  showRegisterUser: async (req, res) => {
+    try {
+      res.render('admin/registerUser', {
+        title: 'Register New User Account',
+        user: req.session.user,
+        success: req.query.success === '1',
+        error: null,
+        form: {}
+      });
+    } catch (error) {
+      console.error('Admin register user page error:', error);
+      res.render('admin/registerUser', {
+        title: 'Register New User Account',
+        user: req.session.user,
+        success: false,
+        error: 'Failed to load register page.',
+        form: {}
+      });
+    }
+  },
+
+  // POST /admin/register-user - Create user directly (auto verified)
+  registerUser: async (req, res) => {
+    try {
+      const fullName = String(req.body.fullName || '').trim();
+      const email = String(req.body.email || '').trim().toLowerCase();
+      const phoneNumber = String(req.body.phoneNumber || '').trim();
+      const password = String(req.body.password || '');
+      const confirmPassword = String(req.body.confirmPassword || '');
+      const terms = req.body.terms;
+
+      const form = { fullName, email, phoneNumber };
+
+      if (!fullName || !email || !phoneNumber || !password || !confirmPassword) {
+        return res.status(400).render('admin/registerUser', {
+          title: 'Register New User Account',
+          user: req.session.user,
+          success: false,
+          error: 'All fields are required.',
+          form
+        });
+      }
+
+      if (!terms) {
+        return res.status(400).render('admin/registerUser', {
+          title: 'Register New User Account',
+          user: req.session.user,
+          success: false,
+          error: 'You must confirm terms to create account.',
+          form
+        });
+      }
+
+      if (password !== confirmPassword) {
+        return res.status(400).render('admin/registerUser', {
+          title: 'Register New User Account',
+          user: req.session.user,
+          success: false,
+          error: 'Passwords do not match.',
+          form
+        });
+      }
+
+      if (password.length < 6) {
+        return res.status(400).render('admin/registerUser', {
+          title: 'Register New User Account',
+          user: req.session.user,
+          success: false,
+          error: 'Password must be at least 6 characters long.',
+          form
+        });
+      }
+
+      const existingUser = await User.findByEmail(email);
+      if (existingUser) {
+        return res.status(400).render('admin/registerUser', {
+          title: 'Register New User Account',
+          user: req.session.user,
+          success: false,
+          error: 'An account with this email already exists.',
+          form
+        });
+      }
+
+      const created = await User.create({
+        name: fullName,
+        email,
+        phone_number: phoneNumber,
+        password,
+        role: 'user',
+        status: 'active',
+        email_verified: true,
+        email_verification_token: null,
+        email_verification_expires: null
+      });
+
+      if (!created) {
+        return res.status(500).render('admin/registerUser', {
+          title: 'Register New User Account',
+          user: req.session.user,
+          success: false,
+          error: 'Failed to create user account.',
+          form
+        });
+      }
+
+      return res.redirect('/admin/register-user?success=1');
+    } catch (error) {
+      console.error('Admin register user error:', error);
+      return res.status(500).render('admin/registerUser', {
+        title: 'Register New User Account',
+        user: req.session.user,
+        success: false,
+        error: error?.message || 'Something went wrong while creating account.',
+        form: {
+          fullName: String(req.body.fullName || '').trim(),
+          email: String(req.body.email || '').trim().toLowerCase(),
+          phoneNumber: String(req.body.phoneNumber || '').trim()
+        }
+      });
+    }
+  },
+
   invalidUsers: async (req, res) => {
     try {
 

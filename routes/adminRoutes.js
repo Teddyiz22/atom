@@ -11,6 +11,8 @@ router.get('/', adminAuth, adminLayout, adminController.dashboard);
 
 // User Management (requires auth + layout for pages, auth only for API)
 router.get('/users', adminAuth, adminLayout, adminController.users);
+router.get('/register-user', adminAuth, adminLayout, adminController.showRegisterUser);
+router.post('/register-user', adminAuth, adminController.registerUser);
 router.get('/users/unverifiedList', adminAuth, adminLayout, adminController.invalidUsers);
 router.get('/users/unverifiedList/data', adminAuth, adminController.unverifiedUsersData);
 router.get('/users/data', adminAuth, adminController.usersData);
