@@ -369,6 +369,12 @@
             </svg>
             Users
           </a>
+          <a href="/admin/register-user" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white hover:bg-opacity-10 text-sm text-gray-400 hover:text-white transition-all duration-200 group">
+            <svg class="h-4 w-4 group-hover:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v6m3-3h-6M5 20h9a2 2 0 002-2v-1a5 5 0 00-10 0v1a2 2 0 002 2zM9.5 7a3.5 3.5 0 110 7 3.5 3.5 0 010-7z" />
+            </svg>
+            Register User
+          </a>
           <a href="/admin/product-management" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white hover:bg-opacity-10 text-sm text-gray-400 hover:text-white transition-all duration-200 group">
             <svg class="h-4 w-4 group-hover:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
@@ -468,7 +474,7 @@
           var path = window.location.pathname || '';
           var groups = [
             { key: 'overview', links: ['/admin', '/admin/reports'] },
-            { key: 'management', links: ['/admin/users', '/admin/product-management', '/admin/product-types', '/admin/payment-methods', '/admin/smile-sub-items', '/admin/g2bulk-items', '/admin/blogs'] },
+            { key: 'management', links: ['/admin/users', '/admin/register-user', '/admin/product-management', '/admin/product-types', '/admin/payment-methods', '/admin/smile-sub-items', '/admin/g2bulk-items', '/admin/blogs'] },
             { key: 'finance', links: ['/admin/wallets', '/admin/wallets/active', '/admin/transactions', '/admin/game-purchase-transactions'] },
             { key: 'settings', links: ['/admin/settings'] }
           ];
@@ -655,6 +661,12 @@
           </svg>
           Users
         </a>
+        <a href="/admin/register-user" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white hover:bg-opacity-10 text-sm text-gray-400 hover:text-white transition-all duration-200 group">
+          <svg class="h-4 w-4 group-hover:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v6m3-3h-6M5 20h9a2 2 0 002-2v-1a5 5 0 00-10 0v1a2 2 0 002 2zM9.5 7a3.5 3.5 0 110 7 3.5 3.5 0 010-7z" />
+          </svg>
+          Register User
+        </a>
         <a href="/admin/product-management" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white hover:bg-opacity-10 text-sm text-gray-400 hover:text-white transition-all duration-200 group">
           <svg class="h-4 w-4 group-hover:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
@@ -814,7 +826,7 @@
         var path = window.location.pathname || '';
         var groups = [
           { key: 'overview', links: ['/admin', '/admin/reports'] },
-          { key: 'management', links: ['/admin/users', '/admin/product-management', '/admin/product-types', '/admin/payment-methods', '/admin/smile-sub-items', '/admin/g2bulk-items'] },
+          { key: 'management', links: ['/admin/users', '/admin/register-user', '/admin/product-management', '/admin/product-types', '/admin/payment-methods', '/admin/smile-sub-items', '/admin/g2bulk-items'] },
           { key: 'finance', links: ['/admin/wallets', '/admin/transactions', '/admin/game-purchase-transactions'] },
           { key: 'settings', links: ['/admin/settings'] }
         ];

@@ -714,7 +714,7 @@ const userController = {
   showVerificationPending: (req, res) => {
     const pendingData = req.session.pendingVerification;
     if (!pendingData) {
-      return res.redirect('/users/register');
+      return res.redirect('/users/login');
     }
 
     // Clear the session data after using it

@@ -15,8 +15,18 @@ router.use(disableLayout);
 // User routes
 router.get('/login', requireGuest, userController.showLogin);
 router.post('/login', requireGuest, userController.login);
-router.get('/register', requireGuest, userController.showRegister);
-router.post('/register', requireGuest, userController.register);
+router.get('/register', requireGuest, (req, res) => {
+  return res.status(404).render('errors/404', {
+    title: 'Page Not Found',
+    message: 'Page not found.'
+  });
+});
+router.post('/register', requireGuest, (req, res) => {
+  return res.status(404).json({
+    status: 404,
+    message: 'Page not found.'
+  });
+});
 router.post('/logout', userController.logout);
 
 // Email verification routes
