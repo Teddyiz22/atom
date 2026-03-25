@@ -6,7 +6,6 @@ const { requireAuth, requireAuthAPI } = require('../middleware/authMiddleware');
 const {
   validateMLUser,
   validateMLOrder,
-  validateContact,
   handleValidationErrors,
   sanitizeInput
 } = require('../middleware/validationMiddleware');
@@ -80,8 +79,6 @@ router.use(setCurrentPath);
 // Public routes
 router.get('/', mlController.shopTypes);
 router.get('/about', mlController.about);
-router.get('/contact', mlController.contact);
-router.post('/contact', validateContact, handleValidationErrors, protectForm, mlController.submitContact);
 router.get('/guide', mlController.guide);
 router.get('/disclaimer', mlController.disclaimer);
 router.get('/privacy-policy', mlController.privacyPolicy);

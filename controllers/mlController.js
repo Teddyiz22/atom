@@ -469,7 +469,8 @@ const mlController = {
       if (productType.status !== 'active') {
         return res.status(404).render('errors/404', {
           title: 'Page Not Found',
-          message: 'This game or product type is not available at the moment.'
+          message: 'This game or product type is not available at the moment.',
+          showTelegramSupport: true
         });
       }
 
@@ -857,93 +858,6 @@ const mlController = {
       res.status(500).render('errors/500', {
         title: 'Server Error',
         message: 'Something went wrong.'
-      });
-    }
-  },
-
-  // GET /contact - Contact page
-  contact: (req, res) => {
-    try {
-      res.render('ml/contact', {
-        title: 'Contact Us - ATOM Game Shop',
-        description: 'Get in touch with ATOM Game Shop. Fast customer support for all your gaming top-up needs.',
-        user: req.session.user || null,
-        websiteUrl: process.env.WEBSITE_URL || 'http://localhost:3600'
-      });
-    } catch (error) {
-      console.error('Error in contact page:', error);
-      res.status(500).render('errors/500', {
-        title: 'Server Error',
-        message: 'Something went wrong.'
-      });
-    }
-  },
-
-  // POST /contact - Submit contact form
-  submitContact: async (req, res) => {
-    try {
-      const { name, email, phone, subject, message } = req.body;
-
-      // Basic validation
-      if (!name || !email || !subject || !message) {
-        return res.render('ml/contact', {
-          title: 'Contact Us - ATOM Game Shop',
-          user: req.session.user || null,
-          error: 'All required fields must be filled out.'
-        });
-      }
-
-      // Validate email format
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) {
-        return res.render('ml/contact', {
-          title: 'Contact Us - ATOM Game Shop',
-          user: req.session.user || null,
-          error: 'Please enter a valid email address.'
-        });
-      }
-
-      // Prepare contact data
-      const contactData = {
-        name: name.trim(),
-        email: email.trim().toLowerCase(),
-        phone: phone ? phone.trim() : null,
-        subject: subject.trim(),
-        message: message.trim()
-      };
-
-      console.log('📧 Processing contact form submission:', {
-        name: contactData.name,
-        email: contactData.email,
-        subject: contactData.subject
-      });
-
-      // Send email using EmailService
-      const emailService = require('../services/emailService');
-      const emailResult = await emailService.sendContactEmail(contactData);
-
-      if (emailResult.success) {
-        console.log('✅ Contact form emails sent successfully');
-        res.render('ml/contact', {
-          title: 'Contact Us - ATOM Game Shop',
-          user: req.session.user || null,
-          success: 'Thank you for your message! We have received it and will get back to you within 1-2 hours.'
-        });
-      } else {
-        console.log('⚠️ Email service unavailable, but form submission logged');
-        // Still show success to user even if email fails
-        res.render('ml/contact', {
-          title: 'Contact Us - ATOM Game Shop',
-          user: req.session.user || null,
-          success: 'Thank you for your message! We have received it and will get back to you soon.'
-        });
-      }
-    } catch (error) {
-      console.error('❌ Error in contact submission:', error);
-      res.render('ml/contact', {
-        title: 'Contact Us - ATOM Game Shop',
-        user: req.session.user || null,
-        error: 'Something went wrong while sending your message. Please try again or contact us via Telegram.'
       });
     }
   },

@@ -988,8 +988,7 @@ class EmailService {
 
               <div style="border-top: 2px solid #e9ecef; padding-top: 20px; text-align: center;">
                 <p style="color: #6c757d; margin: 0; font-size: 14px; line-height: 1.5;">
-                  Need immediate assistance? Join our Telegram channel for live support!<br>
-                  <a href="https://t.me/atomgameshop" style="color: #667eea;">@atomgameshop</a>
+                  Thank you for choosing ATOM Game Shop.
                 </p>
               </div>
             </div>
