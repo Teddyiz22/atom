@@ -43,12 +43,22 @@ class TelegramService {
     if (!this.bot) return;
 
     try {
+      // Clear any webhook so getUpdates (polling) receives callback_query and messages.
+      // If a webhook was left from another deploy or Bot API test, buttons appear but never fire here.
+      await this.bot.deleteWebHook({ drop_pending_updates: false });
       await this.bot.getMe();
       this.enabled = true;
       await this.bot.startPolling();
-      console.log('✅ Telegram bot polling started!');
+      console.log('✅ Telegram bot polling started (webhook cleared).');
     } catch (error) {
-      console.error('❌ Telegram bot initialization failed:', error?.message || error);
+      const msg = error?.message || String(error);
+      if (msg.includes('409') || msg.includes('Conflict')) {
+        console.error(
+          '❌ Telegram bot: another process is already receiving updates for this token (409). ' +
+            'Stop duplicate PM2 workers / other servers using the same TELEGRAM_BOT_TOKEN.'
+        );
+      }
+      console.error('❌ Telegram bot initialization failed:', msg);
       await this.disableBot();
     }
   }
@@ -159,6 +169,10 @@ Your chat ID: \`${chatId}\`
       const chatId = msg.chat.id;
 
       try {
+        // Telegram expects answerCallbackQuery within ~10s or the client stays "loading".
+        // Approve/reject work can exceed that, so acknowledge immediately.
+        await this.bot.answerCallbackQuery(callbackQuery.id).catch(() => {});
+
         if (action.startsWith('approve_')) {
           const transactionId = action.replace('approve_', '');
           await this.handleApproval(transactionId, chatId, msg.message_id);
@@ -171,12 +185,16 @@ Your chat ID: \`${chatId}\`
           const reason = parts.slice(1).join('_');
           await this.handleRejection(transactionId, reason, chatId, msg.message_id);
         }
-
-        // Answer the callback query to remove loading state
-        this.bot.answerCallbackQuery(callbackQuery.id);
       } catch (error) {
         console.error('Error handling callback query:', error);
-        this.bot.answerCallbackQuery(callbackQuery.id, { text: 'Error occurred' });
+        try {
+          await this.bot.answerCallbackQuery(callbackQuery.id, {
+            text: 'Error occurred',
+            show_alert: true
+          });
+        } catch (_) {
+          // Already answered above
+        }
       }
     });
 
