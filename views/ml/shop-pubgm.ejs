@@ -656,6 +656,8 @@
   <script>
     let selectedPackageData = null;
     let verificationTimer = null;
+    const VERIFICATION_DEBOUNCE_MS = 200;
+    const INITIAL_VERIFY_DELAY_MS = 200;
     let isVerifying = false;
     let lastVerifiedFields = null;
     const isLoggedIn = !!(document.body && document.body.dataset && document.body.dataset.isLoggedIn === '1');
@@ -803,7 +805,7 @@
             } else {
               showInfoState();
             }
-          }, 800);
+          }, VERIFICATION_DEBOUNCE_MS);
         });
       });
     }
@@ -1049,7 +1051,7 @@
         const fields = collectFields();
         const pid = String(fields.player_id || '').trim();
         if (pid) verifyPlayer(fields);
-      }, 500);
+      }, INITIAL_VERIFY_DELAY_MS);
     }
 
     // Form submission handler with order processing

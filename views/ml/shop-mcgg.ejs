@@ -470,6 +470,8 @@
   <script>
     let selectedPackageData = null;
     let verificationTimer = null;
+    const VERIFICATION_DEBOUNCE_MS = 300;
+    const INITIAL_VERIFY_DELAY_MS = 300;
     let isVerifying = false;
 
     // Auto-verification with debounce
@@ -490,7 +492,7 @@
               } else {
                 showInfoState();
               }
-            }, 800); // 800ms delay for debounce
+            }, VERIFICATION_DEBOUNCE_MS);
           });
         });
       }
@@ -711,7 +713,7 @@
           const userId = document.getElementById('userId').value;
           const zoneId = document.getElementById('zoneId').value;
           verifyUser(userId, zoneId);
-        }, 1000);
+        }, INITIAL_VERIFY_DELAY_MS);
       }
     }
 
@@ -863,4 +865,3 @@
 </body>
 
 </html>
-
