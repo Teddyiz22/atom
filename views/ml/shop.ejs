@@ -222,8 +222,13 @@
                 Games</button>
             </div>
 
+            <%
+              const activeTypeCodes = new Set((productTypes || []).map(t => String(t.typeCode || '').toLowerCase()));
+              const hasType = (code) => activeTypeCodes.has(String(code || '').toLowerCase());
+            %>
             <div class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 px-4 mt-6 font-mont max-w-5xl mx-auto">
 
+              <% if (hasType('ml')) { %>
               <a href="/shop/ml" class="group">
                 <div
                   class="relative rounded-2xl p-2 bg-white/10 backdrop-blur-lg border border-white/20 shadow-md shadow-blue-900/25 hover:scale-105 transition-transform duration-300 h-full">
@@ -235,7 +240,9 @@
                   </div>
                 </div>
               </a>
+              <% } %>
 
+              <% if (hasType('mlphp')) { %>
               <a href="/shop/mlphp" class="group">
                 <div
                   class="relative rounded-2xl p-2 bg-white/10 backdrop-blur-lg border border-white/20 shadow-md shadow-blue-900/25 hover:scale-105 transition-transform duration-300 h-full">
@@ -244,7 +251,9 @@
                     Philippines</p>
                 </div>
               </a>
+              <% } %>
 
+              <% if (hasType('mlbb_special')) { %>
               <a href="/shop/mlbb_special" class="group">
                 <div
                   class="relative rounded-2xl p-2 bg-white/10 backdrop-blur-lg border border-white/20 shadow-md shadow-blue-900/25 hover:scale-105 transition-transform duration-300 h-full">
@@ -254,7 +263,9 @@
                   </p>
                 </div>
               </a>
+              <% } %>
 
+              <% if (hasType('pubgm')) { %>
               <a href="/shop/pubgm" class="group">
                 <div
                   class="relative rounded-2xl p-2 bg-white/10 backdrop-blur-lg border border-white/20 shadow-md shadow-blue-900/25 hover:scale-105 transition-transform duration-300 h-full">
@@ -263,7 +274,20 @@
                   </p>
                 </div>
               </a>
+              <% } %>
 
+              <% if (hasType('pubgcustom')) { %>
+              <a href="/shop/pubgcustom" class="group">
+                <div
+                  class="relative rounded-2xl p-2 bg-white/10 backdrop-blur-lg border border-amber-400/30 shadow-md shadow-amber-900/20 hover:scale-105 transition-transform duration-300 h-full">
+                  <img src="/images/pubg.png" class="w-full rounded-xl aspect-square object-cover opacity-90">
+                  <p class="text-white text-[8px] sm:text-[8px] text-center mt-2 leading-tight font-bold">PUBG
+                  </p>
+                </div>
+              </a>
+              <% } %>
+
+              <% if (hasType('mcgg')) { %>
               <a href="/shop/mcgg" class="group">
                 <div
                   class="relative rounded-2xl p-2 bg-white/10 backdrop-blur-lg border border-white/20 shadow-md shadow-blue-900/25 hover:scale-105 transition-transform duration-300 h-full">
@@ -272,7 +296,9 @@
                     Go</p>
                 </div>
               </a>
+              <% } %>
 
+              <% if (hasType('hok')) { %>
               <a href="/shop/hok" class="group">
                 <div
                   class="relative rounded-2xl p-2 bg-white/10 backdrop-blur-lg border border-white/20 shadow-md shadow-blue-900/25 hover:scale-105 transition-transform duration-300 h-full">
@@ -281,6 +307,7 @@
                   </p>
                 </div>
               </a>
+              <% } %>
 
             </div>
             <% } else { %>

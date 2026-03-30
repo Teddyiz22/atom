@@ -60,6 +60,7 @@
             <th class="text-right">Total</th>
             <th>Status</th>
             <th>Created</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -83,18 +84,19 @@
             "type": "GET"
           },
           "columns": [
-            { "data": 0 }, // ID
-            { "data": 1 }, // User
-            { "data": 2 }, // Game ID
-            { "data": 3 }, // Server ID
-            { "data": 4 }, // Provider
-            { "data": 5 }, // Type Code
-            { "data": 6 }, // Product
-            { "data": 7 }, // Total
-            { "data": 8 }, // Status
-            { "data": 9 }  // Created
+            { "data": 0 },
+            { "data": 1 },
+            { "data": 2 },
+            { "data": 3 },
+            { "data": 4 },
+            { "data": 5 },
+            { "data": 6 },
+            { "data": 7 },
+            { "data": 8 },
+            { "data": 9 },
+            { "data": 10, "orderable": false, "searchable": false }
           ],
-          "order": [[9, "desc"]], // Sort by Created (index 9) descending
+          "order": [[9, "desc"]],
           "pageLength": 25,
           "lengthMenu": [
             [10, 25, 50, 100],
@@ -118,4 +120,31 @@
 
     initializeDataTable();
   });
+
+  function approveManualPurchase(id) {
+    if (!confirm('Approve this manual order? The customer has already been charged; this marks the order complete.')) return;
+    fetch('/admin/game-purchase-transactions/' + id + '/approve-manual', { method: 'POST', headers: { 'Content-Type': 'application/json' } })
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        alert(d.success ? d.message : (d.message || 'Failed'));
+        if (d.success && typeof $ !== 'undefined' && $.fn.DataTable) $('#transactionsTable').DataTable().ajax.reload(null, false);
+      })
+      .catch(function () { alert('Request failed'); });
+  }
+
+  function rejectManualPurchase(id) {
+    var reason = prompt('Rejection reason (refunds wallet):', 'Rejected by admin');
+    if (reason === null) return;
+    fetch('/admin/game-purchase-transactions/' + id + '/reject-manual', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ reason: reason || 'Rejected by admin' })
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        alert(d.success ? d.message : (d.message || 'Failed'));
+        if (d.success && typeof $ !== 'undefined' && $.fn.DataTable) $('#transactionsTable').DataTable().ajax.reload(null, false);
+      })
+      .catch(function () { alert('Request failed'); });
+  }
 </script>

@@ -18,6 +18,7 @@ async function isProductTypeActiveForCustomer(provider, typeCode) {
 const crypto = require('crypto');
 const loggingService = require('../services/loggingService');
 const { logUserActivity } = require('../services/loggingService');
+const telegramService = require('../services/telegramService');
 
 // In-memory user order locks to prevent concurrent orders from same user
 const userOrderLocks = new Map();
@@ -588,6 +589,7 @@ const mlController = {
         if (code === 'ml') return 'ml/shop-ml';
         if (code === 'mlphp') return 'ml/shop-mlphp';
         if (code === 'pubgm') return 'ml/shop-pubgm';
+        if (code === 'pubgcustom') return 'ml/shop-pubg-custom';
         return 'ml/shop';
       })();
 
@@ -1754,6 +1756,180 @@ const mlController = {
     }
   },
 
+  /**
+   * Manual fulfillment (e.g. Pubg Custom): deduct wallet, create pending purchase for admin approve/reject.
+   * No Smile/G2Bulk API calls.
+   */
+  manualGamePlaceOrder: async (req, res) => {
+    const body = req.body && typeof req.body === 'object' ? req.body : {};
+    const productIdNum = Number(body.product_id || body.productId);
+    const currency = String(body.currency || 'MMK').trim().toUpperCase();
+    const playerId = String(body.player_id || body.playerId || '').trim();
+    const serverId = body.server_id != null && String(body.server_id).trim() !== ''
+      ? String(body.server_id).trim()
+      : null;
+    const remark = body.remark ? String(body.remark).trim().slice(0, 500) : '';
+
+    if (!req.session?.user) {
+      return res.status(401).json({ status: 401, message: 'Please login to place an order' });
+    }
+
+    if (!Number.isFinite(productIdNum) || productIdNum < 1) {
+      return res.status(400).json({ status: 400, message: 'Invalid product' });
+    }
+
+    if (!['MMK', 'THB'].includes(currency)) {
+      return res.status(400).json({ status: 400, message: 'Invalid currency' });
+    }
+
+    if (!playerId || playerId.length < 3) {
+      return res.status(400).json({ status: 400, message: 'Player ID is required' });
+    }
+
+    const MANUAL_TYPE = 'pubgcustom';
+    if (!(await isProductTypeActiveForCustomer('manual', MANUAL_TYPE))) {
+      return res.status(404).json({ status: 404, message: 'This game is not available at the moment.' });
+    }
+
+    const userId = req.session.user.id;
+    if (!acquireUserLock(userId)) {
+      return res.status(429).json({
+        status: 429,
+        message: 'Another order is already being processed for your account. Please wait and try again.'
+      });
+    }
+
+    const { sequelize } = require('../models');
+    const dbTx = await sequelize.transaction();
+
+    try {
+      const product = await Product.findByPk(productIdNum, {
+        transaction: dbTx,
+        lock: dbTx.LOCK.UPDATE
+      });
+
+      if (!product) {
+        await dbTx.rollback();
+        releaseUserLock(userId);
+        return res.status(404).json({ status: 404, message: 'Package not found' });
+      }
+
+      const pType = await ProductType.findByPk(product.productTypeId, { transaction: dbTx });
+      if (!pType) {
+        await dbTx.rollback();
+        releaseUserLock(userId);
+        return res.status(404).json({ status: 404, message: 'Package not found' });
+      }
+      if (pType.provider !== 'manual' || String(pType.typeCode).toLowerCase() !== MANUAL_TYPE) {
+        await dbTx.rollback();
+        releaseUserLock(userId);
+        return res.status(400).json({ status: 400, message: 'Invalid package for this shop' });
+      }
+
+      if (pType.status !== 'active' || !product.is_active) {
+        await dbTx.rollback();
+        releaseUserLock(userId);
+        return res.status(403).json({ status: 403, message: 'This package is not available' });
+      }
+
+      const totalAmount = currency === 'MMK'
+        ? Math.max(0, Math.round(Number(product.price_mmk) * 100) / 100)
+        : Math.max(0, Math.round(Number(product.price_thb) * 100) / 100);
+
+      if (!Number.isFinite(totalAmount) || totalAmount <= 0) {
+        await dbTx.rollback();
+        releaseUserLock(userId);
+        return res.status(400).json({ status: 400, message: 'Invalid package price' });
+      }
+
+      const Wallet = require('../models/Wallet');
+      const wallet = await Wallet.findOne({
+        where: { userId },
+        lock: dbTx.LOCK.UPDATE,
+        transaction: dbTx
+      });
+
+      if (!wallet) {
+        await dbTx.rollback();
+        releaseUserLock(userId);
+        return res.status(404).json({ status: 404, message: 'Wallet not found. Please contact support.' });
+      }
+
+      const balanceField = currency === 'MMK' ? 'balance_mmk' : 'balance_thb';
+      const currentBalance = Number(wallet[balanceField] || 0);
+      if (!Number.isFinite(currentBalance) || currentBalance < totalAmount) {
+        await dbTx.rollback();
+        releaseUserLock(userId);
+        return res.status(400).json({
+          status: 400,
+          message: `Insufficient balance. Your ${currency} wallet has ${parseInt(currentBalance, 10)}. Required: ${parseInt(totalAmount, 10)}`
+        });
+      }
+
+      const idempotencyKey = `manual:${userId}:${MANUAL_TYPE}:${productIdNum}:${playerId}:${serverId || ''}:${currency}:${Date.now()}:${Math.random().toString(36).slice(2, 8)}`;
+
+      const newBalance = currentBalance - totalAmount;
+      await wallet.update({ [balanceField]: newBalance }, { transaction: dbTx });
+
+      const GamePurchaseTransaction = require('../models/GamePurchaseTransaction');
+      const deliveryMeta = remark ? JSON.stringify({ customer_note: remark }) : null;
+
+      const purchase = await GamePurchaseTransaction.create({
+        user_id: userId,
+        user_name: req.session.user.name,
+        provider: 'manual',
+        product_type_code: MANUAL_TYPE,
+        product_id: String(product.id),
+        product_name: product.name,
+        player_id: playerId,
+        server_id: serverId,
+        quantity: 1,
+        total_amount: totalAmount,
+        currency,
+        status: 'pending',
+        idempotency_key: idempotencyKey,
+        order_id: null,
+        delivery_items: deliveryMeta,
+        failure_reason: null
+      }, { transaction: dbTx });
+
+      await dbTx.commit();
+      releaseUserLock(userId);
+
+      await logUserActivity(userId, 'MANUAL_GAME_ORDER_PLACED', {
+        userEmail: req.session.user.email,
+        purchaseId: purchase.id,
+        productId: product.id,
+        amount: totalAmount,
+        currency
+      });
+
+      // Push manual game order to Telegram with approve/reject actions
+      try {
+        await telegramService.sendManualGameOrderNotification(purchase);
+      } catch (notifyError) {
+        console.error('Manual game order Telegram notify error:', notifyError);
+      }
+
+      return res.status(200).json({
+        status: 200,
+        message: 'Order submitted. Your balance has been held pending admin approval.',
+        data: {
+          purchaseId: purchase.id,
+          newBalance,
+          status: 'pending'
+        }
+      });
+    } catch (error) {
+      try {
+        await dbTx.rollback();
+      } catch (_) {}
+      releaseUserLock(userId);
+      console.error('manualGamePlaceOrder error:', error);
+      return res.status(500).json({ status: 500, message: 'Something went wrong while placing the order. Please try again.' });
+    }
+  },
+
   g2bulkOrderCallback: async (req, res) => {
     const body = req.body && typeof req.body === 'object' ? req.body : {};
     const orderId = String(body.order_id || body.orderId || '').trim();
@@ -2028,6 +2204,7 @@ function getGameNameFromTypeCode(typeCode) {
     mlphp: 'Mobile Legends (PH)',
     mlbb_special: 'Mobile Legends (SG/MY)',
     pubgm: 'PUBG Mobile',
+    pubgcustom: 'PUBG Mobile (Manual)',
     hok: 'Honor of Kings',
     mcgg: 'Magic Chess: Go Go'
   };

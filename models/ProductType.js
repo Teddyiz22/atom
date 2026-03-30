@@ -16,7 +16,7 @@ const ProductType = sequelize.define('ProductType', {
     allowNull: false
   },
   provider: {
-    type: DataTypes.ENUM('smile', 'g2bulk'),
+    type: DataTypes.ENUM('smile', 'g2bulk', 'manual'),
     allowNull: false
   },
   type: {

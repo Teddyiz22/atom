@@ -72,6 +72,8 @@ router.post('/payment-methods/delete', adminAuth, adminController.deletePaymentM
 // Game Purchase Transactions (requires auth + layout)
 router.get('/game-purchase-transactions', adminAuth, adminLayout, adminController.gamePurchaseTransactions);
 router.get('/game-purchase-transactions/data', adminAuth, adminController.gamePurchaseTransactionsData);
+router.post('/game-purchase-transactions/:id/approve-manual', adminApiAuth, adminController.approveManualGamePurchase);
+router.post('/game-purchase-transactions/:id/reject-manual', adminApiAuth, adminController.rejectManualGamePurchase);
 
 // Maintenance Mode API (requires API auth only)
 router.get('/maintenance/status', adminApiAuth, adminController.getMaintenanceStatus);

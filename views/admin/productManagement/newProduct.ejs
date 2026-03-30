@@ -13,7 +13,7 @@
     <div>
       <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
         <%= isEdit ? 'Edit' : 'Add' %>
-        <span class="<%= provider === 'smile' ? 'text-indigo-300' : 'text-teal-300' %>"><%= provider %></span>
+        <span class="<%= provider === 'smile' ? 'text-indigo-300' : (provider === 'manual' ? 'text-amber-300' : 'text-teal-300') %>"><%= provider %></span>
         Product
         <span class="text-gray-200">- <%= productType.name %></span>
       </h1>
@@ -48,7 +48,7 @@
           </label>
         </div>
 
-        <% if (provider === 'smile') { %>
+        <% if (provider === 'smile' || provider === 'manual') { %>
           <div>
             <label for="region" class="block text-sm font-semibold text-gray-200 mb-2">Region</label>
             <select id="region" name="region" required class="w-full rounded-lg bg-white/5 border border-white/10 px-4 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-brand-500/50">
@@ -59,8 +59,8 @@
         <% } %>
 
         <div>
-          <label for="diamond_amount" class="block text-sm font-semibold text-gray-200 mb-2"><%= provider === 'smile' ? 'Price' : 'USD Amount' %></label>
-          <input type="number" id="diamond_amount" name="diamond_amount" min="0" step="<%= provider === 'smile' ? '0.01' : '1' %>" required value="<%= v('diamond_amount') %>" class="w-full rounded-lg bg-white/5 border border-white/10 px-4 py-2 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500/50">
+          <label for="diamond_amount" class="block text-sm font-semibold text-gray-200 mb-2"><%= (provider === 'smile' || provider === 'manual') ? 'Amount / display value' : 'USD Amount' %></label>
+          <input type="number" id="diamond_amount" name="diamond_amount" min="0" step="<%= (provider === 'smile' || provider === 'manual') ? '0.01' : '1' %>" required value="<%= v('diamond_amount') %>" class="w-full rounded-lg bg-white/5 border border-white/10 px-4 py-2 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500/50">
         </div>
 
         <!-- Price inputs for all providers -->
@@ -106,7 +106,7 @@
         </div>
 
         <div class="flex flex-wrap gap-2 pt-2">
-          <button type="submit" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg <%= provider === 'smile' ? 'bg-indigo-600 hover:bg-indigo-500' : 'bg-teal-600 hover:bg-teal-500' %> text-sm font-semibold text-white transition-colors">
+          <button type="submit" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg <%= (provider === 'smile' || provider === 'manual') ? 'bg-indigo-600 hover:bg-indigo-500' : 'bg-teal-600 hover:bg-teal-500' %> text-sm font-semibold text-white transition-colors">
             <%= isEdit ? 'Save' : 'Add' %>
             <i class="fas fa-save text-xs"></i>
           </button>

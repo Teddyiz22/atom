@@ -5,7 +5,7 @@ const GamePurchaseTransaction = sequelize.define('GamePurchaseTransaction', {
   id: { type: DataTypes.INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true },
   user_id: { type: DataTypes.INTEGER, allowNull: false },
   user_name: { type: DataTypes.STRING(100), allowNull: false },
-  provider: { type: DataTypes.ENUM('g2bulk', 'smile'), allowNull: false },
+  provider: { type: DataTypes.ENUM('g2bulk', 'smile', 'manual'), allowNull: false },
   product_type_code: { type: DataTypes.STRING(64), allowNull: false },
   product_id: { type: DataTypes.STRING(64), allowNull: false },
   product_name: { type: DataTypes.STRING(128), allowNull: false },

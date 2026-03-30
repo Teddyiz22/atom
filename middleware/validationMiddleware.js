@@ -31,6 +31,27 @@ const validateMLOrder = [
     .withMessage('Currency must be MMK or THB')
 ];
 
+const validateManualGameOrder = [
+  body('product_id')
+    .isInt({ min: 1 })
+    .withMessage('Product ID must be a positive integer'),
+  body('currency')
+    .isIn(['MMK', 'THB'])
+    .withMessage('Currency must be MMK or THB'),
+  body('player_id')
+    .trim()
+    .isLength({ min: 3, max: 64 })
+    .withMessage('Player ID must be 3–64 characters'),
+  body('server_id')
+    .optional()
+    .trim()
+    .isLength({ max: 64 }),
+  body('remark')
+    .optional()
+    .trim()
+    .isLength({ max: 500 })
+];
+
 // Validation rules for contact form
 const validateContact = [
   body('name')
@@ -193,6 +214,7 @@ const sanitizeInput = (req, res, next) => {
 module.exports = {
   validateMLUser,
   validateMLOrder,
+  validateManualGameOrder,
   validateContact,
   validateProfileUpdate,
   validateUserRegistration,
