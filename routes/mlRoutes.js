@@ -6,6 +6,7 @@ const { requireAuth, requireAuthAPI } = require('../middleware/authMiddleware');
 const {
   validateMLUser,
   validateMLOrder,
+  validateManualGameOrder,
   handleValidationErrors,
   sanitizeInput
 } = require('../middleware/validationMiddleware');
@@ -116,6 +117,11 @@ router.get('/shop/pubgm', generateCSRFSecret, generateCSRFToken, (req, res, next
   req.query.provider = 'g2bulk';
   next();
 }, mlController.shop);
+router.get('/shop/pubgcustom', generateCSRFSecret, generateCSRFToken, (req, res, next) => {
+  req.params.typeCode = 'pubgcustom';
+  req.query.provider = 'manual';
+  next();
+}, mlController.shop);
 router.get('/shop/:typeCode', generateCSRFSecret, generateCSRFToken, mlController.shop);
 router.post('/shop/order', requireAuth, mlController.processOrder);
 
@@ -123,6 +129,7 @@ router.post('/shop/order', requireAuth, mlController.processOrder);
 router.get('/api/debug-config', mlController.debugConfig);
 router.post('/api/verify-user', verificationRateLimit, validateMLUser, handleValidationErrors, mlController.verifyUser);
 router.post('/api/place-order', purchaseRateLimit, requireAuthAPI, validateMLOrder, handleValidationErrors, protectAPI, mlController.placeOrder);
+router.post('/api/manual-game-order', purchaseRateLimit, requireAuthAPI, validateManualGameOrder, handleValidationErrors, protectAPI, mlController.manualGamePlaceOrder);
 router.get('/api/g2bulk/games/:code/fields', mlController.g2bulkFields);
 router.post('/api/g2bulk/games/:code/check-player', verificationRateLimit, mlController.g2bulkCheckPlayer);
 router.post('/api/g2bulk/games/:code/order', purchaseRateLimit, requireAuthAPI, protectAPI, mlController.g2bulkPlaceOrder);

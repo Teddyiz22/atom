@@ -232,6 +232,8 @@
                         Success
                       <% } else if (purchase.status === 'completed') { %>
                         ✅ Completed
+                      <% } else if (purchase.provider === 'manual' && purchase.status === 'pending') { %>
+                        ⏳ Awaiting approval
                       <% } else if (purchase.status === 'pending') { %>
                         ⏳ Pending
                       <% } else if (purchase.status === 'processing') { %>
@@ -303,6 +305,8 @@
                     Success
                   <% } else if (purchase.status === 'completed') { %>
                     ✅ Completed
+                  <% } else if (purchase.provider === 'manual' && purchase.status === 'pending') { %>
+                    ⏳ Awaiting approval
                   <% } else if (purchase.status === 'pending') { %>
                     ⏳ Pending
                   <% } else if (purchase.status === 'processing') { %>

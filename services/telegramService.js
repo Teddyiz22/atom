@@ -1,5 +1,6 @@
 const TelegramBot = require('node-telegram-bot-api');
 const Transaction = require('../models/Transaction');
+const GamePurchaseTransaction = require('../models/GamePurchaseTransaction');
 const User = require('../models/User');
 const Wallet = require('../models/Wallet');
 const emailService = require('./emailService');
@@ -179,6 +180,12 @@ Your chat ID: \`${chatId}\`
         } else if (action.startsWith('reject_')) {
           const transactionId = action.replace('reject_', '');
           await this.handleRejectionRequest(transactionId, chatId, msg.message_id);
+        } else if (action.startsWith('manual_approve_')) {
+          const purchaseId = action.replace('manual_approve_', '');
+          await this.handleManualOrderApproval(purchaseId, chatId, msg.message_id);
+        } else if (action.startsWith('manual_reject_')) {
+          const purchaseId = action.replace('manual_reject_', '');
+          await this.handleManualOrderRejection(purchaseId, chatId, msg.message_id);
         } else if (action.startsWith('confirm_reject_')) {
           const parts = action.split('confirm_reject_')[1].split('_');
           const transactionId = parts[0];
@@ -334,6 +341,199 @@ Your chat ID: \`${chatId}\`
       console.log(`✅ Telegram notification sent for transaction #${transaction.id}`);
     } catch (error) {
       console.error('Error sending Telegram notification:', error);
+    }
+  }
+
+  async sendManualGameOrderNotification(purchase) {
+    if (!this.bot || !this.enabled || !this.adminChatId) {
+      console.log('⚠️  Telegram bot not configured. Skipping manual game order notification.');
+      return;
+    }
+
+    try {
+      const user = await User.findByPk(purchase.user_id).catch(() => null);
+      const createdAt = purchase.created_at || new Date();
+      let customerNote = '';
+      try {
+        const raw = purchase.delivery_items ? JSON.parse(purchase.delivery_items) : null;
+        customerNote = raw?.customer_note ? String(raw.customer_note) : '';
+      } catch (_) {}
+
+      const message = `
+🔔 *New Game order request*
+
+*User detail*
+• Name: ${user?.name || purchase.user_name || 'Unknown'}
+• User ID: ${purchase.user_id}
+• Email: ${user?.email || 'Unknown'}
+
+*Game order*
+• Order ID: \`${purchase.id}\`
+• Game Type: ${purchase.product_type_code || 'pubgcustom'}
+• Purchase: ${purchase.product_name || '-'}
+• Game ID: ${purchase.player_id || '-'}
+• Server ID: ${purchase.server_id || '-'}
+• Amount: ${Number(purchase.total_amount || 0).toLocaleString()} ${purchase.currency || ''}
+• Date Time: ${new Date(createdAt).toLocaleString('en-US', { timeZone: 'Asia/Yangon' })}
+${customerNote ? `• Note: ${customerNote}` : ''}
+
+*Status:* Pending Approval ⏳
+      `;
+
+      const keyboard = {
+        inline_keyboard: [
+          [
+            { text: '✅ Approve', callback_data: `manual_approve_${purchase.id}` },
+            { text: '❌ Reject', callback_data: `manual_reject_${purchase.id}` }
+          ]
+        ]
+      };
+
+      await this.bot.sendMessage(this.adminChatId, message, {
+        parse_mode: 'Markdown',
+        reply_markup: keyboard
+      });
+
+      console.log(`✅ Telegram manual order notification sent for purchase #${purchase.id}`);
+    } catch (error) {
+      console.error('Error sending manual game order Telegram notification:', error);
+    }
+  }
+
+  async handleManualOrderApproval(purchaseId, chatId, messageId) {
+    const { sequelize } = require('../models');
+    const t = await sequelize.transaction();
+    try {
+      const purchase = await GamePurchaseTransaction.findByPk(purchaseId, {
+        transaction: t,
+        lock: t.LOCK.UPDATE
+      });
+
+      if (!purchase || purchase.provider !== 'manual') {
+        await t.rollback();
+        await this.bot.editMessageText('❌ Manual order not found.', { chat_id: chatId, message_id: messageId });
+        return;
+      }
+
+      if (purchase.status !== 'pending') {
+        await t.rollback();
+        await this.bot.editMessageText(`❌ Manual order already ${purchase.status}.`, { chat_id: chatId, message_id: messageId });
+        return;
+      }
+
+      await purchase.update(
+        {
+          status: 'completed',
+          order_id: purchase.order_id || String(purchase.id),
+          updated_at: new Date()
+        },
+        { transaction: t }
+      );
+      await t.commit();
+
+      const approvedMsg = `
+✅ *APPROVED* - Manual Order #${purchase.id}
+
+• User ID: ${purchase.user_id}
+• Purchase: ${purchase.product_name}
+• Game Type: ${purchase.product_type_code}
+• Game ID: ${purchase.player_id || '-'}
+• Server ID: ${purchase.server_id || '-'}
+• Amount: ${Number(purchase.total_amount || 0).toLocaleString()} ${purchase.currency}
+• Approved: ${new Date().toLocaleString('en-US', { timeZone: 'Asia/Yangon' })}
+
+Payment confirmed. Customer deduction remains applied.
+      `;
+
+      await this.bot.editMessageText(approvedMsg, {
+        chat_id: chatId,
+        message_id: messageId,
+        parse_mode: 'Markdown'
+      });
+    } catch (error) {
+      try { await t.rollback(); } catch (_) {}
+      console.error('Error handling manual order approval:', error);
+      await this.bot.editMessageText(
+        '❌ Error processing manual order approval. Please check admin panel.',
+        { chat_id: chatId, message_id: messageId }
+      );
+    }
+  }
+
+  async handleManualOrderRejection(purchaseId, chatId, messageId) {
+    const { sequelize } = require('../models');
+    const t = await sequelize.transaction();
+    try {
+      const purchase = await GamePurchaseTransaction.findByPk(purchaseId, {
+        transaction: t,
+        lock: t.LOCK.UPDATE
+      });
+
+      if (!purchase || purchase.provider !== 'manual') {
+        await t.rollback();
+        await this.bot.editMessageText('❌ Manual order not found.', { chat_id: chatId, message_id: messageId });
+        return;
+      }
+
+      if (purchase.status !== 'pending') {
+        await t.rollback();
+        await this.bot.editMessageText(`❌ Manual order already ${purchase.status}.`, { chat_id: chatId, message_id: messageId });
+        return;
+      }
+
+      const wallet = await Wallet.findOne({
+        where: { userId: purchase.user_id },
+        transaction: t,
+        lock: t.LOCK.UPDATE
+      });
+      if (!wallet) {
+        await t.rollback();
+        await this.bot.editMessageText('❌ User wallet not found for refund.', { chat_id: chatId, message_id: messageId });
+        return;
+      }
+
+      const refundAmount = Number(purchase.total_amount || 0);
+      const balanceField = purchase.currency === 'MMK' ? 'balance_mmk' : 'balance_thb';
+      const currentBalance = Number(wallet[balanceField] || 0);
+      await wallet.update({ [balanceField]: currentBalance + refundAmount }, { transaction: t });
+
+      await purchase.update(
+        {
+          status: 'fail',
+          refunded_amount: refundAmount,
+          failure_reason: 'Rejected by Telegram admin',
+          updated_at: new Date()
+        },
+        { transaction: t }
+      );
+      await t.commit();
+
+      const rejectedMsg = `
+❌ *REJECTED* - Manual Order #${purchase.id}
+
+• User ID: ${purchase.user_id}
+• Purchase: ${purchase.product_name}
+• Game Type: ${purchase.product_type_code}
+• Game ID: ${purchase.player_id || '-'}
+• Server ID: ${purchase.server_id || '-'}
+• Amount: ${refundAmount.toLocaleString()} ${purchase.currency}
+• Rejected: ${new Date().toLocaleString('en-US', { timeZone: 'Asia/Yangon' })}
+
+Customer refunded successfully.
+      `;
+
+      await this.bot.editMessageText(rejectedMsg, {
+        chat_id: chatId,
+        message_id: messageId,
+        parse_mode: 'Markdown'
+      });
+    } catch (error) {
+      try { await t.rollback(); } catch (_) {}
+      console.error('Error handling manual order rejection:', error);
+      await this.bot.editMessageText(
+        '❌ Error processing manual order rejection. Please check admin panel.',
+        { chat_id: chatId, message_id: messageId }
+      );
     }
   }
 

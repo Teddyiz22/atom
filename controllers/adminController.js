@@ -720,7 +720,7 @@ const adminController = {
   productManagementProvider: async (req, res) => {
     try {
       const provider = String(req.params.provider || '').trim().toLowerCase();
-      if (!['smile', 'g2bulk'].includes(provider)) {
+      if (!['smile', 'g2bulk', 'manual'].includes(provider)) {
         return res.redirect('/admin/product-management');
       }
 
@@ -752,11 +752,11 @@ const adminController = {
     try {
       const provider = String(req.params.provider || '').trim().toLowerCase();
       const typeCode = String(req.params.typeCode || '').trim();
-      if (!['smile', 'g2bulk'].includes(provider) || !typeCode) {
+      if (!['smile', 'g2bulk', 'manual'].includes(provider) || !typeCode) {
         return res.redirect('/admin/product-management');
       }
 
-      if (provider !== 'smile') {
+      if (provider === 'g2bulk') {
         return res.redirect(`/admin/product-management/${encodeURIComponent(provider)}/${encodeURIComponent(typeCode)}`);
       }
 
@@ -783,11 +783,11 @@ const adminController = {
     try {
       const provider = String(req.params.provider || '').trim().toLowerCase();
       const typeCode = String(req.params.typeCode || '').trim();
-      if (!['smile', 'g2bulk'].includes(provider) || !typeCode) {
+      if (!['smile', 'g2bulk', 'manual'].includes(provider) || !typeCode) {
         return res.redirect('/admin/product-management');
       }
 
-      if (provider !== 'smile') {
+      if (provider === 'g2bulk') {
         return res.redirect(`/admin/product-management/${encodeURIComponent(provider)}/${encodeURIComponent(typeCode)}`);
       }
 
@@ -798,15 +798,15 @@ const adminController = {
 
       const name = String(req.body.name || '').trim();
       const diamondAmountRaw = String(req.body.diamond_amount || '').trim();
-      const diamondAmount = provider === 'smile'
+      const diamondAmount = (provider === 'smile' || provider === 'manual')
         ? Number.parseFloat(diamondAmountRaw)
         : Number.parseInt(diamondAmountRaw, 10);
       const sortOrder = Number.parseInt(String(req.body.sort_order || '0').trim(), 10);
       const status = String(req.body.status || 'active').trim().toLowerCase();
 
-      const region = provider === 'smile' ? String(req.body.region || 'b').trim().toLowerCase() : 'b';
+      const region = (provider === 'smile' || provider === 'manual') ? String(req.body.region || 'b').trim().toLowerCase() : 'b';
       const smileIDCombinationRaw = provider === 'smile' ? String(req.body.smile_id_combination || '').trim() : '';
-      const category = provider === 'smile' ? String(req.body.category || '').trim() : null;
+      const category = (provider === 'smile' || provider === 'manual') ? String(req.body.category || '').trim() : null;
 
       if (!name) {
         return res.status(400).render('admin/productManagement/newProduct', {
@@ -826,13 +826,13 @@ const adminController = {
           provider,
           productType,
           form: req.body,
-          error: provider === 'smile'
+          error: (provider === 'smile' || provider === 'manual')
             ? 'Amount must be a valid non-negative number.'
             : 'Amount must be a valid non-negative integer.'
         });
       }
 
-      if (provider === 'smile' && !['b', 'ph'].includes(region)) {
+      if ((provider === 'smile' || provider === 'manual') && !['b', 'ph'].includes(region)) {
         return res.status(400).render('admin/productManagement/newProduct', {
           title: `Add Product - ${provider} - ${productType.name} - ATOM Game Shop`,
           user: req.session.user,
@@ -924,7 +924,7 @@ const adminController = {
     try {
       const provider = String(req.params.provider || '').trim().toLowerCase();
       const typeCode = String(req.params.typeCode || '').trim();
-      if (!['smile', 'g2bulk'].includes(provider) || !typeCode) {
+      if (!['smile', 'g2bulk', 'manual'].includes(provider) || !typeCode) {
         return res.redirect('/admin/product-management');
       }
 
@@ -1090,7 +1090,7 @@ const adminController = {
       const provider = String(req.params.provider || '').trim().toLowerCase();
       const typeCode = String(req.params.typeCode || '').trim();
       const id = Number(req.params.id);
-      if (!['smile', 'g2bulk'].includes(provider) || !typeCode || Number.isNaN(id)) {
+      if (!['smile', 'g2bulk', 'manual'].includes(provider) || !typeCode || Number.isNaN(id)) {
         return res.redirect('/admin/product-management');
       }
 
@@ -1133,7 +1133,7 @@ const adminController = {
       const provider = String(req.params.provider || '').trim().toLowerCase();
       const typeCode = String(req.params.typeCode || '').trim();
       const id = Number(req.params.id);
-      if (!['smile', 'g2bulk'].includes(provider) || !typeCode || Number.isNaN(id)) {
+      if (!['smile', 'g2bulk', 'manual'].includes(provider) || !typeCode || Number.isNaN(id)) {
         return res.redirect('/admin/product-management');
       }
 
@@ -1149,14 +1149,14 @@ const adminController = {
 
       const name = String(req.body.name || '').trim();
       const diamondAmountRaw = String(req.body.diamond_amount || '').trim();
-      const diamondAmount = provider === 'smile'
+      const diamondAmount = (provider === 'smile' || provider === 'manual')
         ? Number.parseFloat(diamondAmountRaw)
         : Number.parseInt(diamondAmountRaw, 10);
       const sortOrder = Number.parseInt(String(req.body.sort_order || '0').trim(), 10);
       const status = String(req.body.status || 'active').trim().toLowerCase();
-      const region = provider === 'smile' ? String(req.body.region || 'b').trim().toLowerCase() : 'b';
+      const region = (provider === 'smile' || provider === 'manual') ? String(req.body.region || 'b').trim().toLowerCase() : 'b';
       const smileIDCombinationRaw = provider === 'smile' ? String(req.body.smile_id_combination || '').trim() : '';
-      const category = provider === 'smile' ? String(req.body.category || '').trim() : null;
+      const category = (provider === 'smile' || provider === 'manual') ? String(req.body.category || '').trim() : null;
 
       const renderError = async (message) => {
         return res.status(400).render('admin/productManagement/newProduct', {
@@ -1175,12 +1175,12 @@ const adminController = {
       }
 
       if (!Number.isFinite(diamondAmount) || Number.isNaN(diamondAmount) || diamondAmount < 0) {
-        return renderError(provider === 'smile'
+        return renderError((provider === 'smile' || provider === 'manual')
           ? 'Amount must be a valid non-negative number.'
           : 'Amount must be a valid non-negative integer.');
       }
 
-      if (provider === 'smile' && !['b', 'ph'].includes(region)) {
+      if ((provider === 'smile' || provider === 'manual') && !['b', 'ph'].includes(region)) {
         return renderError('Region must be valid.');
       }
 
@@ -1265,7 +1265,7 @@ const adminController = {
       const provider = String(req.params.provider || '').trim().toLowerCase();
       const typeCode = String(req.params.typeCode || '').trim();
       const id = Number(req.params.id);
-      if (!['smile', 'g2bulk'].includes(provider) || !typeCode || Number.isNaN(id)) {
+      if (!['smile', 'g2bulk', 'manual'].includes(provider) || !typeCode || Number.isNaN(id)) {
         return res.redirect('/admin/product-management');
       }
 
@@ -1292,7 +1292,7 @@ const adminController = {
       const provider = String(req.params.provider || '').trim().toLowerCase();
       const typeCode = String(req.params.typeCode || '').trim();
       const id = Number(req.params.id);
-      if (!['smile', 'g2bulk'].includes(provider) || !typeCode || Number.isNaN(id)) {
+      if (!['smile', 'g2bulk', 'manual'].includes(provider) || !typeCode || Number.isNaN(id)) {
         return res.redirect('/admin/product-management');
       }
 
@@ -1319,7 +1319,7 @@ const adminController = {
       const provider = String(req.params.provider || '').trim().toLowerCase();
       const typeCode = String(req.params.typeCode || '').trim();
       const id = Number(req.params.id);
-      if (!['smile', 'g2bulk'].includes(provider) || !typeCode || Number.isNaN(id)) {
+      if (!['smile', 'g2bulk', 'manual'].includes(provider) || !typeCode || Number.isNaN(id)) {
         return res.redirect('/admin/product-management');
       }
 
@@ -1384,12 +1384,12 @@ const adminController = {
         });
       }
 
-      if (!['smile', 'g2bulk'].includes(provider)) {
+      if (!['smile', 'g2bulk', 'manual'].includes(provider)) {
         return res.status(400).render('admin/productTypes', {
           title: 'Product Types - ATOM Game Shop',
           user: req.session.user,
           productTypes: await ProductType.findAll({ order: [['provider', 'ASC'], ['typeCode', 'ASC']] }),
-          error: 'Provider must be smile or g2bulk.',
+          error: 'Provider must be smile, g2bulk, or manual.',
           form: req.body
         });
       }
@@ -1627,10 +1627,9 @@ const adminController = {
       const orderColumn = parseInt(req.query.order?.[0]?.column) || 0;
       const orderDir = req.query.order?.[0]?.dir || 'desc';
 
-      // Column mapping for ordering
-      // 0: id, 1: user, 2: game_id, 3: server_id, 4: provider, 5: type_code, 6: product, 7: total, 8: status, 9: created_at
+      // Column mapping for ordering (index 10 = Actions — sort by created_at)
       const columns = ['id', 'user_name', 'player_id', 'server_id', 'provider', 'product_type_code', 'product_name', 'total_amount', 'status', 'created_at'];
-      const orderBy = columns[orderColumn] || 'created_at';
+      const orderBy = orderColumn < columns.length ? columns[orderColumn] : 'created_at';
 
       // Build search conditions
       let whereCondition = {};
@@ -1672,17 +1671,19 @@ const adminController = {
         const isG2BulkPending = t.provider === 'g2bulk' && t.status === 'pending';
         const isG2BulkProcessing = t.provider === 'g2bulk' && t.status === 'processing';
         const isG2BulkCompleted = t.provider === 'g2bulk' && (t.status === 'completed' || t.status === 'success');
+        const isManualPending = t.provider === 'manual' && t.status === 'pending';
 
         let statusLabel = t.status;
         if (isG2BulkPending) statusLabel = 'success (p)';
         else if (isG2BulkProcessing) statusLabel = 'success (n)';
         else if (isG2BulkCompleted) statusLabel = 'success';
+        else if (isManualPending) statusLabel = 'awaiting approval';
 
         const isSuccessStyle = isG2BulkPending || isG2BulkProcessing || isG2BulkCompleted || t.status === 'success' || t.status === 'completed';
         const isWarningStyle = !isSuccessStyle && (t.status === 'pending' || t.status === 'processing');
         const badgeClass = isSuccessStyle ? 'success' : (isWarningStyle ? 'warning' : 'danger');
 
-        return [
+        const row = [
           t.id,
           `
         <div class="font-weight-bold">${t.user_name || 'Unknown'}</div>
@@ -1711,6 +1712,18 @@ const adminController = {
               })
             : ''
         ];
+
+        let actions = '<span class="text-muted">—</span>';
+        if (t.provider === 'manual' && t.status === 'pending') {
+          actions = `
+            <div class="btn-group btn-group-sm" role="group">
+              <button type="button" class="btn btn-success" onclick="approveManualPurchase(${t.id})">Approve</button>
+              <button type="button" class="btn btn-danger" onclick="rejectManualPurchase(${t.id})">Reject</button>
+            </div>`;
+        }
+        row.push(actions);
+
+        return row;
       });
 
       res.json({
@@ -1724,6 +1737,85 @@ const adminController = {
       res.status(500).json({
         error: 'Failed to load data'
       });
+    }
+  },
+
+  approveManualGamePurchase: async (req, res) => {
+    const id = Number(req.params.id);
+    if (!Number.isFinite(id) || id < 1) {
+      return res.status(400).json({ success: false, message: 'Invalid order id' });
+    }
+    const { sequelize } = require('../models');
+    const t = await sequelize.transaction();
+    try {
+      const tx = await GamePurchaseTransaction.findByPk(id, { transaction: t, lock: t.LOCK.UPDATE });
+      if (!tx || tx.provider !== 'manual' || tx.status !== 'pending') {
+        await t.rollback();
+        return res.status(400).json({ success: false, message: 'Order not found or not awaiting approval.' });
+      }
+      await tx.update(
+        {
+          status: 'completed',
+          order_id: tx.order_id || String(tx.id),
+          updated_at: new Date()
+        },
+        { transaction: t }
+      );
+      await t.commit();
+      return res.json({ success: true, message: 'Order approved. Customer payment remains deducted.' });
+    } catch (error) {
+      try {
+        await t.rollback();
+      } catch (_) {}
+      console.error('approveManualGamePurchase error:', error);
+      return res.status(500).json({ success: false, message: 'Failed to approve order.' });
+    }
+  },
+
+  rejectManualGamePurchase: async (req, res) => {
+    const id = Number(req.params.id);
+    if (!Number.isFinite(id) || id < 1) {
+      return res.status(400).json({ success: false, message: 'Invalid order id' });
+    }
+    const reason = String(req.body?.reason || 'Rejected by admin').trim().slice(0, 500);
+    const { sequelize } = require('../models');
+    const t = await sequelize.transaction();
+    try {
+      const tx = await GamePurchaseTransaction.findByPk(id, { transaction: t, lock: t.LOCK.UPDATE });
+      if (!tx || tx.provider !== 'manual' || tx.status !== 'pending') {
+        await t.rollback();
+        return res.status(400).json({ success: false, message: 'Order not found or not awaiting approval.' });
+      }
+      const wallet = await Wallet.findOne({
+        where: { userId: tx.user_id },
+        transaction: t,
+        lock: t.LOCK.UPDATE
+      });
+      if (!wallet) {
+        await t.rollback();
+        return res.status(404).json({ success: false, message: 'User wallet not found.' });
+      }
+      const balanceField = tx.currency === 'MMK' ? 'balance_mmk' : 'balance_thb';
+      const amt = Number(tx.total_amount || 0);
+      const cur = Number(wallet[balanceField] || 0);
+      await wallet.update({ [balanceField]: cur + amt }, { transaction: t });
+      await tx.update(
+        {
+          status: 'fail',
+          failure_reason: reason,
+          refunded_amount: amt,
+          updated_at: new Date()
+        },
+        { transaction: t }
+      );
+      await t.commit();
+      return res.json({ success: true, message: 'Order rejected and customer wallet refunded.' });
+    } catch (error) {
+      try {
+        await t.rollback();
+      } catch (_) {}
+      console.error('rejectManualGamePurchase error:', error);
+      return res.status(500).json({ success: false, message: 'Failed to reject order.' });
     }
   },
 
