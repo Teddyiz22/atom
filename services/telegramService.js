@@ -174,23 +174,32 @@ Your chat ID: \`${chatId}\`
         // Approve/reject work can exceed that, so acknowledge immediately.
         await this.bot.answerCallbackQuery(callbackQuery.id).catch(() => {});
 
-        if (action.startsWith('approve_')) {
-          const transactionId = action.replace('approve_', '');
-          await this.handleApproval(transactionId, chatId, msg.message_id);
-        } else if (action.startsWith('reject_')) {
-          const transactionId = action.replace('reject_', '');
-          await this.handleRejectionRequest(transactionId, chatId, msg.message_id);
-        } else if (action.startsWith('manual_approve_')) {
+        // Keep wallet top-up and manual order actions strictly isolated.
+        if (/^manual_approve_\d+$/.test(action)) {
           const purchaseId = action.replace('manual_approve_', '');
           await this.handleManualOrderApproval(purchaseId, chatId, msg.message_id);
-        } else if (action.startsWith('manual_reject_')) {
+        } else if (/^manual_reject_\d+$/.test(action)) {
           const purchaseId = action.replace('manual_reject_', '');
           await this.handleManualOrderRejection(purchaseId, chatId, msg.message_id);
+        } else if (/^approve_\d+$/.test(action)) {
+          const transactionId = action.replace('approve_', '');
+          await this.handleApproval(transactionId, chatId, msg.message_id);
+        } else if (/^reject_\d+$/.test(action)) {
+          const transactionId = action.replace('reject_', '');
+          await this.handleRejectionRequest(transactionId, chatId, msg.message_id);
         } else if (action.startsWith('confirm_reject_')) {
           const parts = action.split('confirm_reject_')[1].split('_');
           const transactionId = parts[0];
           const reason = parts.slice(1).join('_');
           await this.handleRejection(transactionId, reason, chatId, msg.message_id);
+        } else if (/^approve_manual_\d+$/.test(action)) {
+          // Backward compatibility for old manual buttons.
+          const purchaseId = action.replace('approve_manual_', '');
+          await this.handleManualOrderApproval(purchaseId, chatId, msg.message_id);
+        } else if (/^reject_manual_\d+$/.test(action)) {
+          // Backward compatibility for old manual buttons.
+          const purchaseId = action.replace('reject_manual_', '');
+          await this.handleManualOrderRejection(purchaseId, chatId, msg.message_id);
         }
       } catch (error) {
         console.error('Error handling callback query:', error);
@@ -353,11 +362,6 @@ Your chat ID: \`${chatId}\`
     try {
       const user = await User.findByPk(purchase.user_id).catch(() => null);
       const createdAt = purchase.created_at || new Date();
-      let customerNote = '';
-      try {
-        const raw = purchase.delivery_items ? JSON.parse(purchase.delivery_items) : null;
-        customerNote = raw?.customer_note ? String(raw.customer_note) : '';
-      } catch (_) {}
 
       const message = `
 🔔 *New Game order request*
@@ -372,10 +376,8 @@ Your chat ID: \`${chatId}\`
 • Game Type: ${purchase.product_type_code || 'pubgcustom'}
 • Purchase: ${purchase.product_name || '-'}
 • Game ID: ${purchase.player_id || '-'}
-• Server ID: ${purchase.server_id || '-'}
 • Amount: ${Number(purchase.total_amount || 0).toLocaleString()} ${purchase.currency || ''}
 • Date Time: ${new Date(createdAt).toLocaleString('en-US', { timeZone: 'Asia/Yangon' })}
-${customerNote ? `• Note: ${customerNote}` : ''}
 
 *Status:* Pending Approval ⏳
       `;
@@ -438,7 +440,6 @@ ${customerNote ? `• Note: ${customerNote}` : ''}
 • Purchase: ${purchase.product_name}
 • Game Type: ${purchase.product_type_code}
 • Game ID: ${purchase.player_id || '-'}
-• Server ID: ${purchase.server_id || '-'}
 • Amount: ${Number(purchase.total_amount || 0).toLocaleString()} ${purchase.currency}
 • Approved: ${new Date().toLocaleString('en-US', { timeZone: 'Asia/Yangon' })}
 
@@ -515,7 +516,6 @@ Payment confirmed. Customer deduction remains applied.
 • Purchase: ${purchase.product_name}
 • Game Type: ${purchase.product_type_code}
 • Game ID: ${purchase.player_id || '-'}
-• Server ID: ${purchase.server_id || '-'}
 • Amount: ${refundAmount.toLocaleString()} ${purchase.currency}
 • Rejected: ${new Date().toLocaleString('en-US', { timeZone: 'Asia/Yangon' })}
 

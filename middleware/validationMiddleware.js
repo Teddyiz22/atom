@@ -41,15 +41,7 @@ const validateManualGameOrder = [
   body('player_id')
     .trim()
     .isLength({ min: 3, max: 64 })
-    .withMessage('Player ID must be 3–64 characters'),
-  body('server_id')
-    .optional()
-    .trim()
-    .isLength({ max: 64 }),
-  body('remark')
-    .optional()
-    .trim()
-    .isLength({ max: 500 })
+    .withMessage('Player ID must be 3–64 characters')
 ];
 
 // Validation rules for contact form
