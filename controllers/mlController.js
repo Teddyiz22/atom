@@ -1765,10 +1765,6 @@ const mlController = {
     const productIdNum = Number(body.product_id || body.productId);
     const currency = String(body.currency || 'MMK').trim().toUpperCase();
     const playerId = String(body.player_id || body.playerId || '').trim();
-    const serverId = body.server_id != null && String(body.server_id).trim() !== ''
-      ? String(body.server_id).trim()
-      : null;
-    const remark = body.remark ? String(body.remark).trim().slice(0, 500) : '';
 
     if (!req.session?.user) {
       return res.status(401).json({ status: 401, message: 'Please login to place an order' });
@@ -1866,13 +1862,12 @@ const mlController = {
         });
       }
 
-      const idempotencyKey = `manual:${userId}:${MANUAL_TYPE}:${productIdNum}:${playerId}:${serverId || ''}:${currency}:${Date.now()}:${Math.random().toString(36).slice(2, 8)}`;
+      const idempotencyKey = `manual:${userId}:${MANUAL_TYPE}:${productIdNum}:${playerId}:${currency}:${Date.now()}:${Math.random().toString(36).slice(2, 8)}`;
 
       const newBalance = currentBalance - totalAmount;
       await wallet.update({ [balanceField]: newBalance }, { transaction: dbTx });
 
       const GamePurchaseTransaction = require('../models/GamePurchaseTransaction');
-      const deliveryMeta = remark ? JSON.stringify({ customer_note: remark }) : null;
 
       const purchase = await GamePurchaseTransaction.create({
         user_id: userId,
@@ -1882,14 +1877,14 @@ const mlController = {
         product_id: String(product.id),
         product_name: product.name,
         player_id: playerId,
-        server_id: serverId,
+        server_id: null,
         quantity: 1,
         total_amount: totalAmount,
         currency,
         status: 'pending',
         idempotency_key: idempotencyKey,
         order_id: null,
-        delivery_items: deliveryMeta,
+        delivery_items: null,
         failure_reason: null
       }, { transaction: dbTx });
 
@@ -2204,7 +2199,7 @@ function getGameNameFromTypeCode(typeCode) {
     mlphp: 'Mobile Legends (PH)',
     mlbb_special: 'Mobile Legends (SG/MY)',
     pubgm: 'PUBG Mobile',
-    pubgcustom: 'PUBG Mobile (Manual)',
+    pubgcustom: 'PUBG Mobile',
     hok: 'Honor of Kings',
     mcgg: 'Magic Chess: Go Go'
   };
