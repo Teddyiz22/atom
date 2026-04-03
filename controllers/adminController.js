@@ -806,7 +806,8 @@ const adminController = {
 
       const region = (provider === 'smile' || provider === 'manual') ? String(req.body.region || 'b').trim().toLowerCase() : 'b';
       const smileIDCombinationRaw = provider === 'smile' ? String(req.body.smile_id_combination || '').trim() : '';
-      const category = (provider === 'smile' || provider === 'manual') ? String(req.body.category || '').trim() : null;
+      // Only Smile products use category enum in products table.
+      const category = provider === 'smile' ? String(req.body.category || '').trim() : null;
 
       if (!name) {
         return res.status(400).render('admin/productManagement/newProduct', {
@@ -1156,7 +1157,8 @@ const adminController = {
       const status = String(req.body.status || 'active').trim().toLowerCase();
       const region = (provider === 'smile' || provider === 'manual') ? String(req.body.region || 'b').trim().toLowerCase() : 'b';
       const smileIDCombinationRaw = provider === 'smile' ? String(req.body.smile_id_combination || '').trim() : '';
-      const category = (provider === 'smile' || provider === 'manual') ? String(req.body.category || '').trim() : null;
+      // Only Smile products use category enum in products table.
+      const category = provider === 'smile' ? String(req.body.category || '').trim() : null;
 
       const renderError = async (message) => {
         return res.status(400).render('admin/productManagement/newProduct', {
