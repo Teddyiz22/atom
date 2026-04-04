@@ -720,7 +720,7 @@
             const pid = String((fields && (fields.player_id || fields.user_id || fields.userid || '')) || '').trim();
             lastVerifiedFields = fields || null;
             showSuccessState(playerName || pid || 'Verified');
-            showSuccessToast('✓ Player verified successfully!');
+            showSuccessToast('✓ Player verified successfully!', 1500);
             return;
           }
           lastVerifiedFields = null;

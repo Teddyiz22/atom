@@ -653,7 +653,7 @@
           if (result.status === 200 && result.username) {
             lastVerifiedFields = { userid: userId, zoneid: zoneId };
             showSuccessState(result.username);
-            showSuccessToast('✓ User verified successfully!');
+            showSuccessToast('✓ User verified successfully!', 1500);
           } else {
             lastVerifiedFields = null;
             showErrorState(result.message || 'User not found');

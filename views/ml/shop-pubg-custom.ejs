@@ -15,6 +15,8 @@
       theme: {
         extend: {
           colors: {
+            primary: '#38B6FF',
+            secondary: '#2493D4',
             theme: {
               400: '#38B6FF',
               500: '#2493D4',
@@ -123,10 +125,10 @@
               <img src="/images/uc.png" alt="" class="w-10 h-10 object-contain rounded-lg">
               <p class="text-white font-semibold text-sm leading-tight line-clamp-2"><%= product.name %></p>
             </div>
-            <p class="price-mmk text-theme-300 font-bold mt-3 text-center text-sm">
+            <p class="price-mmk text-blue-400 font-bold mt-3 text-center text-sm">
               <%= new Intl.NumberFormat('en-US').format(product.price_mmk) %> MMK
             </p>
-            <p class="price-thb text-theme-300 font-bold mt-3 text-center text-sm hidden">
+            <p class="price-thb text-blue-400 font-bold mt-3 text-center text-sm hidden">
               ฿<%= new Intl.NumberFormat('en-US').format(product.price_thb) %>
             </p>
           </div>
@@ -138,7 +140,7 @@
 
         <div id="selectedBar" class="hidden mt-6 p-4 bg-white/5 border border-white/20 rounded-xl">
           <p class="text-white text-sm"><span class="text-gray-400">Selected:</span> <span id="selectedLabel" class="font-semibold"></span></p>
-          <p class="text-theme-300 font-bold mt-1" id="selectedPrice"></p>
+          <p class="text-blue-400 font-bold mt-1" id="selectedPrice"></p>
         </div>
 
         <button type="button" id="orderBtn"
@@ -261,6 +263,7 @@
 
     syncCurrencyUI();
   </script>
+    <%- include('../partials/ml-floating-nav') %>
 </body>
 
 </html>

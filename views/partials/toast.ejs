@@ -193,20 +193,20 @@
   }
 
   // Helper functions with better user experience
-  function showSuccessToast(message) {
-    showToast(message, 'success', 6000);
+  function showSuccessToast(message, duration) {
+    showToast(message, 'success', duration || 6000);
   }
 
-  function showErrorToast(message) {
-    showToast(message, 'error', 7000); // Longer for errors
+  function showErrorToast(message, duration) {
+    showToast(message, 'error', duration || 7000); // Longer for errors
   }
 
-  function showWarningToast(message) {
-    showToast(message, 'warning', 6000);
+  function showWarningToast(message, duration) {
+    showToast(message, 'warning', duration || 6000);
   }
 
-  function showInfoToast(message) {
-    showToast(message, 'info', 5000);
+  function showInfoToast(message, duration) {
+    showToast(message, 'info', duration || 5000);
   }
 
   function showRegistrationToast(name) {

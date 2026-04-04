@@ -569,7 +569,7 @@
         .then(function(result) {
           if (result.status === 200 && result.username) {
             showSuccessState(result.username);
-            showSuccessToast('✓ User verified successfully!');
+            showSuccessToast('✓ User verified successfully!', 1500);
           } else {
             showErrorState(result.message || 'User not found');
             showErrorToast('✗ ' + (result.message || 'User not found'));
