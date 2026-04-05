@@ -250,8 +250,8 @@
 
         <%
           const subscriptionKeywords = [
-            'Weekly Elite Pack',
-            'Monthly Elite Pack',
+            'Weekly Elite Bundle',
+            'Monthly Epic Bundle',
             'Super Value Pass',
             'Twilight Pass',
             'Weekly'
@@ -264,12 +264,12 @@
           const otherProducts = (products || []).filter(p => !isSubscription(p.name));
 
           const premiumPackageImages = {
-            "weekly elite pack": "/images/weekly-elite.png",
+            "weekly elite bundle": "/images/weekly-elite.png",
             "super value pass": "/images/super-value-pass.png",
             "weekly pass": "/images/weekly-pass.png",
             "weekly": "/images/weekly-pass.png",
              "twilight pass": "/images/twilight_pass.jpg",
-            "monthly elite pack": "/images/monthly-epic.png"
+            "monthly epic bundle": "/images/monthly-epic.png"
           };
 
           function getPremiumPackageImage(name) {
@@ -288,7 +288,7 @@
               let badgeColor = 'from-cyan-500 to-blue-500';
               let desc = '7 days of rewards';
 
-              if (product.name.includes('Weekly Elite Pack') || product.name.includes('Super Value Pass') || product.name.includes('Twilight Pass') || product.name.includes('Monthly Elite Pack')) {
+              if (product.name.includes('Weekly Elite Bundle') || product.name.includes('Super Value Pass') || product.name.includes('Twilight Pass') || product.name.includes('Monthly Epic Bundle')) {
                 type = 'BUNDLE';
                 badgeColor = 'from-purple-500 to-pink-500';
                 desc = 'Exclusive Bundle';
