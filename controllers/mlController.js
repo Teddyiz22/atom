@@ -821,25 +821,53 @@ const mlController = {
   },
 
   // GET /wallet - Wallet page
-  wallet: (req, res) => {
+  wallet: async (req, res) => {
     try {
       // Check if user is logged in
       if (!req.session.user) {
         return res.redirect('/users/login');
       }
 
-      res.render('ml/wallet', {
+      const Wallet = require('../models/Wallet');
+      const Transaction = require('../models/Transaction');
+      const PaymentMethod = require('../models/PaymentMethod');
+
+      // Get or create wallet for user
+      let wallet = await Wallet.findByUserId(req.session.user.id);
+      if (!wallet) {
+        wallet = await Wallet.create({
+          userId: req.session.user.id,
+          balance_mmk: 0,
+          balance_thb: 0
+        });
+      }
+
+      const [transactions, paymentMethods] = await Promise.all([
+        Transaction.findByUserId(req.session.user.id),
+        PaymentMethod.findAll({
+          where: { is_active: 'active' },
+          order: [['region', 'ASC'], ['payment_type', 'ASC'], ['account_name', 'ASC']]
+        })
+      ]);
+
+      // Add wallet to user object for template
+      const userWithWallet = {
+        ...req.session.user,
+        wallet: wallet
+      };
+
+      return res.render('ml/wallet', {
         title: 'My Wallet - ATOM Game Shop | Gaming Balance & Transactions',
         description: 'Manage your ATOM Game Shop wallet, add balance with MMK currency, view transaction history for diamond purchases. Secure payment system for Mobile Legends, PUBG, Honor of Kings.',
         keywords: 'ATOM Game Shop wallet, gaming balance, MMK transactions, diamond payment, Mobile Legends wallet, PUBG balance, gaming payment system',
-        user: req.session.user,
-        balance: 0, // This would come from database
-        transactions: [], // This would come from database
+        user: userWithWallet,
+        transactions: transactions || [],
+        paymentMethods: paymentMethods || [],
         websiteUrl: process.env.WEBSITE_URL || 'http://localhost:3600'
       });
     } catch (error) {
       console.error('Error in wallet page:', error);
-      res.status(500).render('errors/500', {
+      return res.status(500).render('errors/500', {
         title: 'Server Error',
         message: 'Something went wrong.'
       });

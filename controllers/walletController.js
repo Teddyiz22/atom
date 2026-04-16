@@ -1,5 +1,6 @@
 const Wallet = require('../models/Wallet');
 const Transaction = require('../models/Transaction');
+const PaymentMethod = require('../models/PaymentMethod');
 const telegramService = require('../services/telegramService');
 const loggingService = require('../services/loggingService');
 const { logUserActivity } = require('../middleware/loggingMiddleware');
@@ -60,7 +61,13 @@ const walletController = {
         });
       }
 
-      const transactions = await Transaction.findByUserId(req.session.user.id);
+      const [transactions, paymentMethods] = await Promise.all([
+        Transaction.findByUserId(req.session.user.id),
+        PaymentMethod.findAll({
+          where: { is_active: 'active' },
+          order: [['region', 'ASC'], ['payment_type', 'ASC'], ['account_name', 'ASC']]
+        })
+      ]);
 
       // Add wallet to user object for template
       const userWithWallet = {
@@ -72,6 +79,7 @@ const walletController = {
         title: 'Wallet - ML Diamonds Store',
         user: userWithWallet,
         transactions: transactions || [],
+        paymentMethods: paymentMethods || [],
         successToast: req.session.successToast || null,
         errorToast: req.session.errorToast || null
       });
@@ -94,6 +102,7 @@ const walletController = {
         title: 'Wallet - ML Diamonds Store',
         user: { ...req.session.user, wallet: { balance_mmk: 0, balance_thb: 0 } },
         transactions: [],
+        paymentMethods: [],
         errorToast: 'Failed to load wallet information.'
       });
     }

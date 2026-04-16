@@ -1465,6 +1465,7 @@ const adminController = {
         title: 'Payment Methods - ATOM Game Shop',
         user: req.session.user,
         paymentMethods,
+        form: null,
         success: req.query.success === '1'
       });
     } catch (error) {
@@ -1473,7 +1474,47 @@ const adminController = {
         title: 'Payment Methods - ATOM Game Shop',
         user: req.session.user,
         paymentMethods: [],
+        form: null,
         error: 'Failed to load payment methods.'
+      });
+    }
+  },
+
+  editPaymentMethod: async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+      if (Number.isNaN(id)) {
+        return res.redirect('/admin/payment-methods');
+      }
+
+      const [paymentMethods, paymentMethod] = await Promise.all([
+        PaymentMethod.findAll({
+          order: [['region', 'ASC'], ['payment_type', 'ASC'], ['account_name', 'ASC']]
+        }),
+        PaymentMethod.findByPk(id)
+      ]);
+
+      if (!paymentMethod) {
+        return res.redirect('/admin/payment-methods');
+      }
+
+      return res.render('admin/paymentMethods', {
+        title: 'Payment Methods - ATOM Game Shop',
+        user: req.session.user,
+        paymentMethods,
+        form: paymentMethod,
+        success: req.query.success === '1'
+      });
+    } catch (error) {
+      console.error('Edit payment method page error:', error);
+      return res.status(500).render('admin/paymentMethods', {
+        title: 'Payment Methods - ATOM Game Shop',
+        user: req.session.user,
+        paymentMethods: await PaymentMethod.findAll({
+          order: [['region', 'ASC'], ['payment_type', 'ASC'], ['account_name', 'ASC']]
+        }),
+        form: null,
+        error: 'Failed to load payment method.'
       });
     }
   },

@@ -70,6 +70,12 @@
             <i class="fas fa-save mr-2"></i>
             Save
           </button>
+
+          <% if (form && form.id) { %>
+            <a href="/admin/payment-methods" class="btn btn-outline-secondary ml-2">
+              Cancel
+            </a>
+          <% } %>
         </form>
       </div>
     </div>
@@ -111,12 +117,17 @@
                     </td>
                     <td><%= pm.is_active %></td>
                     <td class="text-center">
-                      <form method="POST" action="/admin/payment-methods/delete" class="m-0" onsubmit="return confirm('Delete this payment method?')">
-                        <input type="hidden" name="id" value="<%= pm.id %>">
-                        <button type="submit" class="btn btn-sm btn-danger">
-                          <i class="fas fa-trash"></i>
-                        </button>
-                      </form>
+                      <div class="d-flex align-items-center justify-content-center" style="gap: 6px;">
+                        <a class="btn btn-sm btn-warning" href="/admin/payment-methods/edit/<%= pm.id %>" title="Edit">
+                          <i class="fas fa-edit"></i>
+                        </a>
+                        <form method="POST" action="/admin/payment-methods/delete" class="m-0" onsubmit="return confirm('Delete this payment method?')">
+                          <input type="hidden" name="id" value="<%= pm.id %>">
+                          <button type="submit" class="btn btn-sm btn-danger" title="Delete">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </form>
+                      </div>
                     </td>
                   </tr>
                 <% }) %>

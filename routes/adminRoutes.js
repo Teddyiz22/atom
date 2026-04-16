@@ -66,6 +66,7 @@ router.post('/product-types/delete', adminAuth, adminController.deleteProductTyp
 
 // Payment Methods (requires auth + layout)
 router.get('/payment-methods', adminAuth, adminLayout, adminController.paymentMethods);
+router.get('/payment-methods/edit/:id', adminAuth, adminLayout, adminController.editPaymentMethod);
 router.post('/payment-methods/save', adminAuth, adminController.upsertPaymentMethod);
 router.post('/payment-methods/delete', adminAuth, adminController.deletePaymentMethod);
 

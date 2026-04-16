@@ -319,51 +319,52 @@
 
   <%- include('../partials/ml-scripts') %>
 
+  <script id="dbPaymentMethodsJson" type="application/json"><%- JSON.stringify((paymentMethods || []).map(pm => ({
+    id: pm.id,
+    region: pm.region,
+    payment_type: pm.payment_type,
+    account_name: pm.account_name,
+    account_number: pm.account_number,
+    is_active: pm.is_active
+  }))) %></script>
+
   <script>
     let selectedCurrencyType = '';
     let selectedAmountValue = 0;
 
-    // Payment account data
-    const paymentAccounts = {
-      // MMK Payment Methods
-      'Wave Pay': {
-        name: 'Nay Myo Tun',
-        method: 'Wave Pay',
-        number: '09404466692',
-        currency: 'MMK'
-      },
-      'KBZ Pay': {
-        name: 'Nay Myo Tun',
-        method: 'KBZ Pay',
-        number: '09404466692',
-        currency: 'MMK'
-      },
-      'AYA Pay': {
-        name: 'Nay Myo Tun',
-        method: 'AYA Pay',
-        number: '09404466692',
-        currency: 'MMK'
-      },
-      'UAB Pay': {
-        name: 'Nay Myo Tun',
-        method: 'UAB Pay',
-        number: '09404466692',
-        currency: 'MMK'
-      },
-      'CB Bank': {
-        name: 'Nay Myo Tun',
-        method: 'CB Bank',
-        number: '0179-1009-0000-2337',
-        currency: 'MMK'
-      },
-      // THB Payment Methods
-      'Krungthai Bank': {
-        name: 'Mr. Nay Myo Tun',
-        method: 'Krungthai Bank',
-        number: '5010-802-937',
-        currency: 'THB'
+    // Payment methods from database (dynamic)
+    const dbPaymentMethods = (() => {
+      try {
+        const el = document.getElementById('dbPaymentMethodsJson');
+        if (!el) return [];
+        return JSON.parse(el.textContent || '[]');
+      } catch (e) {
+        console.warn('Failed to parse payment methods JSON', e);
+        return [];
       }
-    };
+    })();
+
+    function regionToCurrency(region) {
+      if (region === 'Myanmar') return 'MMK';
+      if (region === 'Thailand') return 'THB';
+      return null;
+    }
+
+    // Build lookup by payment_type for each currency (first match wins)
+    const paymentAccounts = {};
+    dbPaymentMethods.forEach(pm => {
+      const currency = regionToCurrency(pm.region);
+      if (!currency) return;
+      const key = `${currency}::${pm.payment_type}`;
+      if (!paymentAccounts[key]) {
+        paymentAccounts[key] = {
+          name: pm.account_name,
+          method: pm.payment_type,
+          number: pm.account_number,
+          currency
+        };
+      }
+    });
 
     function selectCurrency(currency) {
       selectedCurrencyType = currency;
@@ -408,17 +409,29 @@
       const paymentMethodSelect = document.getElementById('paymentMethod');
       paymentMethodSelect.innerHTML = '<option value="" class="text-gray-900">Select Payment Method</option>';
 
-      // Filter payment accounts by currency
-      Object.keys(paymentAccounts).forEach(methodKey => {
-        const account = paymentAccounts[methodKey];
-        if (account.currency === currency) {
-          const option = document.createElement('option');
-          option.value = methodKey;
-          option.textContent = methodKey;
-          option.className = 'text-gray-900';
-          paymentMethodSelect.appendChild(option);
-        }
+      // Create options from DB methods filtered by currency
+      const seen = new Set();
+      Object.keys(paymentAccounts).forEach(key => {
+        const account = paymentAccounts[key];
+        if (account.currency !== currency) return;
+        if (seen.has(account.method)) return;
+        seen.add(account.method);
+
+        const option = document.createElement('option');
+        option.value = account.method; // value posted to server as payment_type
+        option.textContent = account.method;
+        option.className = 'text-gray-900';
+        paymentMethodSelect.appendChild(option);
       });
+
+      if (paymentMethodSelect.options.length === 1) {
+        const option = document.createElement('option');
+        option.value = '';
+        option.textContent = 'No payment methods available';
+        option.disabled = true;
+        option.className = 'text-gray-900';
+        paymentMethodSelect.appendChild(option);
+      }
     }
 
     function hideTopupForm() {
@@ -444,8 +457,9 @@
       const accountInfo = document.getElementById('accountInfo');
       const uploadSection = document.getElementById('uploadSection');
 
-      if (paymentMethod && paymentAccounts[paymentMethod]) {
-        const account = paymentAccounts[paymentMethod];
+      const key = `${selectedCurrencyType}::${paymentMethod}`;
+      if (paymentMethod && paymentAccounts[key]) {
+        const account = paymentAccounts[key];
         document.getElementById('accountName').textContent = account.name;
         document.getElementById('paymentMethodName').textContent = account.method;
         document.getElementById('accountNumber').textContent = account.number;
