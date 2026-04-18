@@ -13,6 +13,55 @@ const { getMaintenanceStatus, setMaintenanceStatus } = require('../middleware/ma
 
 const MMK_OFFSET_MINUTES = 390;
 
+function escapeHtml(str = '') {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function mmkDayStartUtcMs(date = new Date()) {
+  const shifted = new Date(date.getTime() + MMK_OFFSET_MINUTES * 60 * 1000);
+  return Date.UTC(shifted.getUTCFullYear(), shifted.getUTCMonth(), shifted.getUTCDate());
+}
+
+function formatLastLoginMyanmar(lastLogin) {
+  if (!lastLogin) {
+    return `<span class="badge badge-secondary">Never</span>`;
+  }
+
+  const last = new Date(lastLogin);
+  if (Number.isNaN(last.getTime())) {
+    return `<span class="badge badge-secondary">Never</span>`;
+  }
+
+  const nowDay = mmkDayStartUtcMs(new Date());
+  const lastDay = mmkDayStartUtcMs(last);
+  const diffDays = Math.max(0, Math.floor((nowDay - lastDay) / (24 * 60 * 60 * 1000)));
+
+  let label = 'Today';
+  let badge = 'success';
+
+  if (diffDays >= 90) {
+    label = '3 months ago';
+    badge = 'danger';
+  } else if (diffDays >= 30) {
+    label = '1 month ago';
+    badge = 'warning';
+  } else if (diffDays >= 7) {
+    label = `${diffDays} days ago`;
+    badge = 'warning';
+  } else if (diffDays >= 1) {
+    label = `${diffDays} day${diffDays === 1 ? '' : 's'} ago`;
+    badge = 'primary';
+  }
+
+  const tooltip = escapeHtml(last.toLocaleString('en-GB', { timeZone: 'Asia/Yangon' }));
+  return `<span class="badge badge-${badge}" title="${tooltip}">${label}</span>`;
+}
+
 async function getG2BulkAccountInfo() {
   const rawBaseUrl = String(process.env.G2BULK_API_URL || '').trim();
   const baseUrl = rawBaseUrl.replace(/\/+$/, '');
@@ -603,7 +652,7 @@ const adminController = {
         `<span class="badge badge-${user.role === 'admin' ? 'danger' : 'primary'}">${user.role}</span>`,
         `<span class="badge badge-${user.status === 'active' ? 'success' : 'warning'}" id="status-badge-${user.id}">${user.status}</span>`,
         `<span class="badge badge-${user.email_verified ? 'success' : 'secondary'}">${user.email_verified ? 'Verified' : 'Unverified'}</span>`,
-        user.last_login ? new Date(user.last_login).toLocaleDateString() : 'Never',
+        formatLastLoginMyanmar(user.last_login),
         new Date(user.created_at).toLocaleDateString('en-GB'),
         user.role !== 'admin' ?
           `<button class="btn btn-sm btn-${user.status === 'active' ? 'warning' : 'success'} mr-1" onclick="toggleUserStatus(${user.id})">
