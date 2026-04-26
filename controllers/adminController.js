@@ -419,6 +419,52 @@ const adminController = {
 
   },
 
+  inactiveUsers: async (req, res) => {
+    try {
+      const { Op } = require('sequelize');
+
+      // Myanmar day start in UTC ms, then subtract 90 days
+      const nowDayUtc = mmkDayStartUtcMs(new Date());
+      const thresholdUtc = new Date(nowDayUtc - 90 * 24 * 60 * 60 * 1000);
+
+      const inactiveUsersList = await User.findAll({
+        where: {
+          role: 'user',
+          [Op.or]: [
+            { last_login: null },
+            { last_login: { [Op.lte]: thresholdUtc } }
+          ]
+        },
+        order: [['created_at', 'DESC']],
+        attributes: [
+          'id',
+          'name',
+          'email',
+          'phone_number',
+          'role',
+          'status',
+          'email_verified',
+          'last_login',
+          'created_at'
+        ]
+      });
+
+      return res.render('admin/inactiveUsers', {
+        title: 'Inactive Users',
+        user: req.session.user,
+        totalInactiveUser: inactiveUsersList.length
+      });
+    } catch (error) {
+      console.error('Failed to load inactive users', error);
+      return res.render('admin/inactiveUsers', {
+        title: 'Inactive Users',
+        user: req.session.user,
+        totalInactiveUser: 0,
+        error: 'Failed to load inactive users.'
+      });
+    }
+  },
+
   verifyUser: async (req, res) => {
     try {
       const { id } = req.params;
@@ -593,6 +639,121 @@ const adminController = {
     } catch (error) {
       console.error('Unverified users data error:', error);
       res.status(500).json({ error: 'Failed to load unverified users data' });
+    }
+  },
+
+  // GET /admin/users/inactiveuserlist/data
+  inactiveUsersData: async (req, res) => {
+    try {
+      const { Op } = require('sequelize');
+
+      // DataTables parameters
+      const draw = parseInt(req.query.draw) || 1;
+      const start = parseInt(req.query.start) || 0;
+      const length = parseInt(req.query.length) || 10;
+      const searchValue = req.query.search?.value || '';
+      const orderColumn = parseInt(req.query.order?.[0]?.column) || 0;
+      const orderDir = req.query.order?.[0]?.dir || 'desc';
+
+      // Column mapping (same order as table)
+      const columns = [
+        'id',
+        'name',
+        'email',
+        'phone_number',
+        'status',
+        'email_verified',
+        'last_login',
+        'created_at'
+      ];
+      const orderBy = columns[orderColumn] || 'id';
+
+      const nowDayUtc = mmkDayStartUtcMs(new Date());
+      const thresholdUtc = new Date(nowDayUtc - 90 * 24 * 60 * 60 * 1000);
+
+      let whereCondition = {
+        role: 'user',
+        [Op.or]: [
+          { last_login: null },
+          { last_login: { [Op.lte]: thresholdUtc } }
+        ]
+      };
+
+      if (searchValue) {
+        whereCondition = {
+          role: 'user',
+          [Op.and]: [
+            {
+              [Op.or]: [
+                { last_login: null },
+                { last_login: { [Op.lte]: thresholdUtc } }
+              ]
+            },
+            {
+              [Op.or]: [
+                { name: { [Op.like]: `%${searchValue}%` } },
+                { email: { [Op.like]: `%${searchValue}%` } },
+                { phone_number: { [Op.like]: `%${searchValue}%` } },
+                { status: { [Op.like]: `%${searchValue}%` } }
+              ]
+            }
+          ]
+        };
+      }
+
+      const totalRecords = await User.count({
+        where: {
+          role: 'user',
+          [Op.or]: [
+            { last_login: null },
+            { last_login: { [Op.lte]: thresholdUtc } }
+          ]
+        }
+      });
+
+      const filteredRecords = await User.count({ where: whereCondition });
+
+      const users = await User.findAll({
+        where: whereCondition,
+        order: [[orderBy, orderDir.toUpperCase()]],
+        limit: length,
+        offset: start,
+        attributes: [
+          'id',
+          'name',
+          'email',
+          'phone_number',
+          'status',
+          'email_verified',
+          'last_login',
+          'created_at'
+        ]
+      });
+
+      const data = users.map(user => ([
+        user.id,
+        user.name,
+        user.email,
+        user.phone_number || 'N/A',
+        `<span class="badge badge-${user.status === 'active' ? 'success' : 'warning'}">${user.status}</span>`,
+        `<span class="badge badge-${user.email_verified ? 'success' : 'secondary'}">${user.email_verified ? 'Verified' : 'Unverified'}</span>`,
+        formatLastLoginMyanmar(user.last_login),
+        new Date(user.created_at).toLocaleDateString('en-GB'),
+        `<button class="btn btn-sm btn-${user.status === 'active' ? 'warning' : 'success'} mr-1" onclick="toggleUserStatus(${user.id})">
+          <i class="fas fa-${user.status === 'active' ? 'ban' : 'check'}"></i>
+          ${user.status === 'active' ? 'Deactivate' : 'Activate'}
+        </button>`
+      ]));
+
+      return res.json({
+        draw,
+        recordsTotal: totalRecords,
+        recordsFiltered: filteredRecords,
+        data
+      });
+    } catch (error) {
+      console.error('Inactive users data error:', error);
+      return res.status(500).json({ error: 'Failed to load inactive users data' });
     }
   },
 

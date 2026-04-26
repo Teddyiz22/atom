@@ -15,6 +15,8 @@ router.get('/register-user', adminAuth, adminLayout, adminController.showRegiste
 router.post('/register-user', adminAuth, adminController.registerUser);
 router.get('/users/unverifiedList', adminAuth, adminLayout, adminController.invalidUsers);
 router.get('/users/unverifiedList/data', adminAuth, adminController.unverifiedUsersData);
+router.get('/users/inactiveuserlist', adminAuth, adminLayout, adminController.inactiveUsers);
+router.get('/users/inactiveuserlist/data', adminAuth, adminController.inactiveUsersData);
 router.get('/users/data', adminAuth, adminController.usersData);
 router.post('/users/:id/toggle-status', adminApiAuth, adminController.toggleUserStatus);
 router.delete('/users/:id', adminApiAuth, adminController.deleteUser);
