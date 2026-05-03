@@ -3140,28 +3140,33 @@ const adminController = {
   activeWallets: async (req, res) => {
     try {
       const { Op } = require('sequelize');
-      // Get basic stats for the dashboard cards
-      const totalUsers = await User.count();
+      const walletPositiveWhere = {
+        [Op.or]: [
+          { balance_mmk: { [Op.gt]: 0 } },
+          { balance_thb: { [Op.gt]: 0 } }
+        ]
+      };
 
-      // Get total balances from wallets directly
-      const totalMMK = await Wallet.sum('balance_mmk') || 0;
-      const totalTHB = await Wallet.sum('balance_thb') || 0;
-      
-      // Count active wallets (balance > 0)
-      const activeWalletsCount = await Wallet.count({
-        where: {
-          [Op.or]: [
-            { balance_mmk: { [Op.gt]: 0 } },
-            { balance_thb: { [Op.gt]: 0 } }
-          ]
-        }
+      // Users with wallet balance (> 0 in MMK or THB); zero-only wallets excluded
+      const usersWithBalance = await User.count({
+        include: [{
+          model: Wallet,
+          required: true,
+          where: walletPositiveWhere
+        }]
       });
 
+      const allRegisteredUsers = await User.count();
+
+      // Total balances across all wallets (system-wide liquidity)
+      const totalMMK = await Wallet.sum('balance_mmk') || 0;
+      const totalTHB = await Wallet.sum('balance_thb') || 0;
+
       const stats = {
-        totalUsers,
+        totalUsers: usersWithBalance,
         totalMMK,
         totalTHB,
-        activeUsers: activeWalletsCount // Use this instead of active users status
+        activeUsers: allRegisteredUsers
       };
 
       res.render('admin/active_wallets', {
