@@ -80,7 +80,7 @@ router.use(setCurrentPath);
 // Public routes
 router.get('/', mlController.shopTypes);
 router.get('/about', mlController.about);
-router.get('/guide', mlController.guide);
+router.get('/guide', (req, res) => res.redirect('/'));
 router.get('/disclaimer', mlController.disclaimer);
 router.get('/privacy-policy', mlController.privacyPolicy);
 router.get('/terms-and-conditions', mlController.termsAndConditions);
