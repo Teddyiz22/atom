@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>I'm Sorry</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: "Padauk", "Myanmar Text", "Noto Sans Myanmar", Arial, sans-serif;
+      color: #fff;
+      background: linear-gradient(145deg, #ff9aba, #7d5cd7 48%, #1e1a35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow-x: hidden;
+    }
+
+    .bg-photo {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.74;
+      z-index: -2;
+    }
+
+    .bg-overlay {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(rgba(62, 22, 38, 0.42), rgba(20, 13, 23, 0.72));
+      z-index: -1;
+    }
+
+    .page {
+      width: min(92vw, 520px);
+      min-height: 640px;
+      padding: 32px 22px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 22px;
+      position: relative;
+    }
+
+    .sticker {
+      width: min(52vw, 220px);
+      height: auto;
+      filter: drop-shadow(0 16px 24px rgba(0, 0, 0, 0.28));
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .sticker-fallback {
+      display: none;
+      width: min(52vw, 220px);
+      aspect-ratio: 1;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.24);
+      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.22);
+      font-size: clamp(4rem, 22vw, 8rem);
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .sticker.is-hidden {
+      display: none;
+    }
+
+    .sticker-fallback.show {
+      display: flex;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 8vw, 4.25rem);
+      line-height: 1.15;
+      text-shadow: 0 5px 18px rgba(0, 0, 0, 0.4);
+    }
+
+    .message {
+      max-width: 440px;
+      font-size: clamp(1rem, 4vw, 1.3rem);
+      line-height: 1.8;
+      text-shadow: 0 3px 14px rgba(0, 0, 0, 0.45);
+    }
+
+    .actions {
+      width: 100%;
+      min-height: 150px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 700;
+      line-height: 1.45;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, font-size 0.3s ease, padding 0.3s ease;
+      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25);
+    }
+
+    .yes-btn {
+      min-width: 168px;
+      padding: 14px 22px;
+      font-size: 1rem;
+      color: #6d1232;
+      background: linear-gradient(135deg, #fff1f6, #ff9dc1);
+      transform: scale(var(--yes-scale, 1));
+      z-index: 2;
+    }
+
+    .no-btn {
+      min-width: 120px;
+      padding: 14px 20px;
+      font-size: 1rem;
+      color: #fff;
+      background: rgba(57, 43, 54, 0.88);
+      border: 1px solid rgba(255, 255, 255, 0.38);
+    }
+
+    button:hover {
+      box-shadow: 0 18px 34px rgba(0, 0, 0, 0.32);
+    }
+
+    .result {
+      display: none;
+      max-width: 470px;
+      padding: 24px 18px;
+      font-size: clamp(1.05rem, 4vw, 1.45rem);
+      line-height: 1.75;
+      font-weight: 700;
+      color: #fff;
+      text-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+    }
+
+    .result.show {
+      display: block;
+      animation: popIn 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    .heart {
+      position: fixed;
+      bottom: -24px;
+      color: #ffb6cf;
+      font-size: 24px;
+      pointer-events: none;
+      animation: rise 3.5s linear forwards;
+      text-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-12px);
+      }
+    }
+
+    @keyframes popIn {
+      0% {
+        opacity: 0;
+        transform: translateY(22px) scale(0.85);
+      }
+      65% {
+        transform: translateY(-8px) scale(1.04);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes rise {
+      0% {
+        opacity: 0;
+        transform: translateY(0) scale(0.8) rotate(0deg);
+      }
+      15% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-110vh) scale(1.6) rotate(28deg);
+      }
+    }
+
+    @media (max-width: 430px) {
+      .page {
+        min-height: 100vh;
+        padding: 26px 16px;
+      }
+
+      .actions {
+        min-height: 190px;
+        gap: 12px;
+      }
+
+      .yes-btn {
+        min-width: 148px;
+        padding: 12px 16px;
+      }
+
+      .no-btn {
+        min-width: 100px;
+        padding: 12px 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <img
+    class="bg-photo"
+    src="https://i.pinimg.com/736x/f0/76/d6/f076d6f119e53083a0e080a3edc917b7.jpg"
+    referrerpolicy="no-referrer"
+    alt=""
+  >
+  <div class="bg-overlay"></div>
+
+  <main class="page">
+    <img
+      class="sticker"
+      id="sticker"
+      src="https://i.pinimg.com/originals/59/a1/a3/59a1a3c54c9feeca9b15e71441ce956b.gif"
+      referrerpolicy="no-referrer"
+      alt="Sad cute sticker"
+    >
+    <div class="sticker-fallback" id="stickerFallback">🥺</div>
+    <h1>I'm Sorry</h1>
+    <p class="message">တကယ်စိတ်မကောင်းပါဘူး။ စိတ်ဆိုးပြေပြီး ခွင့်လွှတ်ပေးပါနော်။</p>
+
+    <div class="actions" id="actions">
+      <button class="yes-btn" id="yesBtn" type="button">စိတ်ဆိုးပြေတာလက်ခံပါတယ်</button>
+      <button class="no-btn" id="noBtn" type="button">ဟင့်အင်း</button>
+    </div>
+
+    <div class="result" id="result">
+      Congratulations!<br>
+      ကျေးဇူးပါ စိတ်ဆိုးပြေတာ လက်ခံပေးတဲ့ အတွက်။<br>
+      Hsaung နဲ့ ရင်းနှီးသွားရင် chilipotလေးနဲ့ ချော့ပါရစေ။
+    </div>
+  </main>
+
+  <script>
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn = document.getElementById("noBtn");
+    const actions = document.getElementById("actions");
+    const result = document.getElementById("result");
+    const sticker = document.getElementById("sticker");
+    const stickerFallback = document.getElementById("stickerFallback");
+
+    let noClicks = 0;
+    const noTexts = [
+      "ဟင့်အင်း",
+      "နောက်တစ်ခါ စဉ်းစားပါနော်",
+      "တကယ်ကြီးလား",
+      "Yes ကို နှိပ်လိုက်ပါတော့နော်"
+    ];
+
+    noBtn.addEventListener("click", () => {
+      noClicks += 1;
+      const scale = Math.min(1 + noClicks * 0.38, 2.9);
+
+      yesBtn.style.setProperty("--yes-scale", scale);
+      yesBtn.style.fontSize = `${Math.min(1 + noClicks * 0.12, 1.55)}rem`;
+      yesBtn.style.padding = `${Math.min(14 + noClicks * 3, 28)}px ${Math.min(22 + noClicks * 5, 44)}px`;
+      noBtn.textContent = noTexts[Math.min(noClicks, noTexts.length - 1)];
+      noBtn.style.transform = `translate(${randomOffset()}px, ${randomOffset()}px)`;
+    });
+
+    yesBtn.addEventListener("click", () => {
+      actions.style.display = "none";
+      result.classList.add("show");
+      createHearts();
+    });
+
+    sticker.addEventListener("error", () => {
+      sticker.classList.add("is-hidden");
+      stickerFallback.classList.add("show");
+    });
+
+    function randomOffset() {
+      return Math.floor(Math.random() * 46) - 23;
+    }
+
+    function createHearts() {
+      for (let i = 0; i < 28; i += 1) {
+        setTimeout(() => {
+          const heart = document.createElement("div");
+          heart.className = "heart";
+          heart.textContent = "♥";
+          heart.style.left = `${Math.random() * 100}vw`;
+          heart.style.animationDuration = `${2.5 + Math.random() * 2.2}s`;
+          document.body.appendChild(heart);
+          heart.addEventListener("animationend", () => heart.remove());
+        }, i * 90);
+      }
+    }
+  </script>
+</body>
+</html>

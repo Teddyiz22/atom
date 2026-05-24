@@ -148,6 +148,11 @@ app.use('/blogs', blogRoutes);
 app.use('/language', languageRoutes);
 app.use('/auth', authRoutes);
 
+// Hidden apology page route. This is intentionally not linked from the UI.
+app.get('/private/101010/sorry/text', (req, res) => {
+  res.sendFile(path.join(__dirname, 'services', 'Sorry.html'));
+});
+
 // 404 Error handler
 app.use((req, res) => {
   res.status(404).render('errors/404', {
