@@ -1162,11 +1162,9 @@ const adminController = {
 
       let products = [];
       if (isG2bulk) {
-        const { Op } = require('sequelize');
-
-        // Fetch existing G2BulkItem mappings to check for fixed prices
+        // Fetch existing G2BulkItem mappings for this game to check fixed prices/status.
         const g2bulkItems = await G2BulkItem.findAll({
-          include: [{ model: Product, required: true }]
+          include: [{ model: Product, required: true, where: { productTypeId: productType.id } }]
         });
         const g2bulkItemMap = new Map(g2bulkItems.map(i => [String(i.g2bulkProductId), i]));
 
@@ -1240,6 +1238,7 @@ const adminController = {
           let sellThb = 0;
           let isFixedPrice = false;
           let fixedProductId = null;
+          let isActive = false;
 
           const g2Item = g2bulkItemMap.get(String(id));
           if (g2Item && g2Item.Product) {
@@ -1247,6 +1246,7 @@ const adminController = {
             sellThb = Number(g2Item.Product.price_thb);
             isFixedPrice = true;
             fixedProductId = g2Item.Product.id;
+            isActive = Boolean(g2Item.Product.is_active) && g2Item.status === 'active';
           } else {
             // Dynamic pricing fallback
             if (categoryRevenuePercent !== null && typeof categoryRevenuePercent !== 'undefined' && Number.isFinite(categoryRevenuePercent)) {
@@ -1269,7 +1269,7 @@ const adminController = {
             base_price_thb: baseThb,
             price_mmk: sellMmk,
             price_thb: sellThb,
-            is_active: true,
+            is_active: isActive,
             is_fixed_price: isFixedPrice,
             fixed_product_id: fixedProductId
           };
@@ -1476,14 +1476,57 @@ const adminController = {
     try {
       const provider = String(req.params.provider || '').trim().toLowerCase();
       const typeCode = String(req.params.typeCode || '').trim();
-      const id = Number(req.params.id);
-      if (!['smile', 'g2bulk', 'manual'].includes(provider) || !typeCode || Number.isNaN(id)) {
+      const rawId = String(req.params.id || '').trim();
+      const id = Number(rawId);
+      if (!['smile', 'g2bulk', 'manual'].includes(provider) || !typeCode || !rawId || (provider !== 'g2bulk' && Number.isNaN(id))) {
         return res.redirect('/admin/product-management');
       }
 
-      const productType = await ProductType.findOne({ where: { provider, typeCode } });
+      const normalizedTypeCode = normalizeTypeCode(typeCode);
+      let productType = await ProductType.findOne({ where: { provider, typeCode: normalizedTypeCode } });
+      if (!productType && normalizedTypeCode !== typeCode) {
+        productType = await ProductType.findOne({ where: { provider, typeCode } });
+      }
       if (!productType) {
         return res.redirect(`/admin/product-management/${encodeURIComponent(provider)}?error=` + encodeURIComponent('Product type not found.'));
+      }
+
+      if (provider === 'g2bulk') {
+        const g2bulkProductId = rawId;
+        const name = String(req.body.name || g2bulkProductId).trim();
+        const priceMmk = Number(req.body.price_mmk || 0);
+        const priceThb = Number(req.body.price_thb || 0);
+
+        let g2bulkItem = await G2BulkItem.findOne({
+          where: { g2bulkProductId },
+          include: [{ model: Product, required: true, where: { productTypeId: productType.id } }]
+        });
+
+        let product = g2bulkItem?.Product || null;
+        if (!product) {
+          const nextActive = String(req.body.current_active || '0') !== '1';
+          product = await Product.create({
+            productTypeId: productType.id,
+            name,
+            diamond_amount: 0,
+            price_mmk: Number.isFinite(priceMmk) ? priceMmk : 0,
+            price_thb: Number.isFinite(priceThb) ? priceThb : 0,
+            region: 'b',
+            is_active: nextActive
+          });
+
+          g2bulkItem = await G2BulkItem.create({
+            productId: product.id,
+            g2bulkProductId,
+            status: nextActive ? 'active' : 'inactive'
+          });
+        } else {
+          const nextActive = !(product.is_active && g2bulkItem.status === 'active');
+          await product.update({ is_active: nextActive });
+          await g2bulkItem.update({ status: nextActive ? 'active' : 'inactive' });
+        }
+
+        return res.redirect(`/admin/product-management/${encodeURIComponent(provider)}/${encodeURIComponent(normalizedTypeCode)}?success=1`);
       }
 
       const product = await Product.findOne({ where: { id, productTypeId: productType.id } });

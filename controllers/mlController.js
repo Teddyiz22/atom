@@ -516,10 +516,15 @@ const mlController = {
           });
         }
 
-        // Get stored products for pricing
-        const storedProducts = await Product.findAll({
-          where: { productTypeId: productType.id, is_active: true }
+        const g2bulkItems = await G2BulkItem.findAll({
+          where: { status: 'active' },
+          include: [{
+            model: Product,
+            required: true,
+            where: { productTypeId: productType.id, is_active: true }
+          }]
         });
+        const g2bulkItemMap = new Map(g2bulkItems.map(item => [String(item.g2bulkProductId), item]));
 
         // Use a Set to track added product IDs to prevent duplicates
         const addedProductIds = new Set();
@@ -529,20 +534,8 @@ const mlController = {
           const id = String(p?.id ?? p?.product_id ?? p?.code ?? '').trim();
           const name = String(p?.name ?? p?.product_name ?? p?.title ?? '').trim();
           
-          // Find matching stored product to get fixed price
-          // We check against fixed_product_id mapping if possible, or fallback to matching logic
-          // But currently G2BulkItem mapping is the reliable link. 
-          // However, here we only have the `Product` table loaded.
-          // The admin controller logic saves products with `name` matching the API product name.
-          // So we try to match by name if ID doesn't match directly (which it won't for virtual G2Bulk items vs local DB IDs).
-          
-          // Note: In adminController, we create a Product record. 
-          // The G2BulkItem mapping links the API ID to the Product ID.
-          // Ideally we should fetch G2BulkItem mappings here too, but to keep it simple and consistent with current logic:
-          // We rely on the fact that we are filtering by `productTypeId`.
-          // And we match based on the name stored in the DB which should match the API name.
-          
-          const stored = storedProducts.find(sp => sp.name === name);
+          const g2bulkItem = g2bulkItemMap.get(id);
+          const stored = g2bulkItem?.Product;
           
           if (!stored) return null; // Only show configured products
           
@@ -1542,7 +1535,7 @@ const mlController = {
 
       // Check for G2Bulk Item mapping (Fixed Price)
       const g2bulkItem = !isNaN(Number(productId)) ? await G2BulkItem.findOne({
-        where: { productId: Number(productId), status: 'active' },
+        where: { productId: Number(productId) },
         include: [{ model: Product, required: true }]
       }) : null;
 
@@ -1552,6 +1545,11 @@ const mlController = {
       if (g2bulkItem) {
         targetG2BulkId = g2bulkItem.g2bulkProductId;
         fixedPriceProduct = g2bulkItem.Product;
+        if (!fixedPriceProduct || !fixedPriceProduct.is_active || g2bulkItem.status !== 'active') {
+          await transaction.rollback();
+          releaseUserLock(userId);
+          return res.status(403).json({ status: 403, message: 'This package is not available' });
+        }
       }
 
       const client = getG2BulkClientOrThrow();

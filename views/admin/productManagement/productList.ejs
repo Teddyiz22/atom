@@ -84,7 +84,8 @@
               <th style="width: 160px;">Unit Price (USD)</th>
               <th style="width: 160px;">Sell Price (MMK)</th>
               <th style="width: 160px;">Sell Price (THB)</th>
-              <th style="width: 120px;">Actions</th>
+              <th style="width: 120px;">Status</th>
+              <th style="width: 220px;">Actions</th>
             <% } else { %>
               <th style="width: 90px;">ID</th>
               <th>Name</th>
@@ -106,7 +107,7 @@
         <tbody>
           <% if (!products || products.length === 0) { %>
             <tr>
-              <td colspan="<%= isG2bulkVirtual ? 5 : (provider === 'smile' ? 10 : (provider === 'manual' ? 9 : 8)) %>" class="text-center text-muted">No products yet.</td>
+              <td colspan="<%= isG2bulkVirtual ? 7 : (provider === 'smile' ? 10 : (provider === 'manual' ? 9 : 8)) %>" class="text-center text-muted">No products yet.</td>
             </tr>
           <% } else { %>
             <% products.forEach(p => { %>
@@ -131,12 +132,27 @@
                       id="price_thb_<%= p.id %>" value="<%= p.price_thb || '' %>" placeholder="THB">
                   </td>
                   <td class="text-center">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold <%= p.is_active ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-red-500/20 text-red-300 border border-red-500/30' %>">
+                      <%= p.is_active ? 'Active' : 'Inactive' %>
+                    </span>
+                  </td>
+                  <td class="text-center whitespace-nowrap">
                     <button type="button" 
                       class="inline-flex items-center justify-center h-9 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white transition-colors"
                       data-name="<%= p.name %>"
                       onclick="saveFixedPrice(this, '<%= p.id %>', '<%= p.fixed_product_id || '' %>')">
                       <i class="fas fa-save mr-1"></i> Save
                     </button>
+                    <form method="POST" action="/admin/product-management/<%= provider %>/<%= productType.typeCode %>/toggle-status/<%= encodeURIComponent(p.id) %>" class="inline-block m-0 ml-1">
+                      <input type="hidden" name="name" value="<%= p.name %>">
+                      <input type="hidden" name="price_mmk" value="<%= p.price_mmk || 0 %>">
+                      <input type="hidden" name="price_thb" value="<%= p.price_thb || 0 %>">
+                      <input type="hidden" name="current_active" value="<%= p.is_active ? '1' : '0' %>">
+                      <button type="submit" class="inline-flex items-center justify-center h-9 px-3 rounded-lg <%= p.is_active ? 'bg-amber-500/15 hover:bg-amber-500/25 border border-amber-400/20 text-amber-200' : 'bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-400/20 text-emerald-200' %> transition-colors">
+                        <i class="fas fa-<%= p.is_active ? 'ban' : 'check' %> mr-1"></i>
+                        <%= p.is_active ? 'Deactivate' : 'Activate' %>
+                      </button>
+                    </form>
                   </td>
                 <% } else { %>
                   <td><%= p.id %></td>
