@@ -240,23 +240,25 @@
 
         <%
           const packageKeywords = [
-            "Weekly",
-            "Pass",
-            "Card",
-            "Pack",
-            "Package",
-            "Fund",
-            "Bundle",
-            "Offer",
-            "Double Token Lucky Bag"
+            "weekly",
+            "pass",
+            "card",
+            "pack",
+            "package",
+            "fund",
+            "bundle",
+            "offer",
+            "bag"
           ];
 
           const packageItems = [];
           const tokenItems = [];
 
           (products || []).forEach(product => {
-            const name = product.name || '';
-            if (packageKeywords.some(k => name.includes(k))) {
+            const name = String(product.name || '').trim();
+            const normalizedName = name.toLowerCase();
+            const isNumericToken = /^\d+(?:\.\d+)?$/.test(name);
+            if (!isNumericToken || packageKeywords.some(k => normalizedName.includes(k))) {
               packageItems.push(product);
             } else {
               tokenItems.push(product);
@@ -324,6 +326,8 @@
         <%
         const specialPackageImages = {
           "honor point value pack": "/images/honor-point.png",
+          "honor point value pac": "/images/hok-new-product-star.webp",
+          "crimson skyblade ao'yin": "/images/hok-new-product-star.webp",
           "double token lucky bag": "/images/double-token-bag.png",
           "standard purchase rebate pack": "/images/standard-rebate-pack.png",
           "weekly card": "/images/weeklycard.png",

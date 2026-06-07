@@ -479,43 +479,6 @@ const mlController = {
       const isG2bulk = provider === 'g2bulk';
 
       if (isG2bulk) {
-        const rawBaseUrl = String(process.env.G2BULK_API_URL || '').trim();
-        const baseUrl = rawBaseUrl.replace(/\/+$/, '');
-        const apiKey = String(process.env.G2BULK_API_KEY || '').trim();
-        if (!baseUrl || !apiKey) {
-          return res.status(500).render('errors/500', {
-            title: 'Server Error',
-            message: 'Missing G2BULK API configuration.'
-          });
-        }
-
-        const client = axios.create({
-          baseURL: baseUrl,
-          timeout: 15000,
-          headers: { 'X-API-Key': apiKey, 'x-api-key': apiKey, 'Authorization': `Bearer ${apiKey}` }
-        });
-
-        let apiProducts = [];
-        try {
-          const catalogueRes = await client.get(`/games/${encodeURIComponent(normalizedTypeCode)}/catalogue`);
-          const data = catalogueRes?.data;
-          
-          if (data && data.status === 200 && Array.isArray(data.products)) {
-             apiProducts = data.products;
-          } else if (Array.isArray(data)) {
-            apiProducts = data;
-          } else if (Array.isArray(data?.items)) {
-            apiProducts = data.items;
-          } else if (Array.isArray(data?.catalogues)) {
-            apiProducts = data.catalogues;
-          }
-        } catch (error) {
-          return res.status(500).render('errors/500', {
-            title: 'Server Error',
-            message: 'Failed to load products from provider.'
-          });
-        }
-
         const g2bulkItems = await G2BulkItem.findAll({
           where: { status: 'active' },
           include: [{
@@ -524,25 +487,11 @@ const mlController = {
             where: { productTypeId: productType.id, is_active: true }
           }]
         });
-        const g2bulkItemMap = new Map(g2bulkItems.map(item => [String(item.g2bulkProductId), item]));
 
-        // Use a Set to track added product IDs to prevent duplicates
         const addedProductIds = new Set();
-
-        // Map API products but use stored prices
-        products = (Array.isArray(apiProducts) ? apiProducts : []).map(p => {
-          const id = String(p?.id ?? p?.product_id ?? p?.code ?? '').trim();
-          const name = String(p?.name ?? p?.product_name ?? p?.title ?? '').trim();
-          
-          const g2bulkItem = g2bulkItemMap.get(id);
+        products = g2bulkItems.map(g2bulkItem => {
           const stored = g2bulkItem?.Product;
-          
-          if (!stored) return null; // Only show configured products
-          
-          // Deduplication check
-          if (addedProductIds.has(stored.id)) {
-            return null;
-          }
+          if (!stored || addedProductIds.has(stored.id)) return null;
           addedProductIds.add(stored.id);
 
           return {
@@ -555,8 +504,7 @@ const mlController = {
             sort_order: stored.sort_order
           };
         }).filter(Boolean);
-        
-        // Sort products
+
         products.sort((a, b) => {
            if (a.is_featured !== b.is_featured) return (b.is_featured ? 1 : 0) - (a.is_featured ? 1 : 0);
            if (a.sort_order !== b.sort_order) return a.sort_order - b.sort_order;

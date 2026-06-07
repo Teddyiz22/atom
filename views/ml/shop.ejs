@@ -225,6 +225,7 @@
             <%
               const activeTypeCodes = new Set((productTypes || []).map(t => String(t.typeCode || '').toLowerCase()));
               const hasType = (code) => activeTypeCodes.has(String(code || '').toLowerCase());
+              const hasPubg = hasType('pubgm') || hasType('pubgcustom');
             %>
             <div class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 px-4 mt-6 font-mont max-w-5xl mx-auto">
 
@@ -265,26 +266,15 @@
               </a>
               <% } %>
 
-              <% if (hasType('pubgm')) { %>
-              <a href="/shop/pubgm" class="group">
+              <% if (hasPubg) { %>
+              <button type="button" class="group text-left" onclick="openPubgPicker()" aria-haspopup="dialog" aria-controls="pubgPicker">
                 <div
                   class="relative rounded-2xl p-2 bg-white/10 backdrop-blur-lg border border-white/20 shadow-md shadow-blue-900/25 hover:scale-105 transition-transform duration-300 h-full">
                   <img src="/images/pubg.png" class="w-full rounded-xl aspect-square object-cover">
                   <p class="text-white text-[8px] sm:text-[8px] text-center mt-2 leading-tight font-bold">PUBG Mobile
                   </p>
                 </div>
-              </a>
-              <% } %>
-
-              <% if (hasType('pubgcustom')) { %>
-              <a href="/shop/pubgcustom" class="group">
-                <div
-                  class="relative rounded-2xl p-2 bg-white/10 backdrop-blur-lg border border-amber-400/30 shadow-md shadow-amber-900/20 hover:scale-105 transition-transform duration-300 h-full">
-                  <img src="/images/pubg.png" class="w-full rounded-xl aspect-square object-cover opacity-90">
-                  <p class="text-white text-[8px] sm:text-[8px] text-center mt-2 leading-tight font-bold">PUBG
-                  </p>
-                </div>
-              </a>
+              </button>
               <% } %>
 
               <% if (hasType('mcgg')) { %>
@@ -310,6 +300,52 @@
               <% } %>
 
             </div>
+
+            <% if (hasPubg) { %>
+            <div id="pubgPicker" class="fixed inset-0 z-[80] hidden items-center justify-center p-4 sm:p-6" role="dialog"
+              aria-modal="true" aria-labelledby="pubgPickerTitle">
+              <button type="button" class="absolute inset-0 bg-[#071226]/85 backdrop-blur-sm" onclick="closePubgPicker()"
+                aria-label="Close PUBG shop selector"></button>
+
+              <div class="relative w-full max-w-lg overflow-hidden rounded-2xl border border-white/15 bg-[#101a2d] shadow-2xl">
+                <div class="flex items-start justify-between gap-4 border-b border-white/10 px-5 py-4 sm:px-6">
+                  <div>
+                    <h2 id="pubgPickerTitle" class="text-lg font-bold text-white sm:text-xl">PUBG Mobile</h2>
+                    <p class="mt-1 text-sm text-gray-400">Choose how you want to top up.</p>
+                  </div>
+                  <button type="button" onclick="closePubgPicker()"
+                    class="pubg-picker-close flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white/10 text-lg font-bold text-gray-300 hover:bg-white/20 hover:text-white"
+                    aria-label="Close PUBG shop selector">X</button>
+                </div>
+
+                <div class="grid gap-3 p-4 sm:p-5">
+                  <% if (hasType('pubgm')) { %>
+                  <a href="/shop/pubgm"
+                    class="flex min-h-[88px] items-center gap-4 rounded-xl border border-white/15 bg-white/5 p-3 text-left transition hover:border-theme-400/70 hover:bg-white/10 sm:p-4">
+                    <img src="/images/pubgm.png" alt="" class="h-16 w-16 shrink-0 rounded-xl object-cover sm:h-20 sm:w-20">
+                    <span class="min-w-0 flex-1">
+                      <span class="block font-bold text-white">PUBG Mobile Instant</span>
+                      <span class="mt-1 block text-sm text-gray-400">Automatic delivery through G2Bulk</span>
+                    </span>
+                    <span class="text-xl text-theme-300" aria-hidden="true">&gt;</span>
+                  </a>
+                  <% } %>
+
+                  <% if (hasType('pubgcustom')) { %>
+                  <a href="/shop/pubgcustom"
+                    class="flex min-h-[88px] items-center gap-4 rounded-xl border border-white/15 bg-white/5 p-3 text-left transition hover:border-amber-400/70 hover:bg-white/10 sm:p-4">
+                    <img src="/images/pubg.png" alt="" class="h-16 w-16 shrink-0 rounded-xl object-cover sm:h-20 sm:w-20">
+                    <span class="min-w-0 flex-1">
+                      <span class="block font-bold text-white">PUBG Mobile Manual</span>
+                      <span class="mt-1 block text-sm text-gray-400">Manual fulfillment by the admin team</span>
+                    </span>
+                    <span class="text-xl text-amber-300" aria-hidden="true">&gt;</span>
+                  </a>
+                  <% } %>
+                </div>
+              </div>
+            </div>
+            <% } %>
             <% } else { %>
               <% } %>
         </div>
@@ -327,6 +363,28 @@
         const slider = document.getElementById('slider');
         if (slider) slider.style.transform = `translateX(-${index * 100}%)`;
       }, 3000);
+
+      function openPubgPicker() {
+        const picker = document.getElementById('pubgPicker');
+        if (!picker) return;
+        picker.classList.remove('hidden');
+        picker.classList.add('flex');
+        document.body.style.overflow = 'hidden';
+        const closeButton = picker.querySelector('.pubg-picker-close');
+        if (closeButton) closeButton.focus();
+      }
+
+      function closePubgPicker() {
+        const picker = document.getElementById('pubgPicker');
+        if (!picker) return;
+        picker.classList.add('hidden');
+        picker.classList.remove('flex');
+        document.body.style.overflow = '';
+      }
+
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') closePubgPicker();
+      });
     </script>
 
     <%- include('../partials/ml-footer') %>
