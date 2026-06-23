@@ -98,6 +98,22 @@ function normalizeTypeCode(typeCode) {
   return String(typeCode || '').trim().toLowerCase();
 }
 
+function formatG2bulkProductDisplayName(name, fallbackId) {
+  const raw = String(name || fallbackId || '').trim();
+  if (!raw) return String(fallbackId || '');
+  if (/^\d+$/.test(raw)) return `UC ${raw}`;
+  return raw;
+}
+
+function g2bulkProductSortKey(product) {
+  const name = String(product?.name || product?.id || '').trim();
+  const ucMatch = name.match(/^UC\s+(\d+)$/i);
+  if (ucMatch) return Number(ucMatch[1]);
+  const numericName = /^\d+$/.test(name) ? Number(name) : null;
+  if (numericName !== null) return numericName;
+  return Number.MAX_SAFE_INTEGER;
+}
+
 function mmkDateStringFromUTC(date = new Date()) {
   const d = new Date(date.getTime() + MMK_OFFSET_MINUTES * 60 * 1000);
   const y = d.getUTCFullYear();
@@ -1229,7 +1245,7 @@ const adminController = {
 
         products = (Array.isArray(apiProducts) ? apiProducts : []).map(p => {
           const id = String(p?.id ?? p?.product_id ?? p?.code ?? '').trim();
-          const name = String(p?.name ?? p?.product_name ?? p?.title ?? '').trim();
+          const rawName = String(p?.name ?? p?.product_name ?? p?.title ?? '').trim();
           const unitPriceUsd = Number((p?.price ?? p?.amount ?? p?.unit_price) || 0);
           const baseMmk = unitPriceUsd * usdToMmk;
           const baseThb = unitPriceUsd * usdToThb;
@@ -1258,9 +1274,13 @@ const adminController = {
             }
           }
 
+          const displayName = g2Item?.Product?.name
+            ? formatG2bulkProductDisplayName(g2Item.Product.name, id)
+            : formatG2bulkProductDisplayName(rawName, id);
+
           return {
             id,
-            name: name || id,
+            name: displayName || id,
             unit_price_usd: unitPriceUsd,
             stock: Number((p?.stock ?? p?.quantity ?? p?.available) || 0),
             category_id: null,
@@ -1271,8 +1291,41 @@ const adminController = {
             price_thb: sellThb,
             is_active: isActive,
             is_fixed_price: isFixedPrice,
-            fixed_product_id: fixedProductId
+            fixed_product_id: fixedProductId,
+            catalogue_missing: false
           };
+        });
+
+        const seenG2bulkIds = new Set(products.map(p => String(p.id)));
+        for (const g2Item of g2bulkItems) {
+          const g2Id = String(g2Item.g2bulkProductId || '').trim();
+          if (!g2Id || seenG2bulkIds.has(g2Id)) continue;
+          const stored = g2Item.Product;
+          if (!stored) continue;
+          seenG2bulkIds.add(g2Id);
+          products.push({
+            id: g2Id,
+            name: formatG2bulkProductDisplayName(stored.name, g2Id),
+            unit_price_usd: 0,
+            stock: 0,
+            category_id: null,
+            category_title: null,
+            base_price_mmk: Number(stored.price_mmk) || 0,
+            base_price_thb: Number(stored.price_thb) || 0,
+            price_mmk: Number(stored.price_mmk) || 0,
+            price_thb: Number(stored.price_thb) || 0,
+            is_active: Boolean(stored.is_active) && g2Item.status === 'active',
+            is_fixed_price: true,
+            fixed_product_id: stored.id,
+            catalogue_missing: true
+          });
+        }
+
+        products.sort((a, b) => {
+          const aKey = g2bulkProductSortKey(a);
+          const bKey = g2bulkProductSortKey(b);
+          if (aKey !== bKey) return aKey - bKey;
+          return String(a.name || '').localeCompare(String(b.name || ''));
         });
       } else {
         products = await Product.findAll({

@@ -81,6 +81,7 @@
             <% if (isG2bulkVirtual) { %>
               <th style="width: 90px;">ID</th>
               <th>Name</th>
+              <th style="width: 140px;">Catalogue</th>
               <th style="width: 160px;">Unit Price (USD)</th>
               <th style="width: 160px;">Sell Price (MMK)</th>
               <th style="width: 160px;">Sell Price (THB)</th>
@@ -107,7 +108,7 @@
         <tbody>
           <% if (!products || products.length === 0) { %>
             <tr>
-              <td colspan="<%= isG2bulkVirtual ? 7 : (provider === 'smile' ? 10 : (provider === 'manual' ? 9 : 8)) %>" class="text-center text-muted">No products yet.</td>
+              <td colspan="<%= isG2bulkVirtual ? 8 : (provider === 'smile' ? 10 : (provider === 'manual' ? 9 : 8)) %>" class="text-center text-muted">No products yet.</td>
             </tr>
           <% } else { %>
             <% products.forEach(p => { %>
@@ -120,6 +121,13 @@
                       <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
                         Fixed
                       </span>
+                    <% } %>
+                  </td>
+                  <td class="text-center">
+                    <% if (p.catalogue_missing) { %>
+                      <span class="text-sm font-semibold text-red-400">Not Available</span>
+                    <% } else { %>
+                      <span class="text-sm font-semibold text-emerald-300">Available</span>
                     <% } %>
                   </td>
                   <td class="text-right"><%= fmt(p.unit_price_usd) %></td>
@@ -208,8 +216,8 @@
   <script>
     $(document).ready(function () {
       $('#providerProductsTable').DataTable({
-        order: [[0, 'DESC']],
-        pageLength: 10
+        order: [[1, 'asc']],
+        pageLength: <%= isG2bulkVirtual ? 100 : 10 %>
       });
     });
 
