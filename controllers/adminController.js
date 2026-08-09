@@ -1411,18 +1411,12 @@ const adminController = {
         });
       }
 
-      let smileCoinRates = [];
-      if (provider === 'smile') {
-        smileCoinRates = await SmileCoinRate.findAll({ order: [['region', 'ASC']] });
-      }
-
       return res.render('admin/productManagement/productList', {
         title: `Product List - ${provider} - ${productType.name} - ATOM Game Shop`,
         user: req.session.user,
         provider,
         productType,
         products,
-        smileCoinRates,
         smileProductSlug: provider === 'smile' ? smileProductSlugForTypeCode(productType.typeCode) : null,
         success: req.query.success === '1',
         syncMessage: req.query.sync ? String(req.query.sync) : null,
@@ -2109,41 +2103,6 @@ const adminController = {
       console.error('Save G2Bulk price error:', error);
       const typeCode = String(req.body.type_code || '').trim();
       return res.redirect(`/admin/product-management/g2bulk/${encodeURIComponent(typeCode)}?error=` + encodeURIComponent('Failed to save price.'));
-    }
-  },
-
-  saveSmileCoinRate: async (req, res) => {
-    try {
-      const typeCode = String(req.body.type_code || '').trim();
-      const region = String(req.body.region || 'b').trim().toLowerCase();
-      const rateMmk = Number(req.body.rate_mmk);
-      const rateThb = Number(req.body.rate_thb);
-
-      if (!['b', 'ph'].includes(region) || !Number.isFinite(rateMmk) || !Number.isFinite(rateThb)) {
-        return res.redirect(`/admin/product-management/smile/${encodeURIComponent(typeCode)}?error=` + encodeURIComponent('Invalid smile coin rate.'));
-      }
-
-      const [row] = await SmileCoinRate.findOrCreate({
-        where: { region },
-        defaults: {
-          rate_mmk: rateMmk,
-          rate_thb: rateThb,
-          is_active: true
-        }
-      });
-      if (row) {
-        await row.update({
-          rate_mmk: rateMmk,
-          rate_thb: rateThb,
-          is_active: true
-        });
-      }
-
-      return res.redirect(`/admin/product-management/smile/${encodeURIComponent(typeCode)}?success=1`);
-    } catch (error) {
-      console.error('Save smile coin rate error:', error);
-      const typeCode = String(req.body.type_code || '').trim();
-      return res.redirect(`/admin/product-management/smile/${encodeURIComponent(typeCode)}?error=` + encodeURIComponent('Failed to save smile coin rate.'));
     }
   },
 

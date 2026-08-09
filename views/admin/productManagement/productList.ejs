@@ -73,21 +73,15 @@
   <% } %>
 
   <% if (provider === 'smile') { %>
-    <%
-      const rates = Array.isArray(smileCoinRates) ? smileCoinRates : [];
-      const rateB = rates.find(r => String(r.region) === 'b') || null;
-      const ratePh = rates.find(r => String(r.region) === 'ph') || null;
-    %>
     <div class="rounded-2xl border border-white/10 bg-white/5 p-5 mb-6">
-      <div class="flex flex-wrap items-start justify-between gap-3 mb-4">
+      <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 class="text-lg font-semibold text-white">Smile Coin Rates</h2>
-          <p class="text-sm text-gray-400 mt-1">
-            Table: <span class="font-mono text-gray-200">smile_coin_rates</span>
-            <% if (smileProductSlug) { %>
-              · Smile product slug: <span class="font-mono text-indigo-300"><%= smileProductSlug %></span>
-            <% } %>
-          </p>
+          <h2 class="text-lg font-semibold text-white">Smile Coin Sync</h2>
+          <% if (smileProductSlug) { %>
+            <p class="text-sm text-gray-400 mt-1">
+              Smile product slug: <span class="font-mono text-indigo-300"><%= smileProductSlug %></span>
+            </p>
+          <% } %>
         </div>
         <form method="POST" action="/admin/product-management/smile/<%= productType.typeCode %>/sync-smile-coins" class="m-0">
           <input type="hidden" name="type_code" value="<%= productType.typeCode %>">
@@ -95,29 +89,6 @@
             Sync Smile Coins from API
           </button>
         </form>
-      </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <% [['b', 'Brazil (b)', rateB], ['ph', 'Philippines (ph)', ratePh]].forEach(([regionKey, label, row]) => { %>
-          <form method="POST" action="/admin/product-management/smile/save-rate" class="rounded-xl border border-white/10 bg-black/20 p-4 space-y-3">
-            <input type="hidden" name="type_code" value="<%= productType.typeCode %>">
-            <input type="hidden" name="region" value="<%= regionKey %>">
-            <div class="text-sm font-semibold text-gray-200"><%= label %></div>
-            <div class="grid grid-cols-2 gap-3">
-              <div>
-                <label class="block text-xs text-gray-400 mb-1">Rate MMK / coin</label>
-                <input type="number" step="any" name="rate_mmk" value="<%= row ? row.rate_mmk : '' %>" class="w-full bg-white/5 border border-white/10 rounded px-2 py-1.5 text-white text-right focus:outline-none focus:border-indigo-500" placeholder="e.g. 800">
-              </div>
-              <div>
-                <label class="block text-xs text-gray-400 mb-1">Rate THB / coin</label>
-                <input type="number" step="any" name="rate_thb" value="<%= row ? row.rate_thb : '' %>" class="w-full bg-white/5 border border-white/10 rounded px-2 py-1.5 text-white text-right focus:outline-none focus:border-indigo-500" placeholder="e.g. 0">
-              </div>
-            </div>
-            <button type="submit" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-xs font-semibold text-white transition-colors">
-              Save <%= regionKey.toUpperCase() %> Rate
-            </button>
-          </form>
-        <% }) %>
       </div>
     </div>
   <% } %>

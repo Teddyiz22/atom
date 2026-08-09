@@ -56,7 +56,6 @@ router.post('/product-management/:provider/:typeCode/toggle-status/:id', adminAu
 router.post('/product-management/:provider/:typeCode/toggle-featured/:id', adminAuth, adminController.productManagementToggleFeatured);
 router.post('/product-management/:provider/:typeCode/delete/:id', adminAuth, adminController.productManagementDeleteProduct);
 router.post('/product-management/g2bulk/save-price', adminAuth, adminController.saveG2BulkPrice);
-router.post('/product-management/smile/save-rate', adminAuth, adminController.saveSmileCoinRate);
 router.post('/product-management/smile/:typeCode/sync-smile-coins', adminAuth, adminController.syncSmileCoinAmounts);
 
 // Admin Settings (requires auth + layout)
