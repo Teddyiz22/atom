@@ -12,7 +12,7 @@ const ProductType = sequelize.define('ProductType', {
     allowNull: false
   },
   name: {
-    type: DataTypes.STRING(64),
+    type: DataTypes.STRING(128),
     allowNull: false
   },
   provider: {

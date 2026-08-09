@@ -162,6 +162,167 @@ async function smileOneCreateOrder({ userid, zoneid, productid, productSlug, reg
   }
 }
 
+async function loadSmileSubItemsForProduct(product) {
+  let smileSubItems = await SmileSubItem.findAll({
+    where: { productId: product.id, status: 'active' },
+    order: [['sortOrder', 'ASC'], ['id', 'ASC']]
+  });
+
+  if (!smileSubItems.length && product.smileIDCombination) {
+    const ids = String(product.smileIDCombination || '')
+      .trim()
+      .split(/[\+,\s]+/)
+      .map((s) => s.trim())
+      .filter(Boolean);
+    smileSubItems = ids.map((id, idx) => ({
+      id: `temp_${idx}`,
+      productId: product.id,
+      smileProductId: id,
+      name: `${product.name} (Part ${idx + 1})`,
+      amount: 1,
+      smileCoinAmount: null,
+      region: product.region || 'b',
+      status: 'active'
+    }));
+  }
+
+  return smileSubItems;
+}
+
+function resolveExpectedSmileCoins(product, smileSubItems) {
+  const fromProduct = Number(product.smileCoinAmount);
+  if (Number.isFinite(fromProduct) && fromProduct > 0) {
+    return fromProduct;
+  }
+
+  const fromSubs = (smileSubItems || []).reduce((sum, sub) => {
+    const v = Number(sub.smileCoinAmount);
+    return sum + (Number.isFinite(v) && v > 0 ? v : 0);
+  }, 0);
+  if (fromSubs > 0) return Math.round(fromSubs * 100) / 100;
+
+  return null;
+}
+
+/**
+ * MCGG only: re-check getrole change_price for each Smile sub-item.
+ * Sum(change_price) must be <= expected smile_coin_amount.
+ */
+async function checkMcggChangePriceGate({ userid, zoneid, product, productSlug }) {
+  const smileSubItems = await loadSmileSubItemsForProduct(product);
+  if (!smileSubItems.length) {
+    return {
+      ok: false,
+      canPurchase: false,
+      status: 400,
+      message: 'Smile product mapping is not configured for this package.',
+      username: null,
+      expectedSmileCoins: null,
+      actualChangePriceTotal: null,
+      raisePercent: null,
+      checks: []
+    };
+  }
+
+  const expectedSmileCoins = resolveExpectedSmileCoins(product, smileSubItems);
+  if (expectedSmileCoins == null) {
+    return {
+      ok: false,
+      canPurchase: false,
+      status: 400,
+      message: 'Smile coin amount is not set for this package. Please contact support.',
+      username: null,
+      expectedSmileCoins: null,
+      actualChangePriceTotal: null,
+      raisePercent: null,
+      checks: []
+    };
+  }
+
+  const checks = [];
+  let username = null;
+  let actualChangePriceTotal = 0;
+
+  for (const sub of smileSubItems) {
+    const roleRes = await smileOneGetRoleInfo({
+      userid,
+      zoneid,
+      productid: sub.smileProductId,
+      productSlug: productSlug || 'magicchessgogo',
+      region: sub.region || product.region || 'b'
+    });
+
+    const changePriceRaw = roleRes?.change_price;
+    const changePrice = Number(changePriceRaw);
+    const roleOk = Number(roleRes?.status) === 200;
+    if (roleOk && roleRes?.username) {
+      username = String(roleRes.username);
+    }
+
+    const safeChangePrice = Number.isFinite(changePrice) ? changePrice : 0;
+    if (roleOk) {
+      actualChangePriceTotal += safeChangePrice;
+    }
+
+    checks.push({
+      smileProductId: String(sub.smileProductId),
+      status: roleRes?.status ?? null,
+      username: roleRes?.username != null ? String(roleRes.username) : null,
+      zone: roleRes?.zone != null ? roleRes.zone : null,
+      change_price: Number.isFinite(changePrice) ? changePrice : (changePriceRaw != null ? changePriceRaw : null),
+      use: roleRes?.use != null ? String(roleRes.use) : null,
+      message: roleRes?.message != null ? String(roleRes.message) : null,
+      ok: roleOk
+    });
+
+    if (!roleOk) {
+      return {
+        ok: false,
+        canPurchase: false,
+        status: 400,
+        message: roleRes?.message || 'Player check failed. Please verify your User ID / Server ID.',
+        username,
+        expectedSmileCoins,
+        actualChangePriceTotal: Math.round(actualChangePriceTotal * 100) / 100,
+        raisePercent: null,
+        checks
+      };
+    }
+  }
+
+  actualChangePriceTotal = Math.round(actualChangePriceTotal * 100) / 100;
+  const raised = actualChangePriceTotal > expectedSmileCoins + 1e-9;
+  const raisePercent = expectedSmileCoins > 0
+    ? Math.round(((actualChangePriceTotal - expectedSmileCoins) / expectedSmileCoins) * 1000) / 10
+    : null;
+
+  if (raised) {
+    return {
+      ok: true,
+      canPurchase: false,
+      status: 200,
+      message: `You can't proceed because the purchase amount raised by ${raisePercent}%`,
+      username,
+      expectedSmileCoins,
+      actualChangePriceTotal,
+      raisePercent,
+      checks
+    };
+  }
+
+  return {
+    ok: true,
+    canPurchase: true,
+    status: 200,
+    message: 'Price check passed',
+    username,
+    expectedSmileCoins,
+    actualChangePriceTotal,
+    raisePercent: 0,
+    checks
+  };
+}
+
 // Send order confirmation email
 async function sendOrderConfirmationEmail({ user, product, purchase, userid, zoneid, amount, currency, newBalance, orders }) {
   try {
@@ -446,7 +607,8 @@ const mlController = {
         const displayName = (() => {
           if (normalizedTypeCode === 'pubgm') return 'PUBG Mobile';
           if (normalizedTypeCode === 'hok') return 'Honor of Kings';
-          if (normalizedTypeCode === 'mcgg') return 'Marvel Contest of Champions';
+          if (normalizedTypeCode === 'mcgg') return 'Magic Chess: Go Go';
+          if (normalizedTypeCode === 'mcggphp') return 'Magic Chess: Go Go Philippines';
           if (normalizedTypeCode === 'mlbb_special') return 'Mobile Legends Special';
           if (normalizedTypeCode === 'ml') return 'Mobile Legends';
           if (normalizedTypeCode === 'mlphp') return 'Mobile Legends PH';
@@ -525,7 +687,7 @@ const mlController = {
       const viewName = (() => {
         const code = normalizedTypeCode;
         if (code === 'hok') return 'ml/shop-hok';
-        if (code === 'mcgg') return 'ml/shop-mcgg';
+        if (code === 'mcgg' || code === 'mcggphp') return 'ml/shop-mcgg';
         if (code === 'mlbb_special') return 'ml/shop-mlbb_special';
         if (code === 'ml') return 'ml/shop-ml';
         if (code === 'mlphp') return 'ml/shop-mlphp';
@@ -536,6 +698,7 @@ const mlController = {
 
       res.render(viewName, {
         title: `Shop - ${productType.name} | ATOM Game Shop`,
+        gameCode: normalizedTypeCode,
         description: `Buy ${productType.name} packages instantly with MMK currency at ATOM Game Shop.`,
         keywords: `${productType.name} diamonds, ${productType.name} top up, ATOM Game Shop`,
         user: req.session.user || null,
@@ -636,11 +799,12 @@ const mlController = {
         order: [['created_at', 'DESC']]
       });
 
+      const typeNameMap = await loadProductTypeNameMap();
       const purchases = rawPurchases.map(purchase => ({
         id: purchase.id,
         product_name: purchase.product_name,
         product_type_code: purchase.product_type_code,
-        game_name: getGameNameFromTypeCode(purchase.product_type_code),
+        game_name: getGameNameFromTypeCode(purchase.product_type_code, typeNameMap),
         provider: purchase.provider,
         category: null,
         ml_userid: purchase.player_id,
@@ -713,11 +877,12 @@ const mlController = {
         order: [['created_at', 'DESC']]
       });
 
+      const typeNameMap = await loadProductTypeNameMap();
       const purchases = rawPurchases.map(purchase => ({
         id: purchase.id,
         product_name: purchase.product_name,
         product_type_code: purchase.product_type_code,
-        game_name: getGameNameFromTypeCode(purchase.product_type_code),
+        game_name: getGameNameFromTypeCode(purchase.product_type_code, typeNameMap),
         provider: purchase.provider,
         category: null,
         ml_userid: purchase.player_id,
@@ -878,15 +1043,18 @@ const mlController = {
       
       const code = String(gameCode || '').toLowerCase().trim();
 
-      if (code === 'mcgg') {
+      if (code === 'mcgg' || code === 'mcggphp') {
         productSlug = 'magicchessgogo';
-        smileProductId = '23825'; // Use default id for id check
+        smileProductId = code === 'mcggphp' ? '23906' : '23825';
+        if (code === 'mcggphp') region = 'ph';
       } else if (code === 'mlphp') {
         region = 'ph';
         smileProductId = '213'; // Use a valid PH product ID for verification (e.g., 5 Diamonds)
       }
 
-      const smileTypeCode = code === 'mcgg' ? 'mcgg' : (code === 'mlphp' ? 'mlphp' : 'ml');
+      const smileTypeCode = code === 'mcgg'
+        ? 'mcgg'
+        : (code === 'mcggphp' ? 'mcggphp' : (code === 'mlphp' ? 'mlphp' : 'ml'));
       if (!(await isProductTypeActiveForCustomer('smile', smileTypeCode))) {
         return res.status(404).json({
           status: 404,
@@ -912,6 +1080,72 @@ const mlController = {
       res.status(500).json({
         status: 500,
         message: 'Server error while verifying user'
+      });
+    }
+  },
+
+  // POST /api/mcgg/check-purchase - confirm popup price gate (change_price vs smile_coin_amount)
+  checkMcggPurchase: async (req, res) => {
+    try {
+      const userid = String(req.body.userid || '').trim();
+      const zoneid = String(req.body.zoneid || '').trim();
+      const productId = req.body.product_id;
+
+      if (!userid || !zoneid || !productId) {
+        return res.status(400).json({
+          status: 400,
+          message: 'User ID, Server ID and package are required'
+        });
+      }
+
+      const product = await Product.findByPk(productId);
+      if (!product) {
+        return res.status(404).json({ status: 404, message: 'Package not found' });
+      }
+
+      const pType = product.productTypeId ? await ProductType.findByPk(product.productTypeId) : null;
+      const typeCode = String(pType?.typeCode || '').toLowerCase();
+      if (!pType || !['mcgg', 'mcggphp'].includes(typeCode)) {
+        return res.status(400).json({
+          status: 400,
+          message: 'Price check is only available for Magic Chess Go Go.'
+        });
+      }
+
+      if (!(await isProductTypeActiveForCustomer('smile', typeCode))) {
+        return res.status(404).json({
+          status: 404,
+          message: 'This game is not available at the moment.'
+        });
+      }
+
+      const gate = await checkMcggChangePriceGate({
+        userid,
+        zoneid,
+        product,
+        productSlug: 'magicchessgogo'
+      });
+
+      return res.status(gate.status === 200 ? 200 : (gate.status || 400)).json({
+        status: gate.status,
+        message: gate.message,
+        canPurchase: gate.canPurchase,
+        username: gate.username,
+        product: {
+          id: product.id,
+          name: product.name,
+          smile_coin_amount: gate.expectedSmileCoins
+        },
+        expectedSmileCoins: gate.expectedSmileCoins,
+        actualChangePriceTotal: gate.actualChangePriceTotal,
+        raisePercent: gate.raisePercent,
+        checks: gate.checks
+      });
+    } catch (error) {
+      console.error('MCGG check purchase error:', error);
+      return res.status(500).json({
+        status: 500,
+        message: 'Failed to check purchase price. Please try again.'
       });
     }
   },
@@ -1014,7 +1248,7 @@ const mlController = {
               });
             }
              typeCodeForDb = pType.typeCode;
-             if (pType.typeCode === 'mcgg') {
+             if (pType.typeCode === 'mcgg' || pType.typeCode === 'mcggphp') {
                 productSlug = 'magicchessgogo';
              } else if (pType.typeCode === 'mlphp') {
                 // mlphp uses the same slug but might need region handling elsewhere
@@ -1028,6 +1262,35 @@ const mlController = {
         }
       } catch (e) {
         console.warn('Failed to determine product slug from type:', e);
+      }
+
+      // MCGG / MCGG PH: silent BE gate — block if Smile change_price sum exceeds smile_coin_amount
+      // (no pass/fail UI; order API returns error message only when blocked)
+      if (['mcgg', 'mcggphp'].includes(String(typeCodeForDb).toLowerCase())) {
+        const gate = await checkMcggChangePriceGate({
+          userid,
+          zoneid,
+          product,
+          productSlug: 'magicchessgogo'
+        });
+        if (!gate.canPurchase) {
+          await transaction.rollback();
+          releaseUserLock(userId);
+          await logUserActivity(req.session.user.id, 'PURCHASE_MCGG_PRICE_RAISED', {
+            userEmail: req.session.user.email,
+            productId: product_id,
+            productName: product.name,
+            typeCode: typeCodeForDb,
+            expectedSmileCoins: gate.expectedSmileCoins,
+            actualChangePriceTotal: gate.actualChangePriceTotal,
+            raisePercent: gate.raisePercent,
+            checks: gate.checks
+          });
+          return res.status(gate.status === 200 ? 403 : (gate.status || 400)).json({
+            status: gate.status === 200 ? 403 : gate.status,
+            message: gate.message
+          });
+        }
       }
 
       const packagePrice = currency === 'MMK' ? product.price_mmk : product.price_thb;
@@ -2166,8 +2429,11 @@ function getTransactionType(paymentType) {
   return typeMap[paymentType] || '💰 ' + paymentType;
 }
 
-function getGameNameFromTypeCode(typeCode) {
+function getGameNameFromTypeCode(typeCode, typeNameMap = null) {
   const key = String(typeCode || '').trim().toLowerCase();
+  if (typeNameMap && typeNameMap[key]) {
+    return typeNameMap[key];
+  }
   const gameMap = {
     ml: 'Mobile Legends',
     mlphp: 'Mobile Legends (PH)',
@@ -2175,9 +2441,20 @@ function getGameNameFromTypeCode(typeCode) {
     pubgm: 'PUBG Mobile',
     pubgcustom: 'PUBG Mobile',
     hok: 'Honor of Kings',
-    mcgg: 'Magic Chess: Go Go'
+    mcgg: 'Magic Chess: Go Go',
+    mcggphp: 'Magic Chess: Go Go Philippines'
   };
   return gameMap[key] || (typeCode ? String(typeCode).toUpperCase() : 'Unknown');
+}
+
+async function loadProductTypeNameMap() {
+  const rows = await ProductType.findAll({ attributes: ['typeCode', 'name'] });
+  const map = {};
+  rows.forEach((pt) => {
+    const key = String(pt.typeCode || '').trim().toLowerCase();
+    if (key) map[key] = pt.name;
+  });
+  return map;
 }
 
 module.exports = mlController;

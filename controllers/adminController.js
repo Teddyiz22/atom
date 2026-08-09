@@ -6,6 +6,7 @@ const axios = require('axios');
 const ProductType = require('../models/ProductType');
 const PaymentMethod = require('../models/PaymentMethod');
 const SmileSubItem = require('../models/SmileSubItem');
+const SmileCoinRate = require('../models/SmileCoinRate');
 const G2BulkItem = require('../models/G2BulkItem');
 const GamePurchaseTransaction = require('../models/GamePurchaseTransaction');
 const emailService = require('../services/emailService');
@@ -112,6 +113,75 @@ function g2bulkProductSortKey(product) {
   const numericName = /^\d+$/.test(name) ? Number(name) : null;
   if (numericName !== null) return numericName;
   return Number.MAX_SAFE_INTEGER;
+}
+
+function smileProductSlugForTypeCode(typeCode) {
+  const code = normalizeTypeCode(typeCode);
+  if (code === 'mcgg' || code === 'mcggphp') return 'magicchessgogo';
+  return 'mobilelegends';
+}
+
+function smileProductListPathForRegion(region) {
+  return String(region || '').toLowerCase() === 'ph'
+    ? '/ph/smilecoin/api/productlist'
+    : '/smilecoin/api/productlist';
+}
+
+function generateSmileSign(params, key) {
+  const sortedKeys = Object.keys(params).sort();
+  let str = '';
+  sortedKeys.forEach((k) => {
+    str += `${k}=${params[k]}&`;
+  });
+  str += key;
+  const crypto = require('crypto');
+  return crypto
+    .createHash('md5')
+    .update(crypto.createHash('md5').update(str).digest('hex'))
+    .digest('hex');
+}
+
+async function fetchSmileCatalogueMap({ typeCode, region }) {
+  const baseUrl = String(process.env.ML_API_URL || '').replace(/\/+$/, '');
+  const email = process.env.ML_API_EMAIL;
+  const uid = process.env.ML_API_UID;
+  const apiKey = process.env.ML_API_KEY;
+  if (!baseUrl || !email || !uid || !apiKey) {
+    throw new Error('Missing Smile API configuration (ML_API_*).');
+  }
+
+  const product = smileProductSlugForTypeCode(typeCode);
+  const path = smileProductListPathForRegion(region);
+  const time = Math.floor(Date.now() / 1000);
+  const payload = {
+    uid,
+    email,
+    product,
+    time
+  };
+  if (String(region || '').toLowerCase() === 'ph') {
+    payload.country = 'ph';
+    payload.lang = 'en';
+  }
+  payload.sign = generateSmileSign(payload, apiKey);
+
+  const response = await axios.post(`${baseUrl}${path}`, new URLSearchParams(payload).toString(), {
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    timeout: 20000
+  });
+
+  const products = Array.isArray(response.data?.data?.product) ? response.data.data.product : [];
+  const map = new Map();
+  products.forEach((p) => {
+    const id = String(p?.id ?? '').trim();
+    if (!id) return;
+    map.set(id, {
+      id,
+      spu: String(p?.spu ?? '').trim(),
+      smile_coin_amount: Number(p?.price ?? 0)
+    });
+  });
+  return { productSlug: product, path, map, count: products.length };
 }
 
 function mmkDateStringFromUTC(date = new Date()) {
@@ -1034,6 +1104,10 @@ const adminController = {
       const smileIDCombinationRaw = provider === 'smile' ? String(req.body.smile_id_combination || '').trim() : '';
       // Only Smile products use category enum in products table.
       const category = provider === 'smile' ? String(req.body.category || '').trim() : null;
+      const smileCoinAmountRaw = provider === 'smile' ? String(req.body.smile_coin_amount || '').trim() : '';
+      const smileCoinAmount = provider === 'smile' && smileCoinAmountRaw !== ''
+        ? Number.parseFloat(smileCoinAmountRaw)
+        : null;
 
       if (!name) {
         return res.status(400).render('admin/productManagement/newProduct', {
@@ -1133,6 +1207,9 @@ const adminController = {
         region,
         category,
         smileIDCombination: provider === 'smile' ? (smileIDCombinationRaw || null) : null,
+        smileCoinAmount: provider === 'smile'
+          ? (Number.isFinite(smileCoinAmount) ? smileCoinAmount : null)
+          : null,
         is_active: status === 'active',
         is_featured: req.body.is_featured === 'on',
         sort_order: Number.isNaN(sortOrder) ? 0 : sortOrder
@@ -1334,13 +1411,21 @@ const adminController = {
         });
       }
 
+      let smileCoinRates = [];
+      if (provider === 'smile') {
+        smileCoinRates = await SmileCoinRate.findAll({ order: [['region', 'ASC']] });
+      }
+
       return res.render('admin/productManagement/productList', {
         title: `Product List - ${provider} - ${productType.name} - ATOM Game Shop`,
         user: req.session.user,
         provider,
         productType,
         products,
+        smileCoinRates,
+        smileProductSlug: provider === 'smile' ? smileProductSlugForTypeCode(productType.typeCode) : null,
         success: req.query.success === '1',
+        syncMessage: req.query.sync ? String(req.query.sync) : null,
         error: req.query.error ? String(req.query.error) : null
       });
     } catch (error) {
@@ -1381,6 +1466,8 @@ const adminController = {
           price_mmk: product.price_mmk,
           price_thb: product.price_thb,
           smile_id_combination: product.smileIDCombination || '',
+          smile_coin_amount: product.smileCoinAmount ?? '',
+          category: product.category || 'DIAMOND',
           status: product.is_active ? 'active' : 'inactive',
           sort_order: product.sort_order
         },
@@ -1422,6 +1509,10 @@ const adminController = {
       const smileIDCombinationRaw = provider === 'smile' ? String(req.body.smile_id_combination || '').trim() : '';
       // Only Smile products use category enum in products table.
       const category = provider === 'smile' ? String(req.body.category || '').trim() : null;
+      const smileCoinAmountRaw = provider === 'smile' ? String(req.body.smile_coin_amount || '').trim() : '';
+      const smileCoinAmount = provider === 'smile' && smileCoinAmountRaw !== ''
+        ? Number.parseFloat(smileCoinAmountRaw)
+        : null;
 
       const renderError = async (message) => {
         return res.status(400).render('admin/productManagement/newProduct', {
@@ -1513,6 +1604,9 @@ const adminController = {
         region,
         category,
         smileIDCombination: provider === 'smile' ? (smileIDCombinationRaw || null) : null,
+        smileCoinAmount: provider === 'smile'
+          ? (Number.isFinite(smileCoinAmount) ? smileCoinAmount : null)
+          : product.smileCoinAmount,
         is_active: status === 'active',
         is_featured: req.body.is_featured === 'on',
         sort_order: Number.isNaN(sortOrder) ? 0 : sortOrder
@@ -1659,7 +1753,7 @@ const adminController = {
         user: req.session.user,
         productTypes,
         success: req.query.success === '1',
-        form: {}
+        form: null
       });
     } catch (error) {
       console.error('Product types page error:', error);
@@ -1668,7 +1762,48 @@ const adminController = {
         user: req.session.user,
         productTypes: [],
         error: 'Failed to load product types.',
-        form: {}
+        form: null
+      });
+    }
+  },
+
+  editProductType: async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+      if (Number.isNaN(id)) {
+        return res.redirect('/admin/product-types');
+      }
+
+      const [productTypes, productType] = await Promise.all([
+        ProductType.findAll({ order: [['provider', 'ASC'], ['typeCode', 'ASC']] }),
+        ProductType.findByPk(id)
+      ]);
+
+      if (!productType) {
+        return res.redirect('/admin/product-types');
+      }
+
+      return res.render('admin/productTypes', {
+        title: 'Product Types - ATOM Game Shop',
+        user: req.session.user,
+        productTypes,
+        form: {
+          id: productType.id,
+          provider: productType.provider,
+          type_code: productType.typeCode,
+          name: productType.name,
+          status: productType.status
+        },
+        success: req.query.success === '1'
+      });
+    } catch (error) {
+      console.error('Edit product type error:', error);
+      res.render('admin/productTypes', {
+        title: 'Product Types - ATOM Game Shop',
+        user: req.session.user,
+        productTypes: await ProductType.findAll({ order: [['provider', 'ASC'], ['typeCode', 'ASC']] }),
+        form: null,
+        error: 'Failed to load product type.'
       });
     }
   },
@@ -1677,7 +1812,7 @@ const adminController = {
     try {
       const id = req.body.id ? Number(req.body.id) : null;
       const provider = String(req.body.provider || '').trim();
-      const typeCode = String(req.body.type_code || '').trim();
+      const typeCode = String(req.body.type_code || '').trim().toLowerCase();
       const name = String(req.body.name || '').trim();
       const status = String(req.body.status || 'active').trim();
       const type = 'game';
@@ -1692,6 +1827,16 @@ const adminController = {
         });
       }
 
+      if (name.length > 128) {
+        return res.status(400).render('admin/productTypes', {
+          title: 'Product Types - ATOM Game Shop',
+          user: req.session.user,
+          productTypes: await ProductType.findAll({ order: [['provider', 'ASC'], ['typeCode', 'ASC']] }),
+          error: 'Name must be 128 characters or less.',
+          form: req.body
+        });
+      }
+
       if (!['smile', 'g2bulk', 'manual'].includes(provider)) {
         return res.status(400).render('admin/productTypes', {
           title: 'Product Types - ATOM Game Shop',
@@ -1702,12 +1847,29 @@ const adminController = {
         });
       }
 
+      if (!['active', 'inactive'].includes(status)) {
+        return res.status(400).render('admin/productTypes', {
+          title: 'Product Types - ATOM Game Shop',
+          user: req.session.user,
+          productTypes: await ProductType.findAll({ order: [['provider', 'ASC'], ['typeCode', 'ASC']] }),
+          error: 'Status must be active or inactive.',
+          form: req.body
+        });
+      }
+
       if (id && !Number.isNaN(id)) {
         const existing = await ProductType.findByPk(id);
         if (!existing) {
           return res.redirect('/admin/product-types');
         }
-        await existing.update({ provider, typeCode, name, status, type });
+        // Keep typeCode stable on edit (shop routes depend on it); name/provider/status are free to change
+        await existing.update({
+          provider,
+          typeCode: existing.typeCode,
+          name,
+          status,
+          type
+        });
       } else {
         await ProductType.create({ provider, typeCode, name, status, type });
       }
@@ -1715,11 +1877,14 @@ const adminController = {
       return res.redirect('/admin/product-types?success=1');
     } catch (error) {
       console.error('Upsert product type error:', error);
+      const isDuplicate = error?.name === 'SequelizeUniqueConstraintError';
       res.status(500).render('admin/productTypes', {
         title: 'Product Types - ATOM Game Shop',
         user: req.session.user,
         productTypes: await ProductType.findAll({ order: [['provider', 'ASC'], ['typeCode', 'ASC']] }),
-        error: 'Failed to save product type.',
+        error: isDuplicate
+          ? 'A product type with this provider + type code already exists.'
+          : 'Failed to save product type.',
         form: req.body
       });
     }
@@ -1944,6 +2109,130 @@ const adminController = {
       console.error('Save G2Bulk price error:', error);
       const typeCode = String(req.body.type_code || '').trim();
       return res.redirect(`/admin/product-management/g2bulk/${encodeURIComponent(typeCode)}?error=` + encodeURIComponent('Failed to save price.'));
+    }
+  },
+
+  saveSmileCoinRate: async (req, res) => {
+    try {
+      const typeCode = String(req.body.type_code || '').trim();
+      const region = String(req.body.region || 'b').trim().toLowerCase();
+      const rateMmk = Number(req.body.rate_mmk);
+      const rateThb = Number(req.body.rate_thb);
+
+      if (!['b', 'ph'].includes(region) || !Number.isFinite(rateMmk) || !Number.isFinite(rateThb)) {
+        return res.redirect(`/admin/product-management/smile/${encodeURIComponent(typeCode)}?error=` + encodeURIComponent('Invalid smile coin rate.'));
+      }
+
+      const [row] = await SmileCoinRate.findOrCreate({
+        where: { region },
+        defaults: {
+          rate_mmk: rateMmk,
+          rate_thb: rateThb,
+          is_active: true
+        }
+      });
+      if (row) {
+        await row.update({
+          rate_mmk: rateMmk,
+          rate_thb: rateThb,
+          is_active: true
+        });
+      }
+
+      return res.redirect(`/admin/product-management/smile/${encodeURIComponent(typeCode)}?success=1`);
+    } catch (error) {
+      console.error('Save smile coin rate error:', error);
+      const typeCode = String(req.body.type_code || '').trim();
+      return res.redirect(`/admin/product-management/smile/${encodeURIComponent(typeCode)}?error=` + encodeURIComponent('Failed to save smile coin rate.'));
+    }
+  },
+
+  syncSmileCoinAmounts: async (req, res) => {
+    try {
+      const typeCode = String(req.body.type_code || req.params.typeCode || '').trim();
+      const typeCodeLower = normalizeTypeCode(typeCode);
+      const productType = await ProductType.findOne({ where: { provider: 'smile', typeCode: typeCodeLower } });
+      if (!productType) {
+        return res.redirect(`/admin/product-management/smile?error=` + encodeURIComponent('Product type not found.'));
+      }
+
+      const products = await Product.findAll({ where: { productTypeId: productType.id } });
+      const regions = [...new Set(products.map((p) => String(p.region || 'b').toLowerCase()))];
+      if (regions.length === 0) regions.push('b');
+
+      const catalogues = {};
+      for (const region of regions) {
+        try {
+          catalogues[region] = await fetchSmileCatalogueMap({ typeCode: typeCodeLower, region });
+        } catch (err) {
+          console.error(`Smile catalogue fetch failed for ${typeCodeLower}/${region}:`, err.message);
+          catalogues[region] = { map: new Map(), count: 0, error: err.message };
+        }
+      }
+
+      let updatedProducts = 0;
+      let updatedSubItems = 0;
+      let missingIds = 0;
+
+      for (const product of products) {
+        const region = String(product.region || 'b').toLowerCase();
+        const catalogue = catalogues[region] || catalogues.b;
+        const map = catalogue?.map || new Map();
+        const combo = String(product.smileIDCombination || '').trim();
+        if (!combo) continue;
+
+        const smileIds = combo.split('+').map((s) => s.trim()).filter(Boolean);
+        let totalCoins = 0;
+        let foundAny = false;
+
+        for (let i = 0; i < smileIds.length; i++) {
+          const smileId = smileIds[i];
+          const apiItem = map.get(String(smileId));
+          const coinAmount = apiItem ? Number(apiItem.smile_coin_amount) : null;
+          if (apiItem && Number.isFinite(coinAmount)) {
+            foundAny = true;
+            totalCoins += coinAmount;
+          } else {
+            missingIds += 1;
+          }
+
+          const [subItem] = await SmileSubItem.findOrCreate({
+            where: {
+              productId: product.id,
+              smileProductId: smileId,
+              region
+            },
+            defaults: {
+              name: apiItem?.spu || `${product.name}${smileIds.length > 1 ? ` (Part ${i + 1})` : ''}`,
+              amount: 0,
+              smileCoinAmount: Number.isFinite(coinAmount) ? coinAmount : null,
+              status: 'active',
+              sortOrder: i + 1
+            }
+          });
+
+          if (Number.isFinite(coinAmount)) {
+            await subItem.update({
+              smileCoinAmount: coinAmount,
+              name: subItem.name || apiItem?.spu || subItem.name
+            });
+            updatedSubItems += 1;
+          }
+        }
+
+        if (foundAny) {
+          await product.update({ smileCoinAmount: Math.round(totalCoins * 100) / 100 });
+          updatedProducts += 1;
+        }
+      }
+
+      const msg = `Synced smile coins: ${updatedProducts} products, ${updatedSubItems} sub-items` +
+        (missingIds ? ` (${missingIds} smile IDs not in API catalogue)` : '');
+      return res.redirect(`/admin/product-management/smile/${encodeURIComponent(typeCode)}?success=1&sync=${encodeURIComponent(msg)}`);
+    } catch (error) {
+      console.error('Sync smile coin amounts error:', error);
+      const typeCode = String(req.body.type_code || req.params.typeCode || '').trim();
+      return res.redirect(`/admin/product-management/smile/${encodeURIComponent(typeCode)}?error=` + encodeURIComponent(error.message || 'Sync failed.'));
     }
   },
 

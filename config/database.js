@@ -69,6 +69,15 @@ const syncDatabase = async (options = {}) => {
     } catch (e) {
       console.error('❌ Post-sync schema patch failed:', e.message);
     }
+    try {
+      const ptTable = await sequelize.getQueryInterface().describeTable('product_types');
+      const nameType = String(ptTable?.name?.type || '');
+      if (/varchar\s*\(\s*64\s*\)/i.test(nameType)) {
+        await sequelize.query('ALTER TABLE product_types MODIFY name VARCHAR(128) NOT NULL');
+      }
+    } catch (e) {
+      // ignore if table missing / dialect differs
+    }
     console.log('✅ Database models synced successfully!');
     return true;
   } catch (error) {

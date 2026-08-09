@@ -1,0 +1,74 @@
+Smile One — Game Name List
+Source: POST https://www.smile.one/smilecoin/api/product
+Catalogue check: POST /smilecoin/api/productlist (product={slug})
+Fetched at: 2026-08-09T10:37:08.730Z
+
+NOTE:
+- API Documentation.pdf is image/font-encoded, so names come from live Smile API.
+- /product returned the official slug list; magicchessgogo is appended (works with productlist).
+
+INDEX | SLUG                 | GAME NAME                  | PACKAGES | STATUS
+------+----------------------+----------------------------+----------+--------
+    1 | mobilelegends        | Mobile Legends             |       16 | OK
+    2 | bigo                 | Bigo Live                  |        9 | OK
+    3 | ragnarokm            | Ragnarok M                 |       12 | OK
+    4 | hago                 | Hago                       |        6 | OK
+    5 | freefirediamantes    | Free Fire Diamantes        |        6 | OK
+    6 | ddtank               | DDTank                     |        8 | OK
+    7 | tinder               | Tinder                     |        1 | OK
+    8 | pubgmobile           | PUBG Mobile                |        6 | OK
+    9 | sweetdance           | Sweet Dance                |       13 | OK
+   10 | watcherofrealms      | Watcher of Realms          |        8 | OK
+   11 | saintseiyaawakening  | Saint Seiya Awakening      |        8 | OK
+   12 | supersus             | Super Sus                  |       11 | OK
+   13 | eudemonsonline       | Eudemons Online            |        0 | FAIL()
+   14 | honkai               | Honkai Impact              |        0 | FAIL()
+   15 | loveanddeepspace     | Love and Deepspace         |        9 | OK
+   16 | pathtonowhere        | Path to Nowhere            |       19 | OK
+   17 | lovenikki            | Love Nikki                 |       17 | OK
+   18 | shiningnikki         | Shining Nikki              |       15 | OK
+   19 | hok                  | Honor of Kings             |       10 | OK
+   20 | magicchessgogo       | Magic Chess: Go Go         |       20 | OK
+
+Game names only:
+1. Mobile Legends (mobilelegends)
+2. Bigo Live (bigo)
+3. Ragnarok M (ragnarokm)
+4. Hago (hago)
+5. Free Fire Diamantes (freefirediamantes)
+6. DDTank (ddtank)
+7. Tinder (tinder)
+8. PUBG Mobile (pubgmobile)
+9. Sweet Dance (sweetdance)
+10. Watcher of Realms (watcherofrealms)
+11. Saint Seiya Awakening (saintseiyaawakening)
+12. Super Sus (supersus)
+13. Eudemons Online (eudemonsonline)
+14. Honkai Impact (honkai)
+15. Love and Deepspace (loveanddeepspace)
+16. Path to Nowhere (pathtonowhere)
+17. Love Nikki (lovenikki)
+18. Shining Nikki (shiningnikki)
+19. Honor of Kings (hok)
+20. Magic Chess: Go Go (magicchessgogo)
+
+Raw slugs from /smilecoin/api/product:
+1. mobilelegends
+2. bigo
+3. ragnarokm
+4. hago
+5. freefirediamantes
+6. ddtank
+7. tinder
+8. pubgmobile
+9. sweetdance
+10. watcherofrealms
+11. saintseiyaawakening
+12. supersus
+13. eudemonsonline
+14. honkai
+15. loveanddeepspace
+16. pathtonowhere
+17. lovenikki
+18. shiningnikki
+19. hok

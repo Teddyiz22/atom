@@ -97,6 +97,11 @@ router.get('/shop/mcgg', generateCSRFSecret, generateCSRFToken, (req, res, next)
   req.query.provider = 'smile';
   next();
 }, mlController.shop);
+router.get('/shop/mcggphp', generateCSRFSecret, generateCSRFToken, (req, res, next) => {
+  req.params.typeCode = 'mcggphp';
+  req.query.provider = 'smile';
+  next();
+}, mlController.shop);
 router.get('/shop/mlbb_special', generateCSRFSecret, generateCSRFToken, (req, res, next) => {
   req.params.typeCode = 'mlbb_special';
   req.query.provider = 'g2bulk';
@@ -128,6 +133,7 @@ router.post('/shop/order', requireAuth, mlController.processOrder);
 // API Routes with validation
 router.get('/api/debug-config', mlController.debugConfig);
 router.post('/api/verify-user', verificationRateLimit, validateMLUser, handleValidationErrors, mlController.verifyUser);
+router.post('/api/mcgg/check-purchase', verificationRateLimit, requireAuthAPI, validateMLUser, handleValidationErrors, mlController.checkMcggPurchase);
 router.post('/api/place-order', purchaseRateLimit, requireAuthAPI, validateMLOrder, handleValidationErrors, protectAPI, mlController.placeOrder);
 router.post('/api/manual-game-order', purchaseRateLimit, requireAuthAPI, validateManualGameOrder, handleValidationErrors, protectAPI, mlController.manualGamePlaceOrder);
 router.get('/api/g2bulk/games/:code/fields', mlController.g2bulkFields);

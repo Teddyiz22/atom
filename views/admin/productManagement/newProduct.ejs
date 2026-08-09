@@ -88,6 +88,12 @@
           <div>
             <label for="smile_id_combination" class="block text-sm font-semibold text-gray-200 mb-2">Smile ID Combination</label>
             <input type="text" id="smile_id_combination" name="smile_id_combination" value="<%= v('smile_id_combination') %>" class="w-full rounded-lg bg-white/5 border border-white/10 px-4 py-2 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500/50">
+            <p class="text-xs text-gray-400 mt-1">Manual mapping (e.g. 13+14). Left unchanged by sync.</p>
+          </div>
+          <div>
+            <label for="smile_coin_amount" class="block text-sm font-semibold text-gray-200 mb-2">Smile Coin Amount</label>
+            <input type="number" id="smile_coin_amount" name="smile_coin_amount" min="0" step="0.01" value="<%= v('smile_coin_amount') %>" class="w-full rounded-lg bg-white/5 border border-white/10 px-4 py-2 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500/50" placeholder="From Smile API price">
+            <p class="text-xs text-gray-400 mt-1">Total smile coins for this package (API <code>price</code>).</p>
           </div>
         <% } %>
 

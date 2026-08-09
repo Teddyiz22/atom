@@ -1,0 +1,492 @@
+Smile One — ALL GAMES + REGION VARIANTS
+Base URL: https://www.smile.one
+Fetched at: 2026-08-09T10:55:46.749Z
+Account uid: 887384
+
+Variants tested per game:
+  1. BR default  path=/smilecoin/api/productlist  extra={}
+  2. region=php  path=/smilecoin/api/productlist  extra={"region":"php"}
+  3. region=ph  path=/smilecoin/api/productlist  extra={"region":"ph"}
+  4. country=ph lang=en  path=/smilecoin/api/productlist  extra={"country":"ph","lang":"en"}
+  5. PH path + country/lang  path=/ph/smilecoin/api/productlist  extra={"country":"ph","lang":"en"}
+  6. PH path only  path=/ph/smilecoin/api/productlist  extra={}
+  7. php path  path=/php/smilecoin/api/productlist  extra={}
+  8. php path + region=php  path=/php/smilecoin/api/productlist  extra={"region":"php"}
+
+================================================================================
+FOCUS: magicchessgogo (Magic Chess: Go Go)
+================================================================================
+
+[BR default] path=/smilecoin/api/productlist extra={}
+  http=200 apiStatus=200 ok=true packages=20 msg=success
+   1. id=23837 price=4.00 spu=Magic Chess: Go Go BR - diamond_55
+   2. id=23838 price=12.00 spu=Magic Chess: Go Go BR - diamond_165
+   3. id=23839 price=20.00 spu=Magic Chess: Go Go BR - diamond_275
+   4. id=23840 price=40.00 spu=Magic Chess: Go Go BR - diamond_565
+   5. id=23825 price=6.25 spu=Magic Chess: Go Go BR - diamond_86
+   6. id=23826 price=12.50 spu=Magic Chess: Go Go BR - diamond_172
+   7. id=23827 price=18.70 spu=Magic Chess: Go Go BR - diamond_257
+   8. id=23828 price=25.00 spu=Magic Chess: Go Go BR - diamond_344
+   9. id=23829 price=37.50 spu=Magic Chess: Go Go BR - diamond_516
+  10. id=23830 price=50.00 spu=Magic Chess: Go Go BR - diamond_706
+  11. id=23831 price=93.75 spu=Magic Chess: Go Go BR - diamond_1346
+  12. id=23832 price=125.00 spu=Magic Chess: Go Go BR - diamond_1825
+  13. id=23833 price=150.00 spu=Magic Chess: Go Go BR - diamond_2195
+  14. id=23834 price=250.00 spu=Magic Chess: Go Go BR - diamond_3688
+  15. id=23835 price=375.00 spu=Magic Chess: Go Go BR - diamond_5532
+  16. id=23836 price=625.00 spu=Magic Chess: Go Go BR - diamond_9288
+  17. id=25585 price=4.00 spu=Magic Chess: Go Go BR - Lukas's Battle Bounty
+  18. id=25586 price=4.00 spu=Magic Chess: Go Go BR - Battle for Discounts
+  19. id=25587 price=4.14 spu=Magic Chess: Go Go BR - Promotion Bounty
+  20. id=23841 price=9.99 spu=Magic Chess: Go Go BR - Weekly Diamond Pass
+
+[region=php] path=/smilecoin/api/productlist extra={"region":"php"}
+  http=200 apiStatus=200 ok=true packages=20 msg=success
+   1. id=23837 price=4.00 spu=Magic Chess: Go Go BR - diamond_55
+   2. id=23838 price=12.00 spu=Magic Chess: Go Go BR - diamond_165
+   3. id=23839 price=20.00 spu=Magic Chess: Go Go BR - diamond_275
+   4. id=23840 price=40.00 spu=Magic Chess: Go Go BR - diamond_565
+   5. id=23825 price=6.25 spu=Magic Chess: Go Go BR - diamond_86
+   6. id=23826 price=12.50 spu=Magic Chess: Go Go BR - diamond_172
+   7. id=23827 price=18.70 spu=Magic Chess: Go Go BR - diamond_257
+   8. id=23828 price=25.00 spu=Magic Chess: Go Go BR - diamond_344
+   9. id=23829 price=37.50 spu=Magic Chess: Go Go BR - diamond_516
+  10. id=23830 price=50.00 spu=Magic Chess: Go Go BR - diamond_706
+  11. id=23831 price=93.75 spu=Magic Chess: Go Go BR - diamond_1346
+  12. id=23832 price=125.00 spu=Magic Chess: Go Go BR - diamond_1825
+  13. id=23833 price=150.00 spu=Magic Chess: Go Go BR - diamond_2195
+  14. id=23834 price=250.00 spu=Magic Chess: Go Go BR - diamond_3688
+  15. id=23835 price=375.00 spu=Magic Chess: Go Go BR - diamond_5532
+  16. id=23836 price=625.00 spu=Magic Chess: Go Go BR - diamond_9288
+  17. id=25585 price=4.00 spu=Magic Chess: Go Go BR - Lukas's Battle Bounty
+  18. id=25586 price=4.00 spu=Magic Chess: Go Go BR - Battle for Discounts
+  19. id=25587 price=4.14 spu=Magic Chess: Go Go BR - Promotion Bounty
+  20. id=23841 price=9.99 spu=Magic Chess: Go Go BR - Weekly Diamond Pass
+
+[region=ph] path=/smilecoin/api/productlist extra={"region":"ph"}
+  http=200 apiStatus=200 ok=true packages=20 msg=success
+   1. id=23837 price=4.00 spu=Magic Chess: Go Go BR - diamond_55
+   2. id=23838 price=12.00 spu=Magic Chess: Go Go BR - diamond_165
+   3. id=23839 price=20.00 spu=Magic Chess: Go Go BR - diamond_275
+   4. id=23840 price=40.00 spu=Magic Chess: Go Go BR - diamond_565
+   5. id=23825 price=6.25 spu=Magic Chess: Go Go BR - diamond_86
+   6. id=23826 price=12.50 spu=Magic Chess: Go Go BR - diamond_172
+   7. id=23827 price=18.70 spu=Magic Chess: Go Go BR - diamond_257
+   8. id=23828 price=25.00 spu=Magic Chess: Go Go BR - diamond_344
+   9. id=23829 price=37.50 spu=Magic Chess: Go Go BR - diamond_516
+  10. id=23830 price=50.00 spu=Magic Chess: Go Go BR - diamond_706
+  11. id=23831 price=93.75 spu=Magic Chess: Go Go BR - diamond_1346
+  12. id=23832 price=125.00 spu=Magic Chess: Go Go BR - diamond_1825
+  13. id=23833 price=150.00 spu=Magic Chess: Go Go BR - diamond_2195
+  14. id=23834 price=250.00 spu=Magic Chess: Go Go BR - diamond_3688
+  15. id=23835 price=375.00 spu=Magic Chess: Go Go BR - diamond_5532
+  16. id=23836 price=625.00 spu=Magic Chess: Go Go BR - diamond_9288
+  17. id=25585 price=4.00 spu=Magic Chess: Go Go BR - Lukas's Battle Bounty
+  18. id=25586 price=4.00 spu=Magic Chess: Go Go BR - Battle for Discounts
+  19. id=25587 price=4.14 spu=Magic Chess: Go Go BR - Promotion Bounty
+  20. id=23841 price=9.99 spu=Magic Chess: Go Go BR - Weekly Diamond Pass
+
+[country=ph lang=en] path=/smilecoin/api/productlist extra={"country":"ph","lang":"en"}
+  http=200 apiStatus=200 ok=true packages=20 msg=success
+   1. id=23837 price=4.00 spu=Magic Chess: Go Go BR - diamond_55
+   2. id=23838 price=12.00 spu=Magic Chess: Go Go BR - diamond_165
+   3. id=23839 price=20.00 spu=Magic Chess: Go Go BR - diamond_275
+   4. id=23840 price=40.00 spu=Magic Chess: Go Go BR - diamond_565
+   5. id=23825 price=6.25 spu=Magic Chess: Go Go BR - diamond_86
+   6. id=23826 price=12.50 spu=Magic Chess: Go Go BR - diamond_172
+   7. id=23827 price=18.70 spu=Magic Chess: Go Go BR - diamond_257
+   8. id=23828 price=25.00 spu=Magic Chess: Go Go BR - diamond_344
+   9. id=23829 price=37.50 spu=Magic Chess: Go Go BR - diamond_516
+  10. id=23830 price=50.00 spu=Magic Chess: Go Go BR - diamond_706
+  11. id=23831 price=93.75 spu=Magic Chess: Go Go BR - diamond_1346
+  12. id=23832 price=125.00 spu=Magic Chess: Go Go BR - diamond_1825
+  13. id=23833 price=150.00 spu=Magic Chess: Go Go BR - diamond_2195
+  14. id=23834 price=250.00 spu=Magic Chess: Go Go BR - diamond_3688
+  15. id=23835 price=375.00 spu=Magic Chess: Go Go BR - diamond_5532
+  16. id=23836 price=625.00 spu=Magic Chess: Go Go BR - diamond_9288
+  17. id=25585 price=4.00 spu=Magic Chess: Go Go BR - Lukas's Battle Bounty
+  18. id=25586 price=4.00 spu=Magic Chess: Go Go BR - Battle for Discounts
+  19. id=25587 price=4.14 spu=Magic Chess: Go Go BR - Promotion Bounty
+  20. id=23841 price=9.99 spu=Magic Chess: Go Go BR - Weekly Diamond Pass
+
+[PH path + country/lang] path=/ph/smilecoin/api/productlist extra={"country":"ph","lang":"en"}
+  http=200 apiStatus=200 ok=true packages=19 msg=success
+   1. id=23918 price=47.45 spu=Magic Chess: Go Go PH - diamond_55
+   2. id=23919 price=140.60 spu=Magic Chess: Go Go PH - diamond_165
+   3. id=23920 price=233.70 spu=Magic Chess: Go Go PH - diamond_275
+   4. id=23921 price=473.10 spu=Magic Chess: Go Go PH - diamond_565
+   5. id=23906 price=4.75 spu=Magic Chess: Go Go PH - diamond_5
+   6. id=23907 price=9.03 spu=Magic Chess: Go Go PH - diamond_11
+   7. id=23908 price=18.05 spu=Magic Chess: Go Go PH - diamond_22
+   8. id=23909 price=45.13 spu=Magic Chess: Go Go PH - diamond_56
+   9. id=23910 price=90.25 spu=Magic Chess: Go Go PH - diamond_112
+  10. id=23911 price=180.50 spu=Magic Chess: Go Go PH - diamond_223
+  11. id=23912 price=270.75 spu=Magic Chess: Go Go PH - diamond_336
+  12. id=23913 price=451.25 spu=Magic Chess: Go Go PH - diamond_570
+  13. id=23914 price=902.50 spu=Magic Chess: Go Go PH - diamond_1163
+  14. id=23915 price=1805.00 spu=Magic Chess: Go Go PH - diamond_2398
+  15. id=23916 price=4512.50 spu=Magic Chess: Go Go PH - diamond_6042
+  16. id=25600 price=47.45 spu=Magic Chess: Go Go PH - Lukas's Battle Bounty
+  17. id=25601 price=47.45 spu=Magic Chess: Go Go PH - Battle for Discounts
+  18. id=25602 price=53.15 spu=Magic Chess: Go Go PH - Promotion Bounty
+  19. id=23922 price=95.00 spu=Magic Chess: Go Go PH - Weekly Diamond Pass
+
+[PH path only] path=/ph/smilecoin/api/productlist extra={}
+  http=200 apiStatus=200 ok=true packages=19 msg=success
+   1. id=23918 price=47.45 spu=Magic Chess: Go Go PH - diamond_55
+   2. id=23919 price=140.60 spu=Magic Chess: Go Go PH - diamond_165
+   3. id=23920 price=233.70 spu=Magic Chess: Go Go PH - diamond_275
+   4. id=23921 price=473.10 spu=Magic Chess: Go Go PH - diamond_565
+   5. id=23906 price=4.75 spu=Magic Chess: Go Go PH - diamond_5
+   6. id=23907 price=9.03 spu=Magic Chess: Go Go PH - diamond_11
+   7. id=23908 price=18.05 spu=Magic Chess: Go Go PH - diamond_22
+   8. id=23909 price=45.13 spu=Magic Chess: Go Go PH - diamond_56
+   9. id=23910 price=90.25 spu=Magic Chess: Go Go PH - diamond_112
+  10. id=23911 price=180.50 spu=Magic Chess: Go Go PH - diamond_223
+  11. id=23912 price=270.75 spu=Magic Chess: Go Go PH - diamond_336
+  12. id=23913 price=451.25 spu=Magic Chess: Go Go PH - diamond_570
+  13. id=23914 price=902.50 spu=Magic Chess: Go Go PH - diamond_1163
+  14. id=23915 price=1805.00 spu=Magic Chess: Go Go PH - diamond_2398
+  15. id=23916 price=4512.50 spu=Magic Chess: Go Go PH - diamond_6042
+  16. id=25600 price=47.45 spu=Magic Chess: Go Go PH - Lukas's Battle Bounty
+  17. id=25601 price=47.45 spu=Magic Chess: Go Go PH - Battle for Discounts
+  18. id=25602 price=53.15 spu=Magic Chess: Go Go PH - Promotion Bounty
+  19. id=23922 price=95.00 spu=Magic Chess: Go Go PH - Weekly Diamond Pass
+
+[php path] path=/php/smilecoin/api/productlist extra={}
+  http=404 apiStatus=HTML ok=false packages=0 msg=HTML response
+
+[php path + region=php] path=/php/smilecoin/api/productlist extra={"region":"php"}
+  http=404 apiStatus=HTML ok=false packages=0 msg=HTML response
+
+================================================================================
+ALL GAMES SUMMARY
+================================================================================
+SLUG                 | BR pkgs | php pkgs | PH-path pkgs
+---------------------+---------+----------+-------------
+mobilelegends        |      16 |       16 |           0
+bigo                 |       9 |        9 |           0
+ragnarokm            |      12 |       12 |          12
+hago                 |       6 |        6 |           6
+freefirediamantes    |       6 |        6 |           0
+ddtank               |       8 |        8 |           8
+tinder               |       1 |        1 |           3
+pubgmobile           |       6 |        6 |           6
+sweetdance           |      13 |       13 |           0
+watcherofrealms      |       8 |        8 |           8
+saintseiyaawakening  |       8 |        8 |           0
+supersus             |      11 |       11 |          11
+eudemonsonline       |       0 |        0 |           7
+honkai               |       0 |        0 |           0
+loveanddeepspace     |       9 |        9 |           9
+pathtonowhere        |      19 |       19 |           0
+lovenikki            |      17 |       17 |           0
+shiningnikki         |      15 |       15 |           0
+hok                  |      10 |       10 |          10
+magicchessgogo       |      20 |       20 |          19
+
+================================================================================
+ALL GAMES DETAIL (best available catalogue)
+================================================================================
+
+### mobilelegends
+BR: 16 packages (status=200)
+region=php: 16 packages (status=200)
+PH path: 0 packages (status=HTML msg=HTML response)
+   1. id=26555    price=    4.00  mobilelegends BR Weekly Elite Bundle
+   2. id=26556    price=   19.75  mobilelegends BR Monthly Epic Bundle
+   3. id=22590    price=    4.00  mobilelegends BR 55 Diamond
+   4. id=22591    price=   11.99  mobilelegends BR 165 Diamond
+   5. id=22592    price=   19.75  mobilelegends BR 275 Diamond
+   6. id=22593    price=   40.50  mobilelegends BR 565 Diamond
+   7. id=13       price=    6.25  mobilelegends BR 78&8 Diamond
+   8. id=23       price=   12.50  mobilelegends BR 156&16 Diamond
+   9. id=25       price=   18.67  mobilelegends BR 234&23 Diamond
+  10. id=26       price=   50.00  mobilelegends BR 625&81 Diamond
+  11. id=27       price=  150.00  mobilelegends BR 1860&335 Diamond
+  12. id=28       price=  250.00  mobilelegends BR 3099&589 Diamond
+  13. id=29       price=  375.00  mobilelegends BR 4649&883 Diamond
+  14. id=30       price=  625.00  mobilelegends BR 7740&1548 Diamond
+  15. id=33       price=   41.25  mobilelegends BR Passagem do crepúsculo
+  16. id=16642    price=    8.00  Mobile Legends BR - Passe Semanal de Diamante
+
+### bigo
+BR: 9 packages (status=200)
+region=php: 9 packages (status=200)
+PH path: 0 packages (status=HTML msg=HTML response)
+   1. id=16081    price=    2.14  20 Diamonds
+   2. id=16082    price=    5.34  50 Diamonds
+   3. id=16083    price=   10.89  100 Diamonds
+   4. id=16084    price=   21.92  200 Diamonds
+   5. id=16085    price=   54.32  500 Diamonds
+   6. id=18013    price=  106.77  1000 Diamonds
+   7. id=16086    price=  217.25  2000 Diamonds
+   8. id=16087    price=  530.93  5000 Diamonds
+   9. id=16088    price=  1055.3  10000 Diamonds
+
+### ragnarokm
+BR: 12 packages (status=200)
+region=php: 12 packages (status=200)
+PH path: 12 packages (status=200 msg=success)
+   1. id=653      price=    5.70  6+1 Big Cat Coins
+   2. id=654      price=   11.10  12+2 Big Cat Coins
+   3. id=655      price=   15.90  18+3 Big Cat Coins
+   4. id=656      price=   21.70  24+4 Big Cat Coins
+   5. id=657      price=   26.50  30+6 Big Cat Coins
+   6. id=658      price=   54.50  60+12 Big Cat Coins
+   7. id=659      price=  106.60  120+25 Big Cat Coins
+   8. id=660      price=  256.20  298+75 Big Cat Coins
+   9. id=661      price=  511.90  598+150 Big Cat Coins
+  10. id=662      price= 1013.70  1196+300 Big Cat Coins
+  11. id=663      price= 2528.80  2990+750 Big Cat Coins
+  12. id=665      price=   42.90  Premium
+
+### hago
+BR: 6 packages (status=200)
+region=php: 6 packages (status=200)
+PH path: 6 packages (status=200 msg=success)
+   1. id=164      price=    3.89  6570 Diamonds 
+   2. id=165      price=    7.88  13409 Diamonds 
+   3. id=166      price=   18.85  32123 Diamonds 
+   4. id=167      price=   37.81  65136 Diamonds 
+   5. id=168      price=   74.71  129547 Diamonds 
+   6. id=169      price=  154.51  269628 Diamonds 
+
+### freefirediamantes
+BR: 6 packages (status=200)
+region=php: 6 packages (status=200)
+PH path: 0 packages (status=HTML msg=HTML response)
+   1. id=2226     price=    4.49  Free Fire - 100 Diamantes+10%de Bônus
+   2. id=2227     price=   13.99  Free Fire - 310 Diamantes + 10% Bônus
+   3. id=2228     price=   20.99  Free Fire - 520 Diamantes + 10% Bônus
+   4. id=2229     price=   44.99  Free Fire - 1060 Diamantes + 10% Bônus
+   5. id=2230     price=   87.99  Free Fire - 2180 Diamantes + 10% Bônus
+   6. id=2231     price=  209.99  Free Fire - 5600 Diamantes + 10% Bônus
+
+### ddtank
+BR: 8 packages (status=200)
+region=php: 8 packages (status=200)
+PH path: 8 packages (status=200 msg=success)
+   1. id=95       price=    6.00  DDTank BR - 100 Bilhete&10 Extra Bilhete
+   2. id=96       price=   11.00  DDTank BR - 200 Bilhete&20 Extra Bilhete
+   3. id=97       price=   23.00  DDTank BR - 400 Bilhete&60 Extra Bilhete
+   4. id=98       price=   55.20  DDTank BR - 1000 Bilhete&160 Extra Bilhete
+   5. id=99       price=  113.00  DDTank BR - 2000 Bilhete&360 Extra Bilhete
+   6. id=100      price=  220.00  DDTank BR - 4000 Bilhete&960 Extra Bilhete
+   7. id=101      price=  334.00  DDTank BR - 6000 Bilhete&1460 Extra Bilhete
+   8. id=102      price=  561.00  DDTank BR - 10000 Bilhete&2560 Extra Bilhete
+
+### tinder
+BR: 1 packages (status=200)
+region=php: 1 packages (status=200)
+PH path: 3 packages (status=200 msg=success)
+   1. id=1073     price=   10.07  Tinder Plus 1 Semana BR
+
+### pubgmobile
+BR: 6 packages (status=200)
+region=php: 6 packages (status=200)
+PH path: 6 packages (status=200 msg=success)
+   1. id=617      price=    4.93  PUBG Mobile code BR - 60 UC
+   2. id=441      price=   24.82  PUBG Mobile code BR - 300 & 25 UC
+   3. id=442      price=   49.75  PUBG Mobile code BR - 600 & 60 UC
+   4. id=443      price=  124.42  PUBG Mobile code BR - 1500 & 300 UC
+   5. id=444      price=  248.93  PUBG Mobile code BR - 3000 & 850 UC
+   6. id=445      price=  497.92  PUBG Mobile code BR - 6000& 2100 UC
+
+### sweetdance
+BR: 13 packages (status=200)
+region=php: 13 packages (status=200)
+PH path: 0 packages (status=HTML msg=HTML response)
+   1. id=17012    price=    5.00  Sweet dance BR- Pacote de Diamante 1
+   2. id=17013    price=    9.00  Sweet dance BR- Pacote de Diamante 2
+   3. id=17014    price=   23.00  Sweet dance BR- Pacote de Diamante 3
+   4. id=17015    price=   52.00  Sweet dance BR- Pacote de Diamante 4
+   5. id=17016    price=   98.00  Sweet dance BR- Pacote de Diamante 5
+   6. id=17017    price=  151.00  Sweet dance BR- Pacote de Diamante 6
+   7. id=17018    price=  251.00  Sweet dance BR- Pacote de Diamante 7
+   8. id=17019    price=  496.00  Sweet dance BR- Pacote de Diamante 8
+   9. id=17020    price=    5.00  Sweet dance BR- Pacote de Moeda da Sorte
+  10. id=17021    price=    5.00  Sweet dance BR- Pacote de Moeda de Desejo
+  11. id=17022    price=    5.00  Sweet dance BR- Novo Pacote de Ovo
+  12. id=17023    price=    9.00  Sweet dance BR- Pacote de Desconto de Recarga 1
+  13. id=17024    price=   23.00  Sweet dance BR- Pacote de Desconto de Recarga 2
+
+### watcherofrealms
+BR: 8 packages (status=200)
+region=php: 8 packages (status=200)
+PH path: 8 packages (status=200 msg=success)
+   1. id=20857    price=   27.90  Watcher of Realms BR - 499 W-Gold
+   2. id=20856    price=   55.90  Watcher of Realms BR - 999 W-Gold
+   3. id=20855    price=  114.90  Watcher of Realms BR - 1999 W-Gold
+   4. id=20854    price=  169.90  Watcher of Realms BR - 2999 W-Gold
+   5. id=20853    price=  279.90  Watcher of Realms BR - 4999 W-Gold
+   6. id=20852    price=  559.90  Watcher of Realms BR - 9999 W-Gold
+   7. id=20851    price= 1659.90  Watcher of Realms BR - 29999 W-Gold
+   8. id=20850    price= 3319.90  Watcher of Realms BR - 59999 W-Gold
+
+### saintseiyaawakening
+BR: 8 packages (status=200)
+region=php: 8 packages (status=200)
+PH path: 0 packages (status=HTML msg=HTML response)
+   1. id=759      price=    4.99  Saint Seiya BR 60 Coupon
+   2. id=760      price=   25.50  Saint Seiya BR 300 Coupon
+   3. id=761      price=   49.00  Saint Seiya BR 600 Coupon
+   4. id=762      price=  102.00  Saint Seiya BR 1200 Coupon
+   5. id=763      price=  146.00  Saint Seiya BR 1800 Coupon
+   6. id=764      price=  247.00  Saint Seiya BR 3000 Coupon
+   7. id=765      price=  344.00  Saint Seiya BR 4200 Coupon
+   8. id=766      price=  495.00  Saint Seiya BR 6000 Coupon
+
+### supersus
+BR: 11 packages (status=200)
+region=php: 11 packages (status=200)
+PH path: 11 packages (status=200 msg=success)
+   1. id=3088     price=    4.14  100 Goldstar + Extra 28 Goldstar
+   2. id=3089     price=   12.42  300 Goldstar + Extra 95 Goldstar
+   3. id=3090     price=   20.70  500 Goldstar + Extra 170 Goldstar
+   4. id=3091     price=   41.40  1000 Goldstar + Extra 360 Goldstar
+   5. id=3092     price=   82.80  2000 Goldstar + Extra 760 Goldstar
+   6. id=3093     price=  207.00  5000 Goldstar + Extra 2000 Goldstar
+   7. id=5038     price=    4.60  Super Sus BR - Cartão Semanal
+   8. id=5039     price=   47.84  Super Sus BR - Cartão Mensal
+   9. id=5040     price=   52.44  Super Sus BR - Cartão Super VIP
+  10. id=5041     price=   24.18  Super Sus BR - SUPER PASSE
+  11. id=5042     price=   43.24  Super Sus BR - PACOTE SUPER PASSE
+
+### eudemonsonline
+BR: 0 packages (status=HTML)
+region=php: 0 packages (status=HTML)
+PH path: 7 packages (status=200 msg=success)
+   1. id=6871     price=   56.50  Eudemons Online - 80 Eudemons Points
+   2. id=6872     price=  113.50  Eudemons Online - 165 Eudemons Points
+   3. id=6873     price=  284.50  Eudemons Online - 420 Eudemons Points
+   4. id=6874     price=  455.50  Eudemons Online - 680 Eudemons Points
+   5. id=6875     price=  911.50  Eudemons Online - 1380 Eudemons Points
+   6. id=6876     price= 1709.50  Eudemons Online - 2650 Eudemons Points
+   7. id=6877     price= 3420.00  Eudemons Online - 5400 Eudemons Points
+
+### honkai
+BR: 0 packages (status=HTML)
+region=php: 0 packages (status=HTML)
+PH path: 0 packages (status=HTML msg=HTML response)
+  (no packages)
+
+### loveanddeepspace
+BR: 9 packages (status=200)
+region=php: 9 packages (status=200)
+PH path: 9 packages (status=200 msg=success)
+   1. id=18760    price=    4.90  Love and Deepspace BR - 60 Crystals
+   2. id=18761    price=   24.90  Love and Deepspace BR - 300 Crystals
+   3. id=18762    price=   39.90  Love and Deepspace BR - 450 Crystals
+   4. id=18763    price=   79.90  Love and Deepspace BR - 980 Crystals
+   5. id=18764    price=  149.90  Love and Deepspace BR - 1980 Crystals
+   6. id=18765    price=  249.90  Love and Deepspace BR - 3280 Crystals
+   7. id=18766    price=  499.90  Love and Deepspace BR - 6480 Crystals
+   8. id=19176    price=   99.90  Companionship Pack
+   9. id=19177    price=   24.90  Aurum Pass (30 Days)
+
+### pathtonowhere
+BR: 19 packages (status=200)
+region=php: 19 packages (status=200)
+PH path: 0 packages (status=HTML msg=HTML response)
+   1. id=5093     price=    4.90  Ultracube x60
+   2. id=5094     price=   27.90  Ultracube x300
+   3. id=15870    price=   84.90  Dis Jackpot
+   4. id=5095     price=   84.90  Ultracube x980
+   5. id=5096     price=  159.90  Ultracube x1980
+   6. id=5097     price=  269.90  Ultracube x3280
+   7. id=5098     price=  499.90  Ultracube x6480
+   8. id=5099     price=   84.90  Monthly Arrest Pack I
+   9. id=5100     price=  139.90  Monthly Arrest Pack II
+  10. id=5101     price=    4.90  Weekly Arrest Pack
+  11. id=5103     price=   84.90  Weekly Training Pack II
+  12. id=5104     price=   27.90  Black Key VIP (30 Days)
+  13. id=5105     price=  104.90  Rookie Arrest Pack
+  14. id=5106     price=    4.90  Chief Inauguration Special I
+  15. id=5107     price=   27.90  Chief Inauguration Special II
+  16. id=5108     price=   54.90  Chief Inauguration Special III
+  17. id=5109     price=  159.90  Chief Inauguration Special IV
+  18. id=5110     price=  269.90  Chief Inauguration Special V
+  19. id=5111     price=  499.90  Chief Inauguration Special VI
+
+### lovenikki
+BR: 17 packages (status=200)
+region=php: 17 packages (status=200)
+PH path: 0 packages (status=HTML msg=HTML response)
+   1. id=127      price=    8.90  Love Nikki 100 diamonds
+   2. id=128      price=   22.90  Love Nikki 260 diamonds & Monthly Card
+   3. id=129      price=   47.90  Love Nikki 550 diamonds & Carnival Ticket
+   4. id=130      price=   93.90  Love Nikki 1200 diamonds
+   5. id=131      price=  242.90  Love Nikki 3100 diamonds
+   6. id=132      price=  476.90  Love Nikki 6300 diamonds
+   7. id=133      price=    4.90  Love Nikki Discount Pack
+   8. id=134      price=   19.90  Love Nikki Stamina Pack (S)
+   9. id=135      price=   19.90  Love Nikki Gold Pack (S)
+  10. id=137      price=   37.90  Love Nikki Stamina Pack (M)
+  11. id=138      price=   37.90  Love Nikki Gold Pack (M)
+  12. id=139      price=   37.90  Love Nikki Star Coin Pack (M)
+  13. id=140      price=   58.90  Love Nikki Stamina Pack
+  14. id=141      price=   58.90  Love Nikki Glossy Gold Vault
+  15. id=142      price=   58.90  Love Nikki Starlight Pack
+  16. id=126      price=    4.90  Love Nikki Miracle Deal Pack
+  17. id=136      price=   19.90  Star Coin Pack(S)
+
+### shiningnikki
+BR: 15 packages (status=200)
+region=php: 15 packages (status=200)
+PH path: 0 packages (status=HTML msg=HTML response)
+   1. id=855      price=    4.79  Shining Nikki BR Star Gem X 60
+   2. id=856      price=   23.99  Shining Nikki BR Star Gem X 300
+   3. id=857      price=   48.95  Shining Nikki BR Star Gem X 600
+   4. id=858      price=  100.79  Shining Nikki BR Star Gem X 1200
+   5. id=859      price=  249.59  Shining Nikki BR Star Gem X 3000
+   6. id=860      price=  489.59  Shining Nikki BR Star Gem X 6000
+   7. id=861      price=   23.99  Shining Nikki BR Gem Card
+   8. id=862      price=   48.95  Shining Nikki BR Privilege Card
+   9. id=863      price=  100.79  Shining Nikki BR Upgrade Promotion Pack
+  10. id=864      price=  134.39  Shining Nikki BR Rank-up Promotion Pack
+  11. id=865      price=   14.39  Shining Nikki BR Gold Supply Pack
+  12. id=866      price=    9.59  Shining Nikki BR Stamina Supply Pack
+  13. id=867      price=   36.47  Shining Nikki BR Fantasy Ticket Weekly Pack
+  14. id=868      price=   48.95  Shining Nikki BR Personal Rename Card
+  15. id=869      price=  100.79  Shining Nikki BR Guild Rename Card
+
+### hok
+BR: 10 packages (status=200)
+region=php: 10 packages (status=200)
+PH path: 10 packages (status=200 msg=success)
+   1. id=16643    price=    0.97  16 TOKENS
+   2. id=16644    price=    4.73  80 TOKENS
+   3. id=16645    price=   14.24  240 TOKENS
+   4. id=16646    price=   23.75  400 TOKENS
+   5. id=16647    price=   33.27  560 TOKENS
+   6. id=16648    price=   47.51  800 +30 TOKENS
+   7. id=16649    price=   71.31  1200 +45 TOKENS
+   8. id=16650    price=  142.63  2400 +108 TOKENS
+   9. id=16651    price=  237.74  4000 +180 TOKENS
+  10. id=16652    price=  475.54  8000 + 360 TOKENS
+
+### magicchessgogo
+BR: 20 packages (status=200)
+region=php: 20 packages (status=200)
+PH path: 19 packages (status=200 msg=success)
+   1. id=23837    price=    4.00  Magic Chess: Go Go BR - diamond_55
+   2. id=23838    price=   12.00  Magic Chess: Go Go BR - diamond_165
+   3. id=23839    price=   20.00  Magic Chess: Go Go BR - diamond_275
+   4. id=23840    price=   40.00  Magic Chess: Go Go BR - diamond_565
+   5. id=23825    price=    6.25  Magic Chess: Go Go BR - diamond_86
+   6. id=23826    price=   12.50  Magic Chess: Go Go BR - diamond_172
+   7. id=23827    price=   18.70  Magic Chess: Go Go BR - diamond_257
+   8. id=23828    price=   25.00  Magic Chess: Go Go BR - diamond_344
+   9. id=23829    price=   37.50  Magic Chess: Go Go BR - diamond_516
+  10. id=23830    price=   50.00  Magic Chess: Go Go BR - diamond_706
+  11. id=23831    price=   93.75  Magic Chess: Go Go BR - diamond_1346
+  12. id=23832    price=  125.00  Magic Chess: Go Go BR - diamond_1825
+  13. id=23833    price=  150.00  Magic Chess: Go Go BR - diamond_2195
+  14. id=23834    price=  250.00  Magic Chess: Go Go BR - diamond_3688
+  15. id=23835    price=  375.00  Magic Chess: Go Go BR - diamond_5532
+  16. id=23836    price=  625.00  Magic Chess: Go Go BR - diamond_9288
+  17. id=25585    price=    4.00  Magic Chess: Go Go BR - Lukas's Battle Bounty
+  18. id=25586    price=    4.00  Magic Chess: Go Go BR - Battle for Discounts
+  19. id=25587    price=    4.14  Magic Chess: Go Go BR - Promotion Bounty
+  20. id=23841    price=    9.99  Magic Chess: Go Go BR - Weekly Diamond Pass

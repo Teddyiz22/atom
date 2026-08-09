@@ -226,6 +226,12 @@
               const activeTypeCodes = new Set((productTypes || []).map(t => String(t.typeCode || '').toLowerCase()));
               const hasType = (code) => activeTypeCodes.has(String(code || '').toLowerCase());
               const hasPubg = hasType('pubgm') || hasType('pubgcustom');
+              const typeNameByCode = {};
+              (productTypes || []).forEach(t => {
+                const code = String(t.typeCode || '').toLowerCase();
+                if (code) typeNameByCode[code] = t.name;
+              });
+              const typeName = (code, fallback) => typeNameByCode[String(code || '').toLowerCase()] || fallback;
             %>
             <div class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 px-4 mt-6 font-mont max-w-5xl mx-auto">
 
@@ -234,8 +240,7 @@
                 <div
                   class="relative rounded-2xl p-2 bg-white/10 backdrop-blur-lg border border-white/20 shadow-md shadow-blue-900/25 hover:scale-105 transition-transform duration-300 h-full">
                   <img src="/images/mlbb_special.png" class="w-full rounded-xl aspect-square object-cover">
-                  <p class="text-white text-[8px] sm:text-[8px] text-center mt-2 leading-tight font-bold">Mobile Legends
-                  </p>
+                  <p class="text-white text-[8px] sm:text-[8px] text-center mt-2 leading-tight font-bold"><%= typeName('ml', 'Mobile Legends') %></p>
                   <div
                     class="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
                   </div>
@@ -248,8 +253,7 @@
                 <div
                   class="relative rounded-2xl p-2 bg-white/10 backdrop-blur-lg border border-white/20 shadow-md shadow-blue-900/25 hover:scale-105 transition-transform duration-300 h-full">
                   <img src="/images/mlbb_special.png" class="w-full rounded-xl aspect-square object-cover">
-                  <p class="text-white text-[8px] sm:text-[8px] text-center mt-2 leading-tight font-bold">Mobile Legends
-                    Philippines</p>
+                  <p class="text-white text-[8px] sm:text-[8px] text-center mt-2 leading-tight font-bold"><%= typeName('mlphp', 'Mobile Legends Philippines') %></p>
                 </div>
               </a>
               <% } %>
@@ -260,7 +264,7 @@
                   class="relative rounded-2xl p-2 bg-white/10 backdrop-blur-lg border border-white/20 shadow-md shadow-blue-900/25 hover:scale-105 transition-transform duration-300 h-full">
                   <img src="/images/mlbb_special.png" class="w-full rounded-xl aspect-square object-cover">
                   <p class="text-white text-[8px] sm:text-[8px] text-center mt-2 leading-tight font-bold">
-                    Mobile Legends Singapore/Malaysia
+                    <%= typeName('mlbb_special', 'Mobile Legends Singapore/Malaysia') %>
                   </p>
                 </div>
               </a>
@@ -271,8 +275,7 @@
                 <div
                   class="relative rounded-2xl p-2 bg-white/10 backdrop-blur-lg border border-white/20 shadow-md shadow-blue-900/25 hover:scale-105 transition-transform duration-300 h-full">
                   <img src="/images/pubg.png" class="w-full rounded-xl aspect-square object-cover">
-                  <p class="text-white text-[8px] sm:text-[8px] text-center mt-2 leading-tight font-bold">PUBG Mobile
-                  </p>
+                  <p class="text-white text-[8px] sm:text-[8px] text-center mt-2 leading-tight font-bold"><%= typeName('pubgm', typeName('pubgcustom', 'PUBG Mobile')) %></p>
                 </div>
               </button>
               <% } %>
@@ -282,8 +285,17 @@
                 <div
                   class="relative rounded-2xl p-2 bg-white/10 backdrop-blur-lg border border-white/20 shadow-md shadow-blue-900/25 hover:scale-105 transition-transform duration-300 h-full">
                   <img src="/images/mcgg.png" class="w-full rounded-xl aspect-square object-cover">
-                  <p class="text-white text-[8px] sm:text-[8px] text-center mt-2 leading-tight font-bold">Magic Chess Go
-                    Go</p>
+                  <p class="text-white text-[8px] sm:text-[8px] text-center mt-2 leading-tight font-bold"><%= typeName('mcgg', 'Magic Chess Go Go') %></p>
+                </div>
+              </a>
+              <% } %>
+
+              <% if (hasType('mcggphp')) { %>
+              <a href="/shop/mcggphp" class="group">
+                <div
+                  class="relative rounded-2xl p-2 bg-white/10 backdrop-blur-lg border border-white/20 shadow-md shadow-blue-900/25 hover:scale-105 transition-transform duration-300 h-full">
+                  <img src="/images/mcgg.png" class="w-full rounded-xl aspect-square object-cover">
+                  <p class="text-white text-[8px] sm:text-[8px] text-center mt-2 leading-tight font-bold"><%= typeName('mcggphp', 'Magic Chess Go Go PH') %></p>
                 </div>
               </a>
               <% } %>
@@ -293,8 +305,7 @@
                 <div
                   class="relative rounded-2xl p-2 bg-white/10 backdrop-blur-lg border border-white/20 shadow-md shadow-blue-900/25 hover:scale-105 transition-transform duration-300 h-full">
                   <img src="/images/hok.png" class="w-full rounded-xl aspect-square object-cover">
-                  <p class="text-white text-[8px] sm:text-[8px] text-center mt-2 leading-tight font-bold">Honor of Kings
-                  </p>
+                  <p class="text-white text-[8px] sm:text-[8px] text-center mt-2 leading-tight font-bold"><%= typeName('hok', 'Honor of Kings') %></p>
                 </div>
               </a>
               <% } %>
@@ -310,7 +321,7 @@
               <div class="relative w-full max-w-lg overflow-hidden rounded-2xl border border-white/15 bg-[#101a2d] shadow-2xl">
                 <div class="flex items-start justify-between gap-4 border-b border-white/10 px-5 py-4 sm:px-6">
                   <div>
-                    <h2 id="pubgPickerTitle" class="text-lg font-bold text-white sm:text-xl">PUBG Mobile</h2>
+                    <h2 id="pubgPickerTitle" class="text-lg font-bold text-white sm:text-xl"><%= typeName('pubgm', typeName('pubgcustom', 'PUBG Mobile')) %></h2>
                     <p class="mt-1 text-sm text-gray-400">Choose how you want to top up.</p>
                   </div>
                   <button type="button" onclick="closePubgPicker()"
@@ -324,7 +335,7 @@
                     class="flex min-h-[88px] items-center gap-4 rounded-xl border border-white/15 bg-white/5 p-3 text-left transition hover:border-theme-400/70 hover:bg-white/10 sm:p-4">
                     <img src="/images/pubgm.png" alt="" class="h-16 w-16 shrink-0 rounded-xl object-cover sm:h-20 sm:w-20">
                     <span class="min-w-0 flex-1">
-                      <span class="block font-bold text-white">PUBG Mobile Pack</span>
+                      <span class="block font-bold text-white"><%= typeName('pubgm', 'PUBG Mobile Pack') %></span>
                       <span class="mt-1 block text-sm text-gray-400">Automatic delivery instant</span>
                     </span>
                     <span class="text-xl text-theme-300" aria-hidden="true">&gt;</span>
@@ -336,7 +347,7 @@
                     class="flex min-h-[88px] items-center gap-4 rounded-xl border border-white/15 bg-white/5 p-3 text-left transition hover:border-amber-400/70 hover:bg-white/10 sm:p-4">
                     <img src="/images/pubg.png" alt="" class="h-16 w-16 shrink-0 rounded-xl object-cover sm:h-20 sm:w-20">
                     <span class="min-w-0 flex-1">
-                      <span class="block font-bold text-white">PUBG Mobile UC</span>
+                      <span class="block font-bold text-white"><%= typeName('pubgcustom', 'PUBG Mobile UC') %></span>
                       <span class="mt-1 block text-sm text-gray-400">Manual fulfillment by the admin team</span>
                     </span>
                     <span class="text-xl text-amber-300" aria-hidden="true">&gt;</span>

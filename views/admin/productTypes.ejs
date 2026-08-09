@@ -4,7 +4,7 @@
       <i class="fas fa-tags text-primary mr-2"></i>
       Product Types
     </h1>
-    <p class="text-muted mb-0">Manage provider product type codes</p>
+    <p class="text-muted mb-0">Add or edit game / product type names shown in the shop</p>
   </div>
   <a href="/admin" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
     <i class="fas fa-arrow-left fa-sm text-white-50"></i> Back to Dashboard
@@ -25,18 +25,38 @@
   </div>
 <% } %>
 
+<% const isEditing = !!(form && form.id); %>
+
 <div class="row">
   <div class="col-lg-5">
     <div class="card shadow mb-4">
-      <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary">Add / Update</h6>
+      <div class="card-header py-3 d-flex align-items-center justify-content-between">
+        <h6 class="m-0 font-weight-bold text-primary"><%= isEditing ? 'Edit Product Type' : 'Add Product Type' %></h6>
+        <% if (isEditing) { %>
+          <a href="/admin/product-types" class="btn btn-sm btn-outline-secondary">Cancel</a>
+        <% } %>
       </div>
       <div class="card-body">
         <form method="POST" action="/admin/product-types/save">
           <input type="hidden" name="id" value="<%= form?.id || '' %>">
 
           <div class="form-group">
-            <label for="provider">Provider</label>
+            <label for="name">Display Name <span class="text-danger">*</span></label>
+            <input
+              type="text"
+              class="form-control"
+              id="name"
+              name="name"
+              required
+              maxlength="128"
+              placeholder="e.g. Magic Chess: Go Go"
+              value="<%= form?.name || '' %>"
+            >
+            <small class="form-text text-muted">This name is shown on the shop. You can set any label you want.</small>
+          </div>
+
+          <div class="form-group">
+            <label for="provider">Provider <span class="text-danger">*</span></label>
             <select class="form-control" id="provider" name="provider" required>
               <option value="smile" <%= form?.provider === 'smile' ? 'selected' : '' %>>smile</option>
               <option value="g2bulk" <%= form?.provider === 'g2bulk' ? 'selected' : '' %>>g2bulk</option>
@@ -45,13 +65,23 @@
           </div>
 
           <div class="form-group">
-            <label for="type_code">Type Code</label>
-            <input type="text" class="form-control" id="type_code" name="type_code" required value="<%= form?.type_code || '' %>">
-          </div>
-
-          <div class="form-group">
-            <label for="name">Name</label>
-            <input type="text" class="form-control" id="name" name="name" required value="<%= form?.name || '' %>">
+            <label for="type_code">Type Code <span class="text-danger">*</span></label>
+            <input
+              type="text"
+              class="form-control"
+              id="type_code"
+              name="type_code"
+              required
+              maxlength="32"
+              placeholder="e.g. mcgg, ml, pubgm"
+              value="<%= form?.type_code || '' %>"
+              <%= isEditing ? 'readonly' : '' %>
+            >
+            <small class="form-text text-muted">
+              <%= isEditing
+                ? 'Type code cannot be changed after create (used by shop routes).'
+                : 'Lowercase code used in URLs and API (e.g. /shop/mcgg).' %>
+            </small>
           </div>
 
           <div class="form-group">
@@ -64,8 +94,11 @@
 
           <button type="submit" class="btn btn-primary">
             <i class="fas fa-save mr-2"></i>
-            Save
+            <%= isEditing ? 'Update' : 'Add' %>
           </button>
+          <% if (isEditing) { %>
+            <a href="/admin/product-types" class="btn btn-light ml-1">Cancel</a>
+          <% } %>
         </form>
       </div>
     </div>
@@ -87,7 +120,7 @@
                 <th>Type Code</th>
                 <th>Name</th>
                 <th>Status</th>
-                <th style="width: 90px;"></th>
+                <th style="width: 100px;">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -97,27 +130,24 @@
                 </tr>
               <% } else { %>
                 <% productTypes.forEach(pt => { %>
-                  <tr>
+                  <tr class="<%= form?.id == pt.id ? 'product-type-row-editing' : '' %>">
                     <td><%= pt.id %></td>
                     <td><%= pt.provider %></td>
-                    <td><%= pt.typeCode %></td>
-                    <td><%= pt.name %></td>
+                    <td><code><%= pt.typeCode %></code></td>
+                    <td><strong><%= pt.name %></strong></td>
                     <td>
                       <span class="badge badge-<%= pt.status === 'active' ? 'success' : 'secondary' %>">
                         <%= pt.status %>
                       </span>
                     </td>
-                    <td class="text-center">
+                    <td class="text-center text-nowrap">
+                      <a class="btn btn-sm btn-warning" href="/admin/product-types/edit/<%= pt.id %>" title="Edit name">
+                        <i class="fas fa-edit"></i>
+                      </a>
                       <form method="POST" action="/admin/product-types/toggle" class="d-inline-block m-0">
                         <input type="hidden" name="id" value="<%= pt.id %>">
-                        <button type="submit" class="btn btn-sm btn-<%= pt.status === 'active' ? 'warning' : 'success' %> mr-1" title="<%= pt.status === 'active' ? 'Deactivate' : 'Activate' %>">
+                        <button type="submit" class="btn btn-sm btn-<%= pt.status === 'active' ? 'secondary' : 'success' %>" title="<%= pt.status === 'active' ? 'Deactivate' : 'Activate' %>">
                           <i class="fas fa-<%= pt.status === 'active' ? 'ban' : 'check' %>"></i>
-                        </button>
-                      </form>
-                      <form method="POST" action="/admin/product-types/delete" class="d-inline-block m-0" onsubmit="return confirm('Delete this product type?')">
-                        <input type="hidden" name="id" value="<%= pt.id %>">
-                        <button type="submit" class="btn btn-sm btn-danger">
-                          <i class="fas fa-trash"></i>
                         </button>
                       </form>
                     </td>
@@ -131,3 +161,18 @@
     </div>
   </div>
 </div>
+
+<style>
+  tr.product-type-row-editing > td {
+    background: rgba(99, 102, 241, 0.22) !important;
+    color: #f8fafc !important;
+    box-shadow: inset 3px 0 0 #818cf8;
+  }
+  tr.product-type-row-editing > td code,
+  tr.product-type-row-editing > td strong {
+    color: #ffffff !important;
+  }
+  tr.product-type-row-editing:hover > td {
+    background: rgba(99, 102, 241, 0.32) !important;
+  }
+</style>

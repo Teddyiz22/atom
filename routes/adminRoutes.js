@@ -56,15 +56,17 @@ router.post('/product-management/:provider/:typeCode/toggle-status/:id', adminAu
 router.post('/product-management/:provider/:typeCode/toggle-featured/:id', adminAuth, adminController.productManagementToggleFeatured);
 router.post('/product-management/:provider/:typeCode/delete/:id', adminAuth, adminController.productManagementDeleteProduct);
 router.post('/product-management/g2bulk/save-price', adminAuth, adminController.saveG2BulkPrice);
+router.post('/product-management/smile/save-rate', adminAuth, adminController.saveSmileCoinRate);
+router.post('/product-management/smile/:typeCode/sync-smile-coins', adminAuth, adminController.syncSmileCoinAmounts);
 
 // Admin Settings (requires auth + layout)
 router.get('/settings', adminAuth, adminLayout, adminController.settings);
 
 // Product Types (requires auth + layout)
 router.get('/product-types', adminAuth, adminLayout, adminController.productTypes);
+router.get('/product-types/edit/:id', adminAuth, adminLayout, adminController.editProductType);
 router.post('/product-types/save', adminAuth, adminController.upsertProductType);
 router.post('/product-types/toggle', adminAuth, adminController.toggleProductTypeStatus);
-router.post('/product-types/delete', adminAuth, adminController.deleteProductType);
 
 // Payment Methods (requires auth + layout)
 router.get('/payment-methods', adminAuth, adminLayout, adminController.paymentMethods);

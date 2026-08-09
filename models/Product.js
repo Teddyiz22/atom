@@ -52,6 +52,11 @@ const Product = sequelize.define('Product', {
     allowNull: true,
     field: 'smile_id_combination'
   },
+  smileCoinAmount: {
+    type: DataTypes.DECIMAL(12, 2),
+    allowNull: true,
+    field: 'smile_coin_amount'
+  },
   region: {
     type: DataTypes.ENUM('b', 'ph'),
     allowNull: false,

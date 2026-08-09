@@ -1,0 +1,51 @@
+Smile One — Magic Chess: Go Go Packages
+Game slug: magicchessgogo
+API: POST /smilecoin/api/productlist
+Fetched at: 2026-08-09T10:39:09.423Z
+Status: 200  Message: success
+Total packages: 20
+
+INDEX | ID       | SMILE COIN (price) | SPU
+------+----------+--------------------+------------------------------------------
+    1 | 23837    |               4.00 | Magic Chess: Go Go BR - diamond_55
+    2 | 23838    |              12.00 | Magic Chess: Go Go BR - diamond_165
+    3 | 23839    |              20.00 | Magic Chess: Go Go BR - diamond_275
+    4 | 23840    |              40.00 | Magic Chess: Go Go BR - diamond_565
+    5 | 23825    |               6.25 | Magic Chess: Go Go BR - diamond_86
+    6 | 23826    |              12.50 | Magic Chess: Go Go BR - diamond_172
+    7 | 23827    |              18.70 | Magic Chess: Go Go BR - diamond_257
+    8 | 23828    |              25.00 | Magic Chess: Go Go BR - diamond_344
+    9 | 23829    |              37.50 | Magic Chess: Go Go BR - diamond_516
+   10 | 23830    |              50.00 | Magic Chess: Go Go BR - diamond_706
+   11 | 23831    |              93.75 | Magic Chess: Go Go BR - diamond_1346
+   12 | 23832    |             125.00 | Magic Chess: Go Go BR - diamond_1825
+   13 | 23833    |             150.00 | Magic Chess: Go Go BR - diamond_2195
+   14 | 23834    |             250.00 | Magic Chess: Go Go BR - diamond_3688
+   15 | 23835    |             375.00 | Magic Chess: Go Go BR - diamond_5532
+   16 | 23836    |             625.00 | Magic Chess: Go Go BR - diamond_9288
+   17 | 25585    |               4.00 | Magic Chess: Go Go BR - Lukas's Battle Bounty
+   18 | 25586    |               4.00 | Magic Chess: Go Go BR - Battle for Discounts
+   19 | 25587    |               4.14 | Magic Chess: Go Go BR - Promotion Bounty
+   20 | 23841    |               9.99 | Magic Chess: Go Go BR - Weekly Diamond Pass
+
+Package list:
+1. [23837] Magic Chess: Go Go BR - diamond_55 — smile_coin=4.00
+2. [23838] Magic Chess: Go Go BR - diamond_165 — smile_coin=12.00
+3. [23839] Magic Chess: Go Go BR - diamond_275 — smile_coin=20.00
+4. [23840] Magic Chess: Go Go BR - diamond_565 — smile_coin=40.00
+5. [23825] Magic Chess: Go Go BR - diamond_86 — smile_coin=6.25
+6. [23826] Magic Chess: Go Go BR - diamond_172 — smile_coin=12.50
+7. [23827] Magic Chess: Go Go BR - diamond_257 — smile_coin=18.70
+8. [23828] Magic Chess: Go Go BR - diamond_344 — smile_coin=25.00
+9. [23829] Magic Chess: Go Go BR - diamond_516 — smile_coin=37.50
+10. [23830] Magic Chess: Go Go BR - diamond_706 — smile_coin=50.00
+11. [23831] Magic Chess: Go Go BR - diamond_1346 — smile_coin=93.75
+12. [23832] Magic Chess: Go Go BR - diamond_1825 — smile_coin=125.00
+13. [23833] Magic Chess: Go Go BR - diamond_2195 — smile_coin=150.00
+14. [23834] Magic Chess: Go Go BR - diamond_3688 — smile_coin=250.00
+15. [23835] Magic Chess: Go Go BR - diamond_5532 — smile_coin=375.00
+16. [23836] Magic Chess: Go Go BR - diamond_9288 — smile_coin=625.00
+17. [25585] Magic Chess: Go Go BR - Lukas's Battle Bounty — smile_coin=4.00
+18. [25586] Magic Chess: Go Go BR - Battle for Discounts — smile_coin=4.00
+19. [25587] Magic Chess: Go Go BR - Promotion Bounty — smile_coin=4.14
+20. [23841] Magic Chess: Go Go BR - Weekly Diamond Pass — smile_coin=9.99

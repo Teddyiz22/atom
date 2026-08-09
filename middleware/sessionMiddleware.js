@@ -26,12 +26,11 @@ const sessionConfig = {
 
 // Middleware to track session activity and implement additional security
 const sessionSecurityMiddleware = (req, res, next) => {
-  // Track user agent and IP for session hijacking detection
   if (req.session) {
     const currentUserAgent = req.get('User-Agent');
     const currentIP = req.ip || req.connection.remoteAddress;
-    
-    // Initialize session security data
+
+    // Initialize / refresh session security metadata (do not destroy session on UA change)
     if (!req.session.security) {
       req.session.security = {
         userAgent: currentUserAgent,
@@ -40,55 +39,38 @@ const sessionSecurityMiddleware = (req, res, next) => {
         lastActivity: new Date()
       };
     } else {
-      // Check for session hijacking attempts
-      if (req.session.security.userAgent !== currentUserAgent) {
-        console.warn('⚠️ Session hijacking attempt detected - User Agent mismatch:', {
-          sessionId: req.sessionID,
-          originalUA: req.session.security.userAgent,
-          currentUA: currentUserAgent,
-          userId: req.user ? req.user.id : 'anonymous'
-        });
-        
-        // Destroy suspicious session
-        req.session.destroy((err) => {
-          if (err) console.error('Error destroying suspicious session:', err);
-        });
-        
-        return res.status(401).json({ 
-          error: 'Session security violation detected. Please log in again.' 
-        });
-      }
-      
-      // Update last activity
+      // Keep metadata fresh; User-Agent can change via DevTools / browser updates
+      req.session.security.userAgent = currentUserAgent || req.session.security.userAgent;
+      req.session.security.ipAddress = currentIP || req.session.security.ipAddress;
       req.session.security.lastActivity = new Date();
     }
-    
+
     // Implement session timeout based on inactivity
     const inactivityTimeout = 2 * 60 * 60 * 1000; // 2 hours
     const lastActivity = new Date(req.session.security.lastActivity);
     const now = new Date();
-    
+
     if (now - lastActivity > inactivityTimeout) {
       console.log('🕐 Session expired due to inactivity:', {
         sessionId: req.sessionID,
         lastActivity: lastActivity,
         userId: req.user ? req.user.id : 'anonymous'
       });
-      
+
       req.session.destroy((err) => {
         if (err) console.error('Error destroying expired session:', err);
       });
-      
-      if (req.xhr || req.headers.accept.indexOf('json') > -1) {
-        return res.status(401).json({ 
-          error: 'Session expired due to inactivity. Please log in again.' 
+
+      const accept = String(req.headers.accept || '');
+      if (req.xhr || accept.indexOf('json') > -1) {
+        return res.status(401).json({
+          error: 'Session expired due to inactivity. Please log in again.'
         });
-      } else {
-        return res.redirect('/users/login?expired=1');
       }
+      return res.redirect('/users/login?expired=1');
     }
   }
-  
+
   next();
 };
 

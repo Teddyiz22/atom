@@ -8,6 +8,7 @@ const UserActivityLog = require('./UserActivityLog');
 const ProductType = require('./ProductType');
 const PaymentMethod = require('./PaymentMethod');
 const SmileSubItem = require('./SmileSubItem');
+const SmileCoinRate = require('./SmileCoinRate');
 const G2BulkItem = require('./G2BulkItem');
 const GamePurchaseTransaction = require('./GamePurchaseTransaction');
 const SystemSetting = require('./SystemSetting');
@@ -23,6 +24,7 @@ const models = {
     UserActivityLog,
     PaymentMethod,
     SmileSubItem,
+    SmileCoinRate,
     G2BulkItem,
     GamePurchaseTransaction,
     SystemSetting

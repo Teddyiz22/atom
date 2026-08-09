@@ -24,6 +24,11 @@ const SmileSubItem = sequelize.define('SmileSubItem', {
     allowNull: false,
     defaultValue: 0
   },
+  smileCoinAmount: {
+    type: DataTypes.DECIMAL(12, 2),
+    allowNull: true,
+    field: 'smile_coin_amount'
+  },
   region: {
     type: DataTypes.ENUM('b', 'ph'),
     allowNull: false,

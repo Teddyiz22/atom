@@ -166,12 +166,12 @@
         <div class="flex items-start gap-4">
                 <div class="relative shrink-0">
                   <div class="w-20 h-20 rounded-2xl overflow-hidden shadow-2xl border-2 border-white/30">
-                    <img src="/images/mcgg.png" alt="Magic Chess: Go Go" class="w-full h-full object-cover">
+                    <img src="/images/mcgg.png" alt="<%= productType?.name || 'Magic Chess: Go Go' %>" class="w-full h-full object-cover">
                   </div>
                 </div>
 
                 <div class="flex-1 min-w-0 flex flex-col gap-1">
-                  <h1 class="text-xl font-bold text-white truncate">Magic Chess: Go Go</h1>
+                  <h1 class="text-xl font-bold text-white truncate"><%= productType?.name || 'Magic Chess: Go Go' %></h1>
 
                   <div class="flex items-center justify-between gap-3">
                     <p class="text-white/70 text-sm">Instant Delivery</p>
@@ -375,6 +375,7 @@
           </div>
         </div>
 
+        <% if (typeof gameCode === 'undefined' || gameCode !== 'mcggphp') { %>
         <!-- First Time Purchase - Double Diamond Packages -->
         <div class="mb-8">
           <div class="bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-lg p-4 mb-4">
@@ -435,7 +436,7 @@
             <% }) %>
           </div>
         </div>
-
+        <% } %>
 
 
         <!-- Selected Package Display -->
@@ -464,7 +465,49 @@
     </div>
   </section>
 
-
+  <!-- MCGG purchase confirmation -->
+  <div id="mcggConfirmModal" class="fixed inset-0 z-[90] hidden items-center justify-center p-4">
+    <button type="button" class="absolute inset-0 bg-[#071226]/85 backdrop-blur-sm" onclick="closeMcggConfirmModal()" aria-label="Close confirmation"></button>
+    <div class="relative w-full max-w-md rounded-2xl border border-white/15 bg-[#101a2d] shadow-2xl overflow-hidden">
+      <div class="border-b border-white/10 px-5 py-4 flex items-start justify-between gap-3">
+        <div>
+          <h3 class="text-lg font-bold text-white">Confirm Purchase</h3>
+          <p class="text-sm text-gray-400 mt-1">Please confirm your order details</p>
+        </div>
+        <button type="button" onclick="closeMcggConfirmModal()" class="h-9 w-9 rounded-lg bg-white/10 text-gray-300 hover:bg-white/20 hover:text-white">X</button>
+      </div>
+      <div class="px-5 py-4 space-y-3 text-sm">
+        <div class="rounded-xl border border-white/10 bg-white/5 p-3">
+          <p class="text-gray-400">Username</p>
+          <p id="mcggConfirmUsername" class="text-white font-semibold mt-0.5">—</p>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div class="rounded-xl border border-white/10 bg-white/5 p-3">
+            <p class="text-gray-400">User ID</p>
+            <p id="mcggConfirmUserId" class="text-white font-mono font-semibold mt-0.5">—</p>
+          </div>
+          <div class="rounded-xl border border-white/10 bg-white/5 p-3">
+            <p class="text-gray-400">Server ID</p>
+            <p id="mcggConfirmServerId" class="text-white font-mono font-semibold mt-0.5">—</p>
+          </div>
+        </div>
+        <div class="rounded-xl border border-white/10 bg-white/5 p-3">
+          <p class="text-gray-400">Product</p>
+          <p id="mcggConfirmPackage" class="text-white font-semibold mt-0.5">—</p>
+        </div>
+        <div class="rounded-xl border border-indigo-400/20 bg-indigo-500/10 p-3">
+          <p class="text-gray-400">Total Amount</p>
+          <p id="mcggConfirmPrice" class="text-theme-300 font-bold text-lg mt-0.5">—</p>
+        </div>
+      </div>
+      <div class="border-t border-white/10 px-5 py-4 flex gap-2 justify-end">
+        <button type="button" onclick="closeMcggConfirmModal()" class="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-gray-100 text-sm font-semibold">Cancel</button>
+        <button type="button" id="mcggConfirmBuyBtn" onclick="confirmMcggPurchase()" class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold">
+          Purchase
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- Shop-specific JavaScript -->
   <script>
@@ -473,6 +516,9 @@
     const VERIFICATION_DEBOUNCE_MS = 300;
     const INITIAL_VERIFY_DELAY_MS = 300;
     let isVerifying = false;
+    const gameCode = '<%= typeof gameCode !== "undefined" && gameCode ? gameCode : "mcgg" %>';
+    const isMcggPhp = gameCode === 'mcggphp';
+    const credentialsKey = isMcggPhp ? 'mcggphp_credentials' : 'mcgg_credentials';
 
     // Auto-verification with debounce
     function setupAutoVerification() {
@@ -560,7 +606,7 @@
           body: JSON.stringify({
             userid: userId,
             zoneid: zoneId,
-            gameCode: 'mcgg'
+            gameCode: gameCode
           })
         })
         .then(function(response) {
@@ -679,7 +725,7 @@
           zoneId: zoneId,
           savedAt: new Date().toISOString()
         };
-        localStorage.setItem('mcgg_credentials', JSON.stringify(credentials));
+        localStorage.setItem(credentialsKey, JSON.stringify(credentials));
         console.log('MCGG credentials saved to localStorage');
       } catch (error) {
         console.error('Failed to save MCGG credentials:', error);
@@ -688,7 +734,7 @@
 
     function loadMCGGCredentials() {
       try {
-        const saved = localStorage.getItem('mcgg_credentials');
+        const saved = localStorage.getItem(credentialsKey);
         if (saved) {
           const credentials = JSON.parse(saved);
           return credentials;
@@ -745,10 +791,43 @@
       return;
       <% } %>
 
-      processOrder(userId, zoneId, productId, currency);
-
-
+      openMcggConfirmModal(userId, zoneId, productId, currency);
     });
+
+    let pendingMcggOrder = null;
+
+    function openMcggConfirmModal(userId, zoneId, productId, currency) {
+      pendingMcggOrder = { userId, zoneId, productId, currency };
+
+      const modal = document.getElementById('mcggConfirmModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+
+      document.getElementById('mcggConfirmUsername').textContent =
+        document.getElementById('username')?.textContent?.trim() || '—';
+      document.getElementById('mcggConfirmUserId').textContent = userId || '—';
+      document.getElementById('mcggConfirmServerId').textContent = zoneId || '—';
+      document.getElementById('mcggConfirmPackage').textContent = selectedPackageData?.name || '—';
+
+      const price = currency === 'MMK' ? selectedPackageData.priceMMK : selectedPackageData.priceTHB;
+      const currencySymbol = currency === 'MMK' ? 'MMK' : '฿';
+      document.getElementById('mcggConfirmPrice').textContent =
+        new Intl.NumberFormat('en-US').format(price) + ' ' + currencySymbol;
+    }
+
+    function closeMcggConfirmModal() {
+      const modal = document.getElementById('mcggConfirmModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      pendingMcggOrder = null;
+    }
+
+    function confirmMcggPurchase() {
+      if (!pendingMcggOrder) return;
+      const { userId, zoneId, productId, currency } = pendingMcggOrder;
+      closeMcggConfirmModal();
+      processOrder(userId, zoneId, productId, currency);
+    }
 
     // Global variable to prevent multiple simultaneous orders
     let isProcessingOrder = false;
