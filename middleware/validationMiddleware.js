@@ -38,10 +38,20 @@ const validateManualGameOrder = [
   body('currency')
     .isIn(['MMK', 'THB'])
     .withMessage('Currency must be MMK or THB'),
+  body('type_code')
+    .optional()
+    .trim()
+    .isLength({ min: 2, max: 32 })
+    .withMessage('Invalid game type'),
   body('player_id')
     .trim()
-    .isLength({ min: 3, max: 64 })
-    .withMessage('Player ID must be 3–64 characters')
+    .isLength({ min: 1, max: 64 })
+    .withMessage('Player / User ID is required'),
+  body('server_id')
+    .optional({ checkFalsy: true })
+    .trim()
+    .isLength({ min: 1, max: 64 })
+    .withMessage('Server ID must be 1–64 characters')
 ];
 
 // Validation rules for contact form

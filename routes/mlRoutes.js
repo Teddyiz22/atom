@@ -102,6 +102,11 @@ router.get('/shop/mcggphp', generateCSRFSecret, generateCSRFToken, (req, res, ne
   req.query.provider = 'smile';
   next();
 }, mlController.shop);
+router.get('/shop/mcggcustom', generateCSRFSecret, generateCSRFToken, (req, res, next) => {
+  req.params.typeCode = 'mcggcustom';
+  req.query.provider = 'manual';
+  next();
+}, mlController.shop);
 router.get('/shop/mlbb_special', generateCSRFSecret, generateCSRFToken, (req, res, next) => {
   req.params.typeCode = 'mlbb_special';
   req.query.provider = 'g2bulk';

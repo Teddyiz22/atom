@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js",
+    "migrate": "node scripts/migrate.js",
     "cleanup": "node scripts/cleanupDatabase.js",
     "test-telegram": "node scripts/testTelegramBot.js",
     "seed:payment-methods": "node scripts/seedPaymentMethods.js"

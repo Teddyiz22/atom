@@ -687,7 +687,7 @@ const mlController = {
       const viewName = (() => {
         const code = normalizedTypeCode;
         if (code === 'hok') return 'ml/shop-hok';
-        if (code === 'mcgg' || code === 'mcggphp') return 'ml/shop-mcgg';
+        if (code === 'mcgg' || code === 'mcggphp' || code === 'mcggcustom') return 'ml/shop-mcgg';
         if (code === 'mlbb_special') return 'ml/shop-mlbb_special';
         if (code === 'ml') return 'ml/shop-ml';
         if (code === 'mlphp') return 'ml/shop-mlphp';
@@ -699,6 +699,7 @@ const mlController = {
       res.render(viewName, {
         title: `Shop - ${productType.name} | ATOM Game Shop`,
         gameCode: normalizedTypeCode,
+        manualMode: provider === 'manual' && normalizedTypeCode === 'mcggcustom',
         description: `Buy ${productType.name} packages instantly with MMK currency at ATOM Game Shop.`,
         keywords: `${productType.name} diamonds, ${productType.name} top up, ATOM Game Shop`,
         user: req.session.user || null,
@@ -2001,7 +2002,9 @@ const mlController = {
     const body = req.body && typeof req.body === 'object' ? req.body : {};
     const productIdNum = Number(body.product_id || body.productId);
     const currency = String(body.currency || 'MMK').trim().toUpperCase();
-    const playerId = String(body.player_id || body.playerId || '').trim();
+    const manualTypeCode = String(body.type_code || body.typeCode || 'pubgcustom').trim().toLowerCase();
+    const playerId = String(body.player_id || body.playerId || body.userid || '').trim();
+    const serverId = String(body.server_id || body.serverId || body.zoneid || '').trim();
 
     if (!req.session?.user) {
       return res.status(401).json({ status: 401, message: 'Please login to place an order' });
@@ -2015,12 +2018,19 @@ const mlController = {
       return res.status(400).json({ status: 400, message: 'Invalid currency' });
     }
 
-    if (!playerId || playerId.length < 3) {
-      return res.status(400).json({ status: 400, message: 'Player ID is required' });
+    if (!playerId) {
+      return res.status(400).json({ status: 400, message: 'Player / User ID is required' });
     }
 
-    const MANUAL_TYPE = 'pubgcustom';
-    if (!(await isProductTypeActiveForCustomer('manual', MANUAL_TYPE))) {
+    if (manualTypeCode === 'mcggcustom' && !serverId) {
+      return res.status(400).json({ status: 400, message: 'Server ID is required' });
+    }
+
+    if (manualTypeCode === 'pubgcustom' && playerId.length < 3) {
+      return res.status(400).json({ status: 400, message: 'Player ID must be at least 3 characters' });
+    }
+
+    if (!(await isProductTypeActiveForCustomer('manual', manualTypeCode))) {
       return res.status(404).json({ status: 404, message: 'This game is not available at the moment.' });
     }
 
@@ -2053,7 +2063,7 @@ const mlController = {
         releaseUserLock(userId);
         return res.status(404).json({ status: 404, message: 'Package not found' });
       }
-      if (pType.provider !== 'manual' || String(pType.typeCode).toLowerCase() !== MANUAL_TYPE) {
+      if (pType.provider !== 'manual' || String(pType.typeCode).toLowerCase() !== manualTypeCode) {
         await dbTx.rollback();
         releaseUserLock(userId);
         return res.status(400).json({ status: 400, message: 'Invalid package for this shop' });
@@ -2099,7 +2109,7 @@ const mlController = {
         });
       }
 
-      const idempotencyKey = `manual:${userId}:${MANUAL_TYPE}:${productIdNum}:${playerId}:${currency}:${Date.now()}:${Math.random().toString(36).slice(2, 8)}`;
+      const idempotencyKey = `manual:${userId}:${manualTypeCode}:${productIdNum}:${playerId}:${serverId || '-'}:${currency}:${Date.now()}:${Math.random().toString(36).slice(2, 8)}`;
 
       const newBalance = currentBalance - totalAmount;
       await wallet.update({ [balanceField]: newBalance }, { transaction: dbTx });
@@ -2110,11 +2120,11 @@ const mlController = {
         user_id: userId,
         user_name: req.session.user.name,
         provider: 'manual',
-        product_type_code: MANUAL_TYPE,
+        product_type_code: manualTypeCode,
         product_id: String(product.id),
         product_name: product.name,
         player_id: playerId,
-        server_id: null,
+        server_id: serverId || null,
         quantity: 1,
         total_amount: totalAmount,
         currency,
@@ -2132,11 +2142,11 @@ const mlController = {
         userEmail: req.session.user.email,
         purchaseId: purchase.id,
         productId: product.id,
+        typeCode: manualTypeCode,
         amount: totalAmount,
         currency
       });
 
-      // Push manual game order to Telegram with approve/reject actions
       try {
         await telegramService.sendManualGameOrderNotification(purchase);
       } catch (notifyError) {
@@ -2442,7 +2452,8 @@ function getGameNameFromTypeCode(typeCode, typeNameMap = null) {
     pubgcustom: 'PUBG Mobile',
     hok: 'Honor of Kings',
     mcgg: 'Magic Chess: Go Go',
-    mcggphp: 'Magic Chess: Go Go Philippines'
+    mcggphp: 'Magic Chess: Go Go Philippines',
+    mcggcustom: 'MCGG Custom'
   };
   return gameMap[key] || (typeCode ? String(typeCode).toUpperCase() : 'Unknown');
 }

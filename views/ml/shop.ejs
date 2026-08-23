@@ -300,6 +300,16 @@
               </a>
               <% } %>
 
+              <% if (hasType('mcggcustom')) { %>
+              <a href="/shop/mcggcustom" class="group">
+                <div
+                  class="relative rounded-2xl p-2 bg-white/10 backdrop-blur-lg border border-white/20 shadow-md shadow-blue-900/25 hover:scale-105 transition-transform duration-300 h-full">
+                  <img src="/images/mcgg.png" class="w-full rounded-xl aspect-square object-cover">
+                  <p class="text-white text-[8px] sm:text-[8px] text-center mt-2 leading-tight font-bold"><%= typeName('mcggcustom', 'MCGG Custom') %></p>
+                </div>
+              </a>
+              <% } %>
+
               <% if (hasType('hok')) { %>
               <a href="/shop/hok" class="group">
                 <div
