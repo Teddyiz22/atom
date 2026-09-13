@@ -346,7 +346,10 @@
                   <td class="py-3 px-4">
                     <div>
                       <p class="text-white font-mono text-sm">
-                        <%= purchase.ml_userid %>(<%= purchase.ml_zoneid %>)
+                        Game ID: <%= purchase.ml_userid || '—' %>
+                      </p>
+                      <p class="text-gray-300 font-mono text-xs mt-0.5">
+                        Server ID: <%= purchase.ml_zoneid || '—' %>
                       </p>
                       <% if (purchase.ml_username) { %>
                       <p class="text-gray-300 text-sm">
@@ -489,9 +492,8 @@
 
               <div class="mb-2">
                 <p class="text-gray-400 text-sm">Account</p>
-                <p class="text-white font-mono">
-                  <%= purchase.ml_userid %>(<%= purchase.ml_zoneid %>)
-                </p>
+                <p class="text-white font-mono text-sm">Game ID: <%= purchase.ml_userid || '—' %></p>
+                <p class="text-gray-300 font-mono text-xs mt-0.5">Server ID: <%= purchase.ml_zoneid || '—' %></p>
                 <% if (purchase.ml_username) { %>
                 <p class="text-gray-300 text-xs"><%= purchase.ml_username %></p>
                 <% } %>

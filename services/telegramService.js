@@ -373,9 +373,10 @@ Your chat ID: \`${chatId}\`
 
 *Game order*
 • Order ID: \`${purchase.id}\`
-• Game Type: ${purchase.product_type_code || 'pubgcustom'}
+• Game Type: ${purchase.product_type_code || 'manual'}
 • Purchase: ${purchase.product_name || '-'}
 • Game ID: ${purchase.player_id || '-'}
+• Server ID: ${purchase.server_id || '-'}
 • Amount: ${Number(purchase.total_amount || 0).toLocaleString()} ${purchase.currency || ''}
 • Date Time: ${new Date(createdAt).toLocaleString('en-US', { timeZone: 'Asia/Yangon' })}
 
@@ -440,6 +441,7 @@ Your chat ID: \`${chatId}\`
 • Purchase: ${purchase.product_name}
 • Game Type: ${purchase.product_type_code}
 • Game ID: ${purchase.player_id || '-'}
+• Server ID: ${purchase.server_id || '-'}
 • Amount: ${Number(purchase.total_amount || 0).toLocaleString()} ${purchase.currency}
 • Approved: ${new Date().toLocaleString('en-US', { timeZone: 'Asia/Yangon' })}
 
@@ -516,6 +518,7 @@ Payment confirmed. Customer deduction remains applied.
 • Purchase: ${purchase.product_name}
 • Game Type: ${purchase.product_type_code}
 • Game ID: ${purchase.player_id || '-'}
+• Server ID: ${purchase.server_id || '-'}
 • Amount: ${refundAmount.toLocaleString()} ${purchase.currency}
 • Rejected: ${new Date().toLocaleString('en-US', { timeZone: 'Asia/Yangon' })}
 

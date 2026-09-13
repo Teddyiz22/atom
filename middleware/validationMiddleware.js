@@ -48,10 +48,17 @@ const validateManualGameOrder = [
     .isLength({ min: 1, max: 64 })
     .withMessage('Player / User ID is required'),
   body('server_id')
-    .optional({ checkFalsy: true })
-    .trim()
-    .isLength({ min: 1, max: 64 })
-    .withMessage('Server ID must be 1–64 characters')
+    .custom((value, { req }) => {
+      const typeCode = String(req.body.type_code || req.body.typeCode || 'pubgcustom').trim().toLowerCase();
+      const serverId = String(value || '').trim();
+      if (typeCode === 'mcggcustom' && !serverId) {
+        throw new Error('Server ID is required');
+      }
+      if (serverId && (serverId.length < 1 || serverId.length > 64)) {
+        throw new Error('Server ID must be 1–64 characters');
+      }
+      return true;
+    })
 ];
 
 // Validation rules for contact form

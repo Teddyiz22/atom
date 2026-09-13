@@ -928,12 +928,16 @@
           if (result.status === 200) {
             showSuccessToast('✅ ' + result.message);
 
-            if (!isManualShop) {
-              // Save MCGG credentials to localStorage on successful purchase
-              saveMCGGCredentials(userId, zoneId);
+            // Save credentials for next purchase (automatic + manual)
+            saveMCGGCredentials(userId, zoneId);
 
+            if (!isManualShop) {
               setTimeout(function() {
                 showSuccessToast('🎮 Diamonds will be delivered to your account');
+              }, 2000);
+            } else {
+              setTimeout(function() {
+                showSuccessToast('⏳ Waiting for admin approval');
               }, 2000);
             }
 
