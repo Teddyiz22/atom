@@ -34,6 +34,10 @@ GamePurchaseTransaction.belongsTo(Product, { foreignKey: 'product_id', targetKey
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Behind nginx/Cloudflare: trust X-Forwarded-For so express-rate-limit works.
+// Without this: ERR_ERL_UNEXPECTED_X_FORWARDED_FOR on production.
+app.set('trust proxy', 1);
+
 // Import routes
 const mlRoutes = require('./routes/mlRoutes');
 const userRoutes = require('./routes/userRoutes');
