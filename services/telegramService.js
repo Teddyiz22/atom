@@ -1,3 +1,5 @@
+const fs = require('fs');
+const path = require('path');
 const TelegramBot = require('node-telegram-bot-api');
 const Transaction = require('../models/Transaction');
 const GamePurchaseTransaction = require('../models/GamePurchaseTransaction');
@@ -12,6 +14,7 @@ class TelegramService {
     this.token = process.env.TELEGRAM_BOT_TOKEN;
     this.pendingRejections = new Map(); // Initialize the Map for pending rejections
     this.enabled = false;
+    this._reclaiming = false;
 
     if (this.token) {
       this.bot = new TelegramBot(this.token, { polling: false });
@@ -36,8 +39,44 @@ class TelegramService {
         return;
       }
 
+      // Another process (often production PM2) stole the getUpdates stream.
+      // Buttons then show "no reaction" until we reclaim polling.
+      if (statusCode === 409 || message.includes('409') || message.includes('Conflict')) {
+        console.error(
+          '❌ Telegram 409 Conflict: another process is polling this bot token. Reclaiming...'
+        );
+        await this.reclaimPolling();
+        return;
+      }
+
       console.error('Telegram polling error:', error);
     });
+  }
+
+  async reclaimPolling() {
+    if (!this.bot || this._reclaiming) {
+      return;
+    }
+
+    this._reclaiming = true;
+    try {
+      try {
+        await this.bot.stopPolling();
+      } catch (_) {
+        // ignore
+      }
+
+      await this.bot.deleteWebHook({ drop_pending_updates: false });
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      await this.bot.startPolling({ restart: true });
+      this.enabled = true;
+      console.log('✅ Telegram polling reclaimed after 409 conflict.');
+    } catch (error) {
+      console.error('❌ Failed to reclaim Telegram polling:', error?.message || error);
+      this.enabled = false;
+    } finally {
+      this._reclaiming = false;
+    }
   }
 
   async initializeBot() {
@@ -56,8 +95,12 @@ class TelegramService {
       if (msg.includes('409') || msg.includes('Conflict')) {
         console.error(
           '❌ Telegram bot: another process is already receiving updates for this token (409). ' +
-            'Stop duplicate PM2 workers / other servers using the same TELEGRAM_BOT_TOKEN.'
+            'Trying to reclaim polling for local Approve/Reject buttons...'
         );
+        await this.reclaimPolling();
+        if (this.enabled) {
+          return;
+        }
       }
       console.error('❌ Telegram bot initialization failed:', msg);
       await this.disableBot();
@@ -169,10 +212,14 @@ Your chat ID: \`${chatId}\`
       const msg = callbackQuery.message;
       const chatId = msg.chat.id;
 
+      console.log(`📲 Telegram button pressed: ${action} (chat ${chatId})`);
+
       try {
         // Telegram expects answerCallbackQuery within ~10s or the client stays "loading".
         // Approve/reject work can exceed that, so acknowledge immediately.
-        await this.bot.answerCallbackQuery(callbackQuery.id).catch(() => {});
+        await this.bot.answerCallbackQuery(callbackQuery.id, {
+          text: 'Processing...'
+        }).catch(() => {});
 
         // Keep wallet top-up and manual order actions strictly isolated.
         if (/^manual_approve_\d+$/.test(action)) {
@@ -200,6 +247,8 @@ Your chat ID: \`${chatId}\`
           // Backward compatibility for old manual buttons.
           const purchaseId = action.replace('reject_manual_', '');
           await this.handleManualOrderRejection(purchaseId, chatId, msg.message_id);
+        } else {
+          console.log(`⚠️ Unknown Telegram callback action: ${action}`);
         }
       } catch (error) {
         console.error('Error handling callback query:', error);
@@ -323,25 +372,33 @@ Your chat ID: \`${chatId}\`
         }
       );
 
-      // Send screenshot if available
+      // Send screenshot if available (local file — Telegram cannot fetch localhost URLs)
       if (transaction.screenshot) {
-        const screenshotPath = `${process.env.APP_URL || 'http://localhost:3000'}/uploads/${transaction.screenshot}`;
+        const localPath = path.join(__dirname, '..', 'public', 'uploads', transaction.screenshot);
+        const publicUrl = `${process.env.APP_URL || 'http://localhost:3600'}/uploads/${transaction.screenshot}`;
 
         try {
-          await this.bot.sendPhoto(
-            this.adminChatId,
-            screenshotPath,
-            {
-              caption: `💳 Payment Screenshot for Transaction #${transaction.id}`,
-              reply_to_message_id: sentMessage.message_id
-            }
-          );
+          if (fs.existsSync(localPath)) {
+            await this.bot.sendPhoto(
+              this.adminChatId,
+              fs.createReadStream(localPath),
+              {
+                caption: `💳 Payment Screenshot for Transaction #${transaction.id}`,
+                reply_to_message_id: sentMessage.message_id
+              }
+            );
+          } else {
+            await this.bot.sendMessage(
+              this.adminChatId,
+              `📷 Screenshot file missing locally.\n${publicUrl}`,
+              { reply_to_message_id: sentMessage.message_id }
+            );
+          }
         } catch (photoError) {
-          console.error('Error sending screenshot:', photoError);
-          // Send a message about the screenshot error
+          console.error('Error sending screenshot:', photoError?.message || photoError);
           await this.bot.sendMessage(
             this.adminChatId,
-            `📷 Screenshot available at: ${screenshotPath}`,
+            `📷 Screenshot available at: ${publicUrl}`,
             { reply_to_message_id: sentMessage.message_id }
           );
         }
@@ -578,24 +635,8 @@ Customer refunded successfully.
         await wallet.update({ [balanceField]: newBalance });
       }
 
-      // Send approval email to user
-      if (emailService && transaction.User) {
-        try {
-          console.log(`📧 Sending approval email to ${transaction.User.email}`);
-          await emailService.sendApprovalEmail(
-            transaction.User.email,
-            transaction.User.name,
-            transaction
-          );
-          console.log(`✅ Approval email sent successfully to ${transaction.User.email}`);
-        } catch (emailError) {
-          console.error('❌ Error sending approval email:', emailError);
-        }
-      } else {
-        console.log('⚠️ Email service not available or user not found');
-      }
-
-      // Update Telegram message
+      // Update Telegram message FIRST so Approve feels instant.
+      // Do not wait for SMTP — Gmail auth failures previously made buttons look dead.
       const updateMessage = `
 ✅ *APPROVED* - Transaction #${transactionId}
 
@@ -603,8 +644,6 @@ Customer refunded successfully.
 👤 User: ${transaction.User.name}
 📧 Email: ${transaction.User.email}
 ⏰ Approved: ${new Date().toLocaleString('en-US', { timeZone: 'Asia/Yangon' })}
-
-✉️ Approval email sent to user.
       `;
 
       await this.bot.editMessageText(
@@ -617,6 +656,19 @@ Customer refunded successfully.
       );
 
       console.log(`✅ Transaction #${transactionId} approved via Telegram`);
+
+      // Send approval email in background (non-blocking)
+      if (emailService && transaction.User) {
+        emailService.sendApprovalEmail(
+          transaction.User.email,
+          transaction.User.name,
+          transaction
+        ).then(() => {
+          console.log(`✅ Approval email sent successfully to ${transaction.User.email}`);
+        }).catch((emailError) => {
+          console.error('❌ Error sending approval email:', emailError?.message || emailError);
+        });
+      }
     } catch (error) {
       console.error('Error handling approval:', error);
       await this.bot.editMessageText(
@@ -693,25 +745,7 @@ Customer refunded successfully.
 
       console.log(`✅ Transaction #${transactionId} status updated to rejected`);
 
-      // Send rejection email to user
-      if (emailService && transaction.User) {
-        try {
-          console.log(`📧 Sending rejection email to ${transaction.User.email}`);
-          await emailService.sendRejectionEmail(
-            transaction.User.email,
-            transaction.User.name,
-            transaction,
-            cleanReason
-          );
-          console.log(`✅ Rejection email sent successfully to ${transaction.User.email}`);
-        } catch (emailError) {
-          console.error('❌ Error sending rejection email:', emailError);
-        }
-      } else {
-        console.log('⚠️ Email service not available or user not found');
-      }
-
-      // Update Telegram message
+      // Update Telegram message FIRST (don't wait for SMTP)
       const updateMessage = `
 ❌ *REJECTED* - Transaction #${transactionId}
 
@@ -720,8 +754,6 @@ Customer refunded successfully.
 📧 Email: ${transaction.User ? transaction.User.email : 'Unknown'}
 📝 Reason: ${cleanReason}
 ⏰ Rejected: ${new Date().toLocaleString('en-US', { timeZone: 'Asia/Yangon' })}
-
-✉️ Rejection email sent to user.
       `;
 
       await this.bot.editMessageText(
@@ -734,6 +766,20 @@ Customer refunded successfully.
       );
 
       console.log(`✅ Transaction #${transactionId} rejected successfully via Telegram`);
+
+      // Send rejection email in background (non-blocking)
+      if (emailService && transaction.User) {
+        emailService.sendRejectionEmail(
+          transaction.User.email,
+          transaction.User.name,
+          transaction,
+          cleanReason
+        ).then(() => {
+          console.log(`✅ Rejection email sent successfully to ${transaction.User.email}`);
+        }).catch((emailError) => {
+          console.error('❌ Error sending rejection email:', emailError?.message || emailError);
+        });
+      }
     } catch (error) {
       console.error('❌ Error handling rejection:', error);
       try {

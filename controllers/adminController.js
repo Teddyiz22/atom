@@ -2685,25 +2685,22 @@ const adminController = {
         await Wallet.create(newWalletData);
       }
 
-      // Send approval email notification
+      // Send approval email in background (do not block approve response)
       if (transaction.User && transaction.User.email) {
-        console.log(`🔔 Attempting to send approval email to: ${transaction.User.email}`);
-        console.log(`📋 Transaction data for email: ID=${transaction.id}, Amount=${transaction.amount}, Currency=${transaction.currency}`);
-        try {
-          const emailResult = await emailService.sendApprovalEmail(
-            transaction.User.email,
-            transaction.User.name,
-            transaction
-          );
+        console.log(`🔔 Sending approval email (background) to: ${transaction.User.email}`);
+        emailService.sendApprovalEmail(
+          transaction.User.email,
+          transaction.User.name,
+          transaction
+        ).then((emailResult) => {
           if (emailResult.success) {
-            console.log(`✅ Approval email sent successfully to ${transaction.User.email} (Message ID: ${emailResult.messageId})`);
+            console.log(`✅ Approval email sent to ${transaction.User.email} (Message ID: ${emailResult.messageId})`);
           } else {
             console.error(`❌ Failed to send approval email to ${transaction.User.email}:`, emailResult.error);
           }
-        } catch (emailError) {
-          console.error('❌ Exception while sending approval email:', emailError);
-          // Don't fail the transaction approval if email fails
-        }
+        }).catch((emailError) => {
+          console.error('❌ Exception while sending approval email:', emailError?.message || emailError);
+        });
       } else {
         console.warn(`⚠️ Cannot send approval email - Missing user or email data:`, {
           hasUser: !!transaction.User,
@@ -2754,26 +2751,23 @@ const adminController = {
         reason: rejectionReason
       });
 
-      // Send rejection email notification
+      // Send rejection email in background (do not block reject response)
       if (transaction.User && transaction.User.email) {
-        console.log(`🔔 Attempting to send rejection email to: ${transaction.User.email}`);
-        console.log(`📋 Transaction data for email: ID=${transaction.id}, Amount=${transaction.amount}, Currency=${transaction.currency}, Reason=${rejectionReason}`);
-        try {
-          const emailResult = await emailService.sendRejectionEmail(
-            transaction.User.email,
-            transaction.User.name,
-            transaction,
-            rejectionReason
-          );
+        console.log(`🔔 Sending rejection email (background) to: ${transaction.User.email}`);
+        emailService.sendRejectionEmail(
+          transaction.User.email,
+          transaction.User.name,
+          transaction,
+          rejectionReason
+        ).then((emailResult) => {
           if (emailResult.success) {
-            console.log(`✅ Rejection email sent successfully to ${transaction.User.email} (Message ID: ${emailResult.messageId})`);
+            console.log(`✅ Rejection email sent to ${transaction.User.email} (Message ID: ${emailResult.messageId})`);
           } else {
             console.error(`❌ Failed to send rejection email to ${transaction.User.email}:`, emailResult.error);
           }
-        } catch (emailError) {
-          console.error('❌ Exception while sending rejection email:', emailError);
-          // Don't fail the transaction rejection if email fails
-        }
+        }).catch((emailError) => {
+          console.error('❌ Exception while sending rejection email:', emailError?.message || emailError);
+        });
       } else {
         console.warn(`⚠️ Cannot send rejection email - Missing user or email data:`, {
           hasUser: !!transaction.User,
