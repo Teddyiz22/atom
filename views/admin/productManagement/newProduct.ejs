@@ -6,6 +6,7 @@
     : `/admin/product-management/${encodeURIComponent(provider)}/${encodeURIComponent(productType.typeCode)}/new`;
   const f = (typeof form !== 'undefined' && form) ? form : {};
   const v = (key, fallback = '') => (f[key] !== undefined ? f[key] : fallback);
+  const isMcggCustomManual = provider === 'manual' && String(productType.typeCode || '').toLowerCase() === 'mcggcustom';
 %>
 
 <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -58,10 +59,14 @@
           </div>
         <% } %>
 
+        <% if (!isMcggCustomManual) { %>
         <div>
           <label for="diamond_amount" class="block text-sm font-semibold text-gray-200 mb-2"><%= (provider === 'smile' || provider === 'manual') ? 'Amount / display value' : 'USD Amount' %></label>
           <input type="number" id="diamond_amount" name="diamond_amount" min="0" step="<%= (provider === 'smile' || provider === 'manual') ? '0.01' : '1' %>" required value="<%= v('diamond_amount') %>" class="w-full rounded-lg bg-white/5 border border-white/10 px-4 py-2 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500/50">
         </div>
+        <% } else { %>
+          <input type="hidden" name="diamond_amount" value="<%= v('diamond_amount', '0') %>">
+        <% } %>
 
         <!-- Price inputs for all providers -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">

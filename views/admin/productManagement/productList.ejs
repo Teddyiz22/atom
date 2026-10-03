@@ -24,6 +24,7 @@
   <%
     const typeCodeLower = String(productType?.typeCode || '').trim().toLowerCase();
     const isG2bulkVirtual = provider === 'g2bulk';
+    const isMcggCustomManual = provider === 'manual' && typeCodeLower === 'mcggcustom';
     const fmt = (n) => {
       const v = Number(n);
       if (!Number.isFinite(v)) return '-';
@@ -117,7 +118,9 @@
             <% } else { %>
               <th style="width: 90px;">ID</th>
               <th>Name</th>
-              <th style="width: 140px;"><%= provider === 'smile' ? 'Amount' : 'Amount' %></th>
+              <% if (!isMcggCustomManual) { %>
+                <th style="width: 140px;"><%= provider === 'smile' ? 'Amount' : 'Amount' %></th>
+              <% } %>
               <% if (provider === 'smile' || provider === 'manual') { %>
                 <th style="width: 140px;">Region</th>
               <% } %>
@@ -138,7 +141,7 @@
         <tbody>
           <% if (!products || products.length === 0) { %>
             <tr>
-              <td colspan="<%= isG2bulkVirtual ? 8 : (provider === 'smile' ? 11 : (provider === 'manual' ? 9 : 8)) %>" class="text-center text-muted">No products yet.</td>
+              <td colspan="<%= isG2bulkVirtual ? 8 : (provider === 'smile' ? 11 : (isMcggCustomManual ? 8 : (provider === 'manual' ? 9 : 8))) %>" class="text-center text-muted">No products yet.</td>
             </tr>
           <% } else { %>
             <% products.forEach(p => { %>
@@ -195,7 +198,9 @@
                 <% } else { %>
                   <td><%= p.id %></td>
                   <td><%= p.name %></td>
-                  <td><%= (provider === 'smile' || provider === 'manual') ? fmt(p.diamond_amount) : p.diamond_amount %></td>
+                  <% if (!isMcggCustomManual) { %>
+                    <td><%= (provider === 'smile' || provider === 'manual') ? fmt(p.diamond_amount) : p.diamond_amount %></td>
+                  <% } %>
                   <% if (provider === 'smile' || provider === 'manual') { %>
                     <td><span class="uppercase text-xs font-bold px-2 py-1 rounded bg-white/10 text-gray-300"><%= p.region === 'ph' ? 'Philippines' : 'Brazil' %></span></td>
                   <% } %>

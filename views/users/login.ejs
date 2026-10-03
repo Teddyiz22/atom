@@ -126,38 +126,62 @@
         <!-- Register Card -->
         <div id="registerCard" class="hidden">
           <div class="text-center mb-8">
+            <div class="w-20 h-20 bg-gradient-to-br from-theme-400 to-theme-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+              </svg>
+            </div>
             <h2 class="text-3xl font-bold text-white mb-2">Create Account</h2>
-            <p class="text-white/80 text-sm">acc ဖန်တီးရန် telegram လေးနှိပ်ပါ</p>
+            <p class="text-white/80 text-sm">Create your account and start gaming</p>
           </div>
 
-          <div class="space-y-6">
-            <a href="https://t.me/atomgameshop" target="_blank" rel="noopener noreferrer"
-              class="w-full flex items-center justify-center bg-white/10 border border-white/30 text-white py-4 px-4 rounded-xl hover:bg-white/20 transition-all duration-300">
-              <span class="w-14 h-14 rounded-full bg-[#229ED9] flex items-center justify-center mr-4 shadow-lg">
-                <svg class="w-8 h-8 text-white" viewBox="0 0 240 240" aria-hidden="true">
-                  <path fill="currentColor" d="M120 0C53.726 0 0 53.726 0 120c0 66.274 53.726 120 120 120s120-53.726 120-120C240 53.726 186.274 0 120 0zm58.03 81.33-19.71 92.92c-1.49 6.57-5.43 8.18-10.99 5.09l-30.4-22.41-14.66 14.11c-1.62 1.62-2.98 2.98-6.1 2.98l2.18-30.93 56.34-50.88c2.45-2.18-.53-3.4-3.8-1.22l-69.64 43.86-29.98-9.36c-6.52-2.07-6.66-6.52 1.36-9.65l117.16-45.17c5.44-2.07 10.21 1.22 8.24 9.66z"/>
-                </svg>
-              </span>
-              <span class="text-lg font-semibold">Telegram</span>
-            </a>
+          <form action="/users/register" method="POST" class="space-y-5" id="registerForm">
+            <div>
+              <label for="regFullName" class="block text-white/90 text-sm font-medium mb-2"><%= __('auth.full_name') %></label>
+              <input type="text" id="regFullName" name="fullName" required class="w-full px-4 py-3 bg-white/10 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-theme-400 focus:border-transparent transition-all duration-300" placeholder="<%= __('auth.full_name') %>">
+              <div id="regFullNameError" class="error-message text-red-300 text-sm mt-1 hidden"></div>
+            </div>
 
-            <div class="text-center text-white/60">or</div>
+            <div>
+              <label for="regEmail" class="block text-white/90 text-sm font-medium mb-2"><%= __('auth.email') %></label>
+              <input type="email" id="regEmail" name="email" required class="w-full px-4 py-3 bg-white/10 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-theme-400 focus:border-transparent transition-all duration-300" placeholder="<%= __('auth.email') %>">
+              <div id="regEmailError" class="error-message text-red-300 text-sm mt-1 hidden"></div>
+            </div>
 
-            <a href="https://m.me/atomgameshop" target="_blank" rel="noopener noreferrer"
-              class="w-full flex items-center justify-center bg-white/10 border border-white/30 text-white py-4 px-4 rounded-xl hover:bg-white/20 transition-all duration-300">
-              <span class="w-14 h-14 rounded-full bg-gradient-to-br from-[#00B2FF] via-[#006AFF] to-[#A633FF] flex items-center justify-center mr-4 shadow-lg">
-                <svg class="w-8 h-8 text-white" viewBox="0 0 48 48" aria-hidden="true">
-                  <path fill="currentColor" d="M24 4C13.2 4 4.5 12.1 4.5 22.1c0 5.7 2.9 10.8 7.5 14.1V44l7.2-4c1.5.4 3.1.6 4.8.6 10.8 0 19.5-8.1 19.5-18.1C43.5 12.1 34.8 4 24 4zm2.4 24.4-5-5.3-9.7 5.3 10.7-11.4 5 5.3 9.7-5.3-10.7 11.4z"/>
-                </svg>
-              </span>
-              <span class="text-lg font-semibold">Messenger</span>
-            </a>
+            <div>
+              <label for="regPhoneNumber" class="block text-white/90 text-sm font-medium mb-2"><%= __('auth.phone_number') %></label>
+              <input type="tel" id="regPhoneNumber" name="phoneNumber" required class="w-full px-4 py-3 bg-white/10 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-theme-400 focus:border-transparent transition-all duration-300" placeholder="<%= __('auth.phone_number') %>">
+              <div id="regPhoneNumberError" class="error-message text-red-300 text-sm mt-1 hidden"></div>
+            </div>
+
+            <div>
+              <label for="regPassword" class="block text-white/90 text-sm font-medium mb-2"><%= __('auth.password') %></label>
+              <input type="password" id="regPassword" name="password" required class="w-full px-4 py-3 bg-white/10 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-theme-400 focus:border-transparent transition-all duration-300" placeholder="<%= __('auth.password') %>">
+              <div id="regPasswordError" class="error-message text-red-300 text-sm mt-1 hidden"></div>
+              <div class="text-white/60 text-xs mt-1">Password must be at least 6 characters long</div>
+            </div>
+
+            <div>
+              <label for="regConfirmPassword" class="block text-white/90 text-sm font-medium mb-2"><%= __('auth.confirm_password') %></label>
+              <input type="password" id="regConfirmPassword" name="confirmPassword" required class="w-full px-4 py-3 bg-white/10 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-theme-400 focus:border-transparent transition-all duration-300" placeholder="<%= __('auth.confirm_password') %>">
+              <div id="regConfirmPasswordError" class="error-message text-red-300 text-sm mt-1 hidden"></div>
+            </div>
+
+            <div class="flex items-start">
+              <input type="checkbox" id="regTerms" name="terms" required class="w-4 h-4 mt-1 text-theme-400 bg-white/10 border-white/30 rounded focus:ring-theme-400 focus:ring-2">
+              <label for="regTerms" class="ml-3 text-white/80 text-sm leading-relaxed"><%= __('auth.terms_agree') %></label>
+            </div>
+            <div id="regTermsError" class="error-message text-red-300 text-sm mt-1 hidden"></div>
+
+            <button type="submit" id="registerBtn" class="w-full bg-gradient-to-r from-theme-500 to-theme-600 text-white font-bold py-3 px-4 rounded-lg hover:from-theme-600 hover:to-theme-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
+              <%= __('auth.register_button') %>
+            </button>
 
             <button type="button" id="backToLoginBtn"
               class="w-full bg-white/10 border border-white/30 text-white font-semibold py-3 px-4 rounded-lg hover:bg-white/20 transition-all duration-300">
               Back to login
             </button>
-          </div>
+          </form>
         </div>
       </div>
     </div>
@@ -438,12 +462,13 @@
       }
     }
 
-    // Register card toggle
+    // Register card toggle + validation
     document.addEventListener('DOMContentLoaded', function() {
       const loginCard = document.getElementById('loginCard');
       const registerCard = document.getElementById('registerCard');
       const showRegisterBtn = document.getElementById('showRegisterBtn');
       const backToLoginBtn = document.getElementById('backToLoginBtn');
+      const registerForm = document.getElementById('registerForm');
 
       function showRegister() {
         if (loginCard) loginCard.classList.add('hidden');
@@ -455,8 +480,85 @@
         if (loginCard) loginCard.classList.remove('hidden');
       }
 
+      function clearRegError(id) {
+        const input = document.getElementById(id);
+        const errorDiv = document.getElementById(id + 'Error');
+        if (input) {
+          input.classList.remove('border-red-500', 'bg-red-500/10');
+          input.classList.add('border-white/30', 'bg-white/10');
+        }
+        if (errorDiv) {
+          errorDiv.classList.add('hidden');
+          errorDiv.textContent = '';
+        }
+      }
+
+      function showRegError(id, message) {
+        const input = document.getElementById(id);
+        const errorDiv = document.getElementById(id + 'Error');
+        if (input) {
+          input.classList.remove('border-white/30', 'bg-white/10');
+          input.classList.add('border-red-500', 'bg-red-500/10');
+        }
+        if (errorDiv) {
+          errorDiv.classList.remove('hidden');
+          errorDiv.textContent = message;
+        }
+      }
+
+      function validateRegisterForm(event) {
+        event.preventDefault();
+        ['regFullName', 'regEmail', 'regPhoneNumber', 'regPassword', 'regConfirmPassword', 'regTerms'].forEach(clearRegError);
+
+        const fullName = document.getElementById('regFullName').value.trim();
+        const email = document.getElementById('regEmail').value.trim();
+        const phone = document.getElementById('regPhoneNumber').value.trim();
+        const password = document.getElementById('regPassword').value;
+        const confirmPassword = document.getElementById('regConfirmPassword').value;
+        const terms = document.getElementById('regTerms').checked;
+        let firstError = '';
+
+        if (!fullName || fullName.length < 2) {
+          showRegError('regFullName', 'Full name must be at least 2 characters');
+          firstError = firstError || 'Please enter your full name';
+        }
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          showRegError('regEmail', 'Please enter a valid email address');
+          firstError = firstError || 'Please enter a valid email address';
+        }
+        if (!phone || !/^[\+]?[0-9\s\-\(\)]{10,}$/.test(phone)) {
+          showRegError('regPhoneNumber', 'Please enter a valid phone number');
+          firstError = firstError || 'Please enter a valid phone number';
+        }
+        if (!password || password.length < 6) {
+          showRegError('regPassword', 'Password must be at least 6 characters long');
+          firstError = firstError || 'Password must be at least 6 characters long';
+        }
+        if (!confirmPassword || password !== confirmPassword) {
+          showRegError('regConfirmPassword', 'Passwords do not match');
+          firstError = firstError || 'Passwords do not match';
+        }
+        if (!terms) {
+          showRegError('regTerms', 'You must agree to the Terms of Service');
+          firstError = firstError || 'Please agree to the Terms of Service';
+        }
+
+        if (firstError) {
+          showErrorToast(firstError);
+          return false;
+        }
+
+        const registerBtn = document.getElementById('registerBtn');
+        if (registerBtn) {
+          registerBtn.textContent = 'Creating Account...';
+          registerBtn.disabled = true;
+        }
+        registerForm.submit();
+      }
+
       if (showRegisterBtn) showRegisterBtn.addEventListener('click', showRegister);
       if (backToLoginBtn) backToLoginBtn.addEventListener('click', showLogin);
+      if (registerForm) registerForm.addEventListener('submit', validateRegisterForm);
     });
   </script>
 

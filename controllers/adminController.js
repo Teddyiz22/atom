@@ -1093,10 +1093,13 @@ const adminController = {
       }
 
       const name = String(req.body.name || '').trim();
+      const isMcggCustomManual = provider === 'manual' && String(typeCode || '').toLowerCase() === 'mcggcustom';
       const diamondAmountRaw = String(req.body.diamond_amount || '').trim();
-      const diamondAmount = (provider === 'smile' || provider === 'manual')
-        ? Number.parseFloat(diamondAmountRaw)
-        : Number.parseInt(diamondAmountRaw, 10);
+      const diamondAmount = isMcggCustomManual && diamondAmountRaw === ''
+        ? 0
+        : ((provider === 'smile' || provider === 'manual')
+          ? Number.parseFloat(diamondAmountRaw)
+          : Number.parseInt(diamondAmountRaw, 10));
       const sortOrder = Number.parseInt(String(req.body.sort_order || '0').trim(), 10);
       const status = String(req.body.status || 'active').trim().toLowerCase();
 
@@ -1120,7 +1123,7 @@ const adminController = {
         });
       }
 
-      if (!Number.isFinite(diamondAmount) || Number.isNaN(diamondAmount) || diamondAmount < 0) {
+      if (!isMcggCustomManual && (!Number.isFinite(diamondAmount) || Number.isNaN(diamondAmount) || diamondAmount < 0)) {
         return res.status(400).render('admin/productManagement/newProduct', {
           title: `Add Product - ${provider} - ${productType.name} - ATOM Game Shop`,
           user: req.session.user,
@@ -1493,10 +1496,13 @@ const adminController = {
       }
 
       const name = String(req.body.name || '').trim();
+      const isMcggCustomManual = provider === 'manual' && String(typeCode || '').toLowerCase() === 'mcggcustom';
       const diamondAmountRaw = String(req.body.diamond_amount || '').trim();
-      const diamondAmount = (provider === 'smile' || provider === 'manual')
-        ? Number.parseFloat(diamondAmountRaw)
-        : Number.parseInt(diamondAmountRaw, 10);
+      const diamondAmount = isMcggCustomManual && diamondAmountRaw === ''
+        ? Number(product.diamond_amount || 0)
+        : ((provider === 'smile' || provider === 'manual')
+          ? Number.parseFloat(diamondAmountRaw)
+          : Number.parseInt(diamondAmountRaw, 10));
       const sortOrder = Number.parseInt(String(req.body.sort_order || '0').trim(), 10);
       const status = String(req.body.status || 'active').trim().toLowerCase();
       const region = (provider === 'smile' || provider === 'manual') ? String(req.body.region || 'b').trim().toLowerCase() : 'b';
@@ -1524,7 +1530,7 @@ const adminController = {
         return renderError('Name is required.');
       }
 
-      if (!Number.isFinite(diamondAmount) || Number.isNaN(diamondAmount) || diamondAmount < 0) {
+      if (!isMcggCustomManual && (!Number.isFinite(diamondAmount) || Number.isNaN(diamondAmount) || diamondAmount < 0)) {
         return renderError((provider === 'smile' || provider === 'manual')
           ? 'Amount must be a valid non-negative number.'
           : 'Amount must be a valid non-negative integer.');
