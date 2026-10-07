@@ -8,9 +8,49 @@ const PaymentMethod = require('../models/PaymentMethod');
 const SmileSubItem = require('../models/SmileSubItem');
 const SmileCoinRate = require('../models/SmileCoinRate');
 const G2BulkItem = require('../models/G2BulkItem');
+const ProductCategory = require('../models/ProductCategory');
 const GamePurchaseTransaction = require('../models/GamePurchaseTransaction');
 const emailService = require('../services/emailService');
 const { getMaintenanceStatus, setMaintenanceStatus } = require('../middleware/maintenanceMiddleware');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+
+const productImageStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const uploadDir = path.join(__dirname, '../public/uploads/products');
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    const ext = path.extname(file.originalname || '').toLowerCase() || '.png';
+    cb(null, `g2bulk-${uniqueSuffix}${ext}`);
+  }
+});
+
+const uploadG2BulkProductImage = multer({
+  storage: productImageStorage,
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype && file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed'), false);
+    }
+  }
+}).single('image');
+
+function slugifyCategory(name) {
+  return String(name || '')
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 64);
+}
 
 const MMK_OFFSET_MINUTES = 390;
 
@@ -99,10 +139,20 @@ function normalizeTypeCode(typeCode) {
   return String(typeCode || '').trim().toLowerCase();
 }
 
-function formatG2bulkProductDisplayName(name, fallbackId) {
+function formatG2bulkProductDisplayName(name, fallbackId, typeCode) {
   const raw = String(name || fallbackId || '').trim();
   if (!raw) return String(fallbackId || '');
-  if (/^\d+$/.test(raw)) return `UC ${raw}`;
+
+  // Strip accidental UC prefix from non-PUBG games (legacy admin display bug)
+  const code = normalizeTypeCode(typeCode);
+  const ucStripped = raw.replace(/^UC\s+/i, '');
+  const numericSource = /^\d+$/.test(ucStripped) ? ucStripped : raw;
+
+  if (/^\d+$/.test(numericSource)) {
+    // Only PUBG Mobile UC packs use the "UC" label
+    if (code === 'pubgm') return `UC ${numericSource}`;
+    return numericSource;
+  }
   return raw;
 }
 
@@ -1257,12 +1307,19 @@ const adminController = {
       }
 
       let products = [];
+      let categories = [];
       if (isG2bulk) {
+        categories = await ProductCategory.findAll({
+          where: { productTypeId: productType.id },
+          order: [['sort_order', 'ASC'], ['id', 'ASC']]
+        });
+
         // Fetch existing G2BulkItem mappings for this game to check fixed prices/status.
         const g2bulkItems = await G2BulkItem.findAll({
           include: [{ model: Product, required: true, where: { productTypeId: productType.id } }]
         });
         const g2bulkItemMap = new Map(g2bulkItems.map(i => [String(i.g2bulkProductId), i]));
+        const categoryById = new Map(categories.map((c) => [Number(c.id), c]));
 
         // Hardcoded rates as ExchangeRate model is removed
         const usdToMmk = 5300;
@@ -1282,6 +1339,7 @@ const adminController = {
             provider,
             productType,
             products: [],
+            categories,
             success: false,
             error: 'Missing G2BULK API configuration.'
           });
@@ -1318,6 +1376,7 @@ const adminController = {
             provider,
             productType,
             products: [],
+            categories,
             success: false,
             error: `Failed to load products from G2BULK: ${error.message}`
           });
@@ -1335,6 +1394,9 @@ const adminController = {
           let isFixedPrice = false;
           let fixedProductId = null;
           let isActive = false;
+          let categoryId = null;
+          let categoryTitle = null;
+          let imagePath = null;
 
           const g2Item = g2bulkItemMap.get(String(id));
           if (g2Item && g2Item.Product) {
@@ -1343,6 +1405,10 @@ const adminController = {
             isFixedPrice = true;
             fixedProductId = g2Item.Product.id;
             isActive = Boolean(g2Item.Product.is_active) && g2Item.status === 'active';
+            categoryId = g2Item.Product.categoryId || null;
+            const cat = categoryId ? categoryById.get(Number(categoryId)) : null;
+            categoryTitle = cat ? cat.name : null;
+            imagePath = g2Item.Product.image_path || null;
           } else {
             // Dynamic pricing fallback
             if (categoryRevenuePercent !== null && typeof categoryRevenuePercent !== 'undefined' && Number.isFinite(categoryRevenuePercent)) {
@@ -1355,16 +1421,17 @@ const adminController = {
           }
 
           const displayName = g2Item?.Product?.name
-            ? formatG2bulkProductDisplayName(g2Item.Product.name, id)
-            : formatG2bulkProductDisplayName(rawName, id);
+            ? formatG2bulkProductDisplayName(g2Item.Product.name, id, typeCodeLower)
+            : formatG2bulkProductDisplayName(rawName, id, typeCodeLower);
 
           return {
             id,
             name: displayName || id,
             unit_price_usd: unitPriceUsd,
             stock: Number((p?.stock ?? p?.quantity ?? p?.available) || 0),
-            category_id: null,
-            category_title: null,
+            category_id: categoryId,
+            category_title: categoryTitle,
+            image_path: imagePath,
             base_price_mmk: baseMmk,
             base_price_thb: baseThb,
             price_mmk: sellMmk,
@@ -1383,13 +1450,16 @@ const adminController = {
           const stored = g2Item.Product;
           if (!stored) continue;
           seenG2bulkIds.add(g2Id);
+          const categoryId = stored.categoryId || null;
+          const cat = categoryId ? categoryById.get(Number(categoryId)) : null;
           products.push({
             id: g2Id,
-            name: formatG2bulkProductDisplayName(stored.name, g2Id),
+            name: formatG2bulkProductDisplayName(stored.name, g2Id, typeCodeLower),
             unit_price_usd: 0,
             stock: 0,
-            category_id: null,
-            category_title: null,
+            category_id: categoryId,
+            category_title: cat ? cat.name : null,
+            image_path: stored.image_path || null,
             base_price_mmk: Number(stored.price_mmk) || 0,
             base_price_thb: Number(stored.price_thb) || 0,
             price_mmk: Number(stored.price_mmk) || 0,
@@ -1420,6 +1490,7 @@ const adminController = {
         provider,
         productType,
         products,
+        categories,
         smileProductSlug: provider === 'smile' ? smileProductSlugForTypeCode(productType.typeCode) : null,
         success: req.query.success === '1',
         syncMessage: req.query.sync ? String(req.query.sync) : null,
@@ -2047,51 +2118,81 @@ const adminController = {
   },
 
   saveG2BulkPrice: async (req, res) => {
+    const typeCode = String(req.body.type_code || '').trim();
+    const redirectBase = `/admin/product-management/g2bulk/${encodeURIComponent(typeCode)}`;
     try {
       const g2bulkProductId = String(req.body.g2bulk_product_id || '').trim();
       const fixedProductId = req.body.fixed_product_id ? Number(req.body.fixed_product_id) : null;
-      const typeCode = String(req.body.type_code || '').trim();
-      const name = String(req.body.name || '').trim();
+      const rawName = String(req.body.name || '').trim();
       const priceMmk = Number(req.body.price_mmk);
       const priceThb = Number(req.body.price_thb);
+      const categoryIdRaw = req.body.category_id;
+      const categoryId = categoryIdRaw === '' || categoryIdRaw == null
+        ? null
+        : Number(categoryIdRaw);
 
-      if (!g2bulkProductId || !name || Number.isNaN(priceMmk) || Number.isNaN(priceThb)) {
-        return res.redirect(`/admin/product-management/g2bulk/${encodeURIComponent(typeCode)}?error=` + encodeURIComponent('Missing required fields.'));
+      if (!g2bulkProductId || !rawName || Number.isNaN(priceMmk) || Number.isNaN(priceThb)) {
+        return res.redirect(`${redirectBase}?error=` + encodeURIComponent('Missing required fields.'));
       }
+
+      const productType = await ProductType.findOne({ where: { provider: 'g2bulk', typeCode } });
+      if (!productType) {
+        return res.redirect(`${redirectBase}?error=` + encodeURIComponent('Product type not found.'));
+      }
+
+      // Persist clean API names (no "UC" prefix — that's display-only for pubgm)
+      const name = formatG2bulkProductDisplayName(rawName, g2bulkProductId, typeCode)
+        .replace(/^UC\s+/i, '');
+
+      let resolvedCategoryId = null;
+      if (categoryId != null && !Number.isNaN(categoryId)) {
+        const category = await ProductCategory.findOne({
+          where: { id: categoryId, productTypeId: productType.id }
+        });
+        if (!category) {
+          return res.redirect(`${redirectBase}?error=` + encodeURIComponent('Invalid category.'));
+        }
+        resolvedCategoryId = category.id;
+      }
+
+      const imagePath = req.file ? `/uploads/products/${req.file.filename}` : null;
 
       let product;
       if (fixedProductId && !Number.isNaN(fixedProductId)) {
-        // Update existing product
         product = await Product.findByPk(fixedProductId);
         if (product) {
-          await product.update({
+          const updates = {
             name,
             price_mmk: priceMmk,
-            price_thb: priceThb
-          });
+            price_thb: priceThb,
+            categoryId: resolvedCategoryId
+          };
+          if (imagePath) {
+            if (product.image_path && String(product.image_path).startsWith('/uploads/products/')) {
+              const oldPath = path.join(__dirname, '../public', product.image_path);
+              if (fs.existsSync(oldPath)) {
+                try { fs.unlinkSync(oldPath); } catch (_) { /* ignore */ }
+              }
+            }
+            updates.image_path = imagePath;
+          }
+          await product.update(updates);
         }
       }
 
       if (!product) {
-        // Create new product
-        // We need a productTypeId for G2Bulk products if we want to organize them
-        const productType = await ProductType.findOne({ where: { provider: 'g2bulk', typeCode } });
-        if (!productType) {
-           return res.redirect(`/admin/product-management/g2bulk/${encodeURIComponent(typeCode)}?error=` + encodeURIComponent('Product type not found.'));
-        }
-
         product = await Product.create({
           productTypeId: productType.id,
           name,
           price_mmk: priceMmk,
           price_thb: priceThb,
-          diamond_amount: 0, // Placeholder
-          provider: 'g2bulk',
+          diamond_amount: 0,
+          categoryId: resolvedCategoryId,
+          image_path: imagePath,
           is_active: true
         });
       }
 
-      // Ensure mapping exists
       const [item, created] = await G2BulkItem.findOrCreate({
         where: { g2bulkProductId },
         defaults: {
@@ -2104,11 +2205,134 @@ const adminController = {
         await item.update({ productId: product.id });
       }
 
-      return res.redirect(`/admin/product-management/g2bulk/${encodeURIComponent(typeCode)}?success=1`);
+      return res.redirect(`${redirectBase}?success=1`);
     } catch (error) {
       console.error('Save G2Bulk price error:', error);
-      const typeCode = String(req.body.type_code || '').trim();
-      return res.redirect(`/admin/product-management/g2bulk/${encodeURIComponent(typeCode)}?error=` + encodeURIComponent('Failed to save price.'));
+      return res.redirect(`${redirectBase}?error=` + encodeURIComponent('Failed to save price.'));
+    }
+  },
+
+  saveG2BulkCategory: async (req, res) => {
+    const typeCode = String(req.params.typeCode || req.body.type_code || '').trim();
+    const redirectBase = `/admin/product-management/g2bulk/${encodeURIComponent(typeCode)}`;
+    try {
+      const id = req.body.id ? Number(req.body.id) : null;
+      const name = String(req.body.name || '').trim();
+      const sortOrder = Number(req.body.sort_order);
+      const iconPath = String(req.body.icon_path || '').trim() || null;
+
+      if (!name) {
+        return res.redirect(`${redirectBase}?error=` + encodeURIComponent('Category name is required.'));
+      }
+
+      const productType = await ProductType.findOne({ where: { provider: 'g2bulk', typeCode } });
+      if (!productType) {
+        return res.redirect(`${redirectBase}?error=` + encodeURIComponent('Product type not found.'));
+      }
+
+      if (id && !Number.isNaN(id)) {
+        const existing = await ProductCategory.findOne({
+          where: { id, productTypeId: productType.id }
+        });
+        if (!existing) {
+          return res.redirect(`${redirectBase}?error=` + encodeURIComponent('Category not found.'));
+        }
+        await existing.update({
+          name,
+          sortOrder: Number.isFinite(sortOrder) ? sortOrder : existing.sortOrder,
+          iconPath: iconPath !== null ? iconPath : existing.iconPath
+        });
+      } else {
+        let slug = slugifyCategory(name) || `category-${Date.now()}`;
+        const clash = await ProductCategory.findOne({
+          where: { productTypeId: productType.id, slug }
+        });
+        if (clash) slug = `${slug}-${Date.now()}`;
+
+        const maxSort = await ProductCategory.max('sortOrder', {
+          where: { productTypeId: productType.id }
+        });
+        await ProductCategory.create({
+          productTypeId: productType.id,
+          name,
+          slug,
+          sortOrder: Number.isFinite(sortOrder) ? sortOrder : (Number(maxSort) || 0) + 1,
+          iconPath,
+          isActive: true
+        });
+      }
+
+      return res.redirect(`${redirectBase}?success=1`);
+    } catch (error) {
+      console.error('Save G2Bulk category error:', error);
+      return res.redirect(`${redirectBase}?error=` + encodeURIComponent('Failed to save category.'));
+    }
+  },
+
+  reorderG2BulkCategory: async (req, res) => {
+    const typeCode = String(req.params.typeCode || '').trim();
+    const redirectBase = `/admin/product-management/g2bulk/${encodeURIComponent(typeCode)}`;
+    try {
+      const id = Number(req.body.id);
+      const direction = String(req.body.direction || '').trim().toLowerCase();
+      if (!id || !['up', 'down'].includes(direction)) {
+        return res.redirect(`${redirectBase}?error=` + encodeURIComponent('Invalid reorder request.'));
+      }
+
+      const productType = await ProductType.findOne({ where: { provider: 'g2bulk', typeCode } });
+      if (!productType) {
+        return res.redirect(`${redirectBase}?error=` + encodeURIComponent('Product type not found.'));
+      }
+
+      const categories = await ProductCategory.findAll({
+        where: { productTypeId: productType.id },
+        order: [['sort_order', 'ASC'], ['id', 'ASC']]
+      });
+      const index = categories.findIndex((c) => Number(c.id) === id);
+      if (index < 0) {
+        return res.redirect(`${redirectBase}?error=` + encodeURIComponent('Category not found.'));
+      }
+
+      const swapIndex = direction === 'up' ? index - 1 : index + 1;
+      if (swapIndex < 0 || swapIndex >= categories.length) {
+        return res.redirect(redirectBase);
+      }
+
+      const current = categories[index];
+      const neighbor = categories[swapIndex];
+      const currentSort = current.sortOrder;
+      await current.update({ sortOrder: neighbor.sortOrder });
+      await neighbor.update({ sortOrder: currentSort });
+
+      return res.redirect(`${redirectBase}?success=1`);
+    } catch (error) {
+      console.error('Reorder G2Bulk category error:', error);
+      return res.redirect(`${redirectBase}?error=` + encodeURIComponent('Failed to reorder category.'));
+    }
+  },
+
+  toggleG2BulkCategory: async (req, res) => {
+    const typeCode = String(req.params.typeCode || '').trim();
+    const redirectBase = `/admin/product-management/g2bulk/${encodeURIComponent(typeCode)}`;
+    try {
+      const id = Number(req.body.id);
+      const productType = await ProductType.findOne({ where: { provider: 'g2bulk', typeCode } });
+      if (!productType) {
+        return res.redirect(`${redirectBase}?error=` + encodeURIComponent('Product type not found.'));
+      }
+
+      const category = await ProductCategory.findOne({
+        where: { id, productTypeId: productType.id }
+      });
+      if (!category) {
+        return res.redirect(`${redirectBase}?error=` + encodeURIComponent('Category not found.'));
+      }
+
+      await category.update({ isActive: !category.isActive });
+      return res.redirect(`${redirectBase}?success=1`);
+    } catch (error) {
+      console.error('Toggle G2Bulk category error:', error);
+      return res.redirect(`${redirectBase}?error=` + encodeURIComponent('Failed to toggle category.'));
     }
   },
 
@@ -3769,5 +3993,7 @@ const adminController = {
     }
   }
 };
+
+adminController.uploadG2BulkProductImage = uploadG2BulkProductImage;
 
 module.exports = adminController; 

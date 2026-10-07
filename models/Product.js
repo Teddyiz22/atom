@@ -47,6 +47,11 @@ const Product = sequelize.define('Product', {
     type: DataTypes.ENUM('DIAMOND', 'DOUBLE_DIAMOND', 'WEEKLY_PASS', 'TWILIGHT_PASS'),
     allowNull: true
   },
+  categoryId: {
+    type: DataTypes.INTEGER.UNSIGNED,
+    allowNull: true,
+    field: 'category_id'
+  },
   smileIDCombination: {
     type: DataTypes.STRING(256),
     allowNull: true,
@@ -113,6 +118,17 @@ Product.findFeatured = function () {
       is_active: true
     },
     order: [['sort_order', 'ASC']]
+  });
+};
+
+Product.associate = function (models) {
+  Product.belongsTo(models.ProductType, {
+    foreignKey: 'productTypeId',
+    as: 'productType'
+  });
+  Product.belongsTo(models.ProductCategory, {
+    foreignKey: 'categoryId',
+    as: 'productCategory'
   });
 };
 

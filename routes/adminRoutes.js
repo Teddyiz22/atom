@@ -55,7 +55,26 @@ router.post('/product-management/:provider/:typeCode/edit/:id', adminAuth, admin
 router.post('/product-management/:provider/:typeCode/toggle-status/:id', adminAuth, adminController.productManagementToggleStatus);
 router.post('/product-management/:provider/:typeCode/toggle-featured/:id', adminAuth, adminController.productManagementToggleFeatured);
 router.post('/product-management/:provider/:typeCode/delete/:id', adminAuth, adminController.productManagementDeleteProduct);
-router.post('/product-management/g2bulk/save-price', adminAuth, adminController.saveG2BulkPrice);
+router.post(
+  '/product-management/g2bulk/save-price',
+  adminAuth,
+  (req, res, next) => {
+    adminController.uploadG2BulkProductImage(req, res, (err) => {
+      if (err) {
+        const typeCode = String(req.body?.type_code || '').trim();
+        return res.redirect(
+          `/admin/product-management/g2bulk/${encodeURIComponent(typeCode)}?error=` +
+            encodeURIComponent(err.message || 'Image upload failed.')
+        );
+      }
+      return next();
+    });
+  },
+  adminController.saveG2BulkPrice
+);
+router.post('/product-management/g2bulk/:typeCode/categories/save', adminAuth, adminController.saveG2BulkCategory);
+router.post('/product-management/g2bulk/:typeCode/categories/reorder', adminAuth, adminController.reorderG2BulkCategory);
+router.post('/product-management/g2bulk/:typeCode/categories/toggle', adminAuth, adminController.toggleG2BulkCategory);
 router.post('/product-management/smile/:typeCode/sync-smile-coins', adminAuth, adminController.syncSmileCoinAmounts);
 
 // Admin Settings (requires auth + layout)

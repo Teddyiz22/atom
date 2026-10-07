@@ -10,6 +10,7 @@ const PaymentMethod = require('./PaymentMethod');
 const SmileSubItem = require('./SmileSubItem');
 const SmileCoinRate = require('./SmileCoinRate');
 const G2BulkItem = require('./G2BulkItem');
+const ProductCategory = require('./ProductCategory');
 const GamePurchaseTransaction = require('./GamePurchaseTransaction');
 const SystemSetting = require('./SystemSetting');
 
@@ -26,6 +27,7 @@ const models = {
     SmileSubItem,
     SmileCoinRate,
     G2BulkItem,
+    ProductCategory,
     GamePurchaseTransaction,
     SystemSetting
 };

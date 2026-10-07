@@ -239,43 +239,92 @@
 
 
         <%
-          const packageKeywords = [
-            "weekly",
-            "pass",
-            "card",
-            "pack",
-            "package",
-            "fund",
-            "bundle",
-            "offer",
-            "bag"
-          ];
+          const shopCategories = (typeof categories !== 'undefined' && Array.isArray(categories)) ? categories : [];
+          const gameDefaultImage = '/images/toiken.png';
+          const productsByCategory = new Map();
+          const uncategorizedProducts = [];
 
-          const packageItems = [];
-          const tokenItems = [];
-
-          (products || []).forEach(product => {
-            const name = String(product.name || '').trim();
-            const normalizedName = name.toLowerCase();
-            const isNumericToken = /^\d+(?:\.\d+)?$/.test(name);
-            if (!isNumericToken || packageKeywords.some(k => normalizedName.includes(k))) {
-              packageItems.push(product);
+          (products || []).forEach(function(product) {
+            const cid = product.category_id;
+            if (cid) {
+              const key = String(cid);
+              if (!productsByCategory.has(key)) productsByCategory.set(key, []);
+              productsByCategory.get(key).push(product);
             } else {
-              tokenItems.push(product);
+              uncategorizedProducts.push(product);
             }
           });
+
+          function resolveShopImage(product, category) {
+            if (product && product.image_path) return product.image_path;
+            if (category && category.icon_path) return category.icon_path;
+            return gameDefaultImage;
+          }
         %>
 
-        <!-- Token Items -->
-        <% if (tokenItems.length > 0) { %>
+        <% shopCategories.forEach(function(category) {
+          const items = productsByCategory.get(String(category.id)) || [];
+          if (!items.length) return;
+          const isToken = String(category.slug || '').toLowerCase() === 'token';
+        %>
         <div class="mb-8">
           <h3 class="text-lg md:text-xl font-bold text-white mb-4 flex items-center">
-            <div class="flex justify-between items-center mb-2">
-                <img src="/images/toiken.png" alt="HOK" class="w-12 h-auto rounded-lg">Token
+            <img src="<%= category.icon_path || gameDefaultImage %>" alt="<%= category.name %>" class="w-12 h-auto rounded-lg mr-2">
+            <%= category.name %>
+          </h3>
+          <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <% items.forEach(function(product) {
+              const img = resolveShopImage(product, category);
+              const cardClass = isToken
+                ? 'package-card relative bg-white/5 hover:bg-white/10 border border-white/20 rounded-xl p-4 cursor-pointer transition-all duration-300 hover:scale-105 hover:border-theme-400/60'
+                : 'package-card relative bg-gradient-to-br from-purple-900/40 to-blue-900/40 hover:from-purple-900/60 hover:to-blue-900/60 border border-purple-500/30 rounded-xl p-4 cursor-pointer transition-all duration-300 hover:scale-105 hover:border-purple-400/60';
+            %>
+            <div
+              class="<%= cardClass %> <%= product.is_featured ? 'ring-2 ring-yellow-400 shadow-lg shadow-yellow-400/20' : '' %>"
+              data-product-id="<%= String(product.id || '') %>"
+              data-product-name="<%= String(product.name || '') %>"
+              data-price-mmk="<%= product.price_mmk %>"
+              data-price-thb="<%= product.price_thb %>"
+              onclick="selectPackageEl(this)"
+            >
+              <% if (product.is_featured) { %>
+              <div class="absolute top-2 left-2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-black text-xs px-2 py-1 rounded-full font-bold shadow-lg z-10">
+                ⭐ FEATURED</div>
+              <% } %>
+              <div class="flex justify-center mt-3">
+                <div class="flex items-center gap-1 sm:gap-2 max-w-full">
+                  <img
+                    src="<%= img %>"
+                    alt="<%= product.name %>"
+                    class="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 object-contain drop-shadow-lg flex-shrink-0"
+                  />
+                  <p class="text-white font-bold text-xs sm:text-sm md:text-base leading-snug line-clamp-2 break-words max-w-[120px] sm:max-w-[140px] md:max-w-[160px]">
+                    <%= product.name %>
+                  </p>
+                </div>
               </div>
+              <div class="mt-3 text-center">
+                <p class="price-mmk text-blue-400 font-bold text-sm sm:text-base md:text-xl">
+                  <%= new Intl.NumberFormat('en-US').format(product.price_mmk) %> MMK
+                </p>
+                <p class="price-thb text-blue-400 font-bold hidden text-xs sm:text-sm md:text-base">
+                  ฿<%= new Intl.NumberFormat('en-US').format(product.price_thb) %>
+                </p>
+              </div>
+            </div>
+            <% }) %>
+          </div>
+        </div>
+        <% }) %>
+
+        <% if (uncategorizedProducts.length > 0) { %>
+        <div class="mb-8">
+          <h3 class="text-lg md:text-xl font-bold text-white mb-4 flex items-center">
+            <img src="<%= gameDefaultImage %>" alt="Other" class="w-12 h-auto rounded-lg mr-2">
+            Other Packages
           </h3>
           <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            <% tokenItems.forEach((product) => { %>
+            <% uncategorizedProducts.forEach(function(product) { %>
             <div
               class="package-card relative bg-white/5 hover:bg-white/10 border border-white/20 rounded-xl p-4 cursor-pointer transition-all duration-300 hover:scale-105 hover:border-theme-400/60 <%= product.is_featured ? 'ring-2 ring-yellow-400 shadow-lg shadow-yellow-400/20' : '' %>"
               data-product-id="<%= String(product.id || '') %>"
@@ -288,31 +337,19 @@
               <div class="absolute top-2 left-2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-black text-xs px-2 py-1 rounded-full font-bold shadow-lg z-10">
                 ⭐ FEATURED</div>
               <% } %>
-
               <div class="flex justify-center mt-3">
                 <div class="flex items-center gap-1 sm:gap-2 max-w-full">
-                  <img 
-                     src="/images/toiken.png" 
-                    alt="Toiken"
-                    class="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 
-                          object-contain drop-shadow-lg flex-shrink-0"
-                  />
-                  <p class="text-white font-bold 
-                             text-sm sm:text-base md:text-lg
-                            leading-snug line-clamp-2 break-words max-w-[140px] sm:max-w-[180px]">
+                  <img src="<%= product.image_path || gameDefaultImage %>" alt="<%= product.name %>" class="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 object-contain drop-shadow-lg flex-shrink-0">
+                  <p class="text-white font-bold text-sm sm:text-base md:text-lg leading-snug line-clamp-2 break-words max-w-[140px] sm:max-w-[180px]">
                     <%= product.name %>
                   </p>
                 </div>
               </div>
-
               <div class="mt-3 text-center">
-                <p class="price-mmk text-blue-400 font-bold 
-                          text-sm sm:text-base md:text-xl">
+                <p class="price-mmk text-blue-400 font-bold text-sm sm:text-base md:text-xl">
                   <%= new Intl.NumberFormat('en-US').format(product.price_mmk) %> MMK
                 </p>
-
-                <p class="price-thb text-blue-400 font-bold hidden 
-                          text-xs sm:text-sm md:text-base">
+                <p class="price-thb text-blue-400 font-bold hidden text-xs sm:text-sm md:text-base">
                   ฿<%= new Intl.NumberFormat('en-US').format(product.price_thb) %>
                 </p>
               </div>
@@ -321,96 +358,6 @@
           </div>
         </div>
         <% } %>
-
-        
-        <%
-        const specialPackageImages = {
-          "honor point value pack": "/images/honor-point.png",
-          "honor point value pac": "/images/hok-new-product-star.webp",
-          "crimson skyblade ao'yin": "/images/hok-new-product-star.webp",
-          "double token lucky bag": "/images/double-token-bag.png",
-          "standard purchase rebate pack": "/images/standard-rebate-pack.png",
-          "weekly card": "/images/weeklycard.png",
-          "premium purchase rebate pack": "/images/premium-rebate-pack.png",
-          "weekly card plus": "/images/weekly-card-plus.png"
-        };
-
-        function getSpecialPackageImage(name) {
-          const lower = name.toLowerCase();
-          if (specialPackageImages[lower]) {
-            return specialPackageImages[lower];
-          }
-          return "/images/pubgm.png"; // fallback
-        }
-        %>
-
-        <!-- Package Items -->
-        <% if (packageItems.length > 0) { %>
-        <div class="mb-8">
-          <h3 class="text-lg md:text-xl font-bold text-white mb-4 flex items-center">
-            <div class="flex justify-between items-center mb-2">
-                <img src="/images/double-token-bag.png" alt="HOK" class="w-12 h-auto rounded-lg">Packages
-              </div>
-          </h3>
-          <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            <% packageItems.forEach((product) => { %>
-              <div
-                class="package-card relative bg-gradient-to-br from-purple-900/40 to-blue-900/40 
-                      hover:from-purple-900/60 hover:to-blue-900/60 border border-purple-500/30 
-                      rounded-xl p-4 cursor-pointer transition-all duration-300 
-                      hover:scale-105 hover:border-purple-400/60 
-                      <%= product.is_featured ? 'ring-2 ring-yellow-400 shadow-lg shadow-yellow-400/20' : '' %>"
-                data-product-id="<%= String(product.id || '') %>"
-                data-product-name="<%= String(product.name || '') %>"
-                data-price-mmk="<%= product.price_mmk %>"
-                data-price-thb="<%= product.price_thb %>"
-                onclick="selectPackageEl(this)"
-              >
-                <% if (product.is_featured) { %>
-                  <div class="absolute top-2 left-2 bg-gradient-to-r from-yellow-400 to-yellow-600 
-                              text-black text-xs px-2 py-1 rounded-full font-bold shadow-lg z-10">
-                    ⭐ FEATURED
-                  </div>
-                <% } %>
-
-                <!-- Image + Name -->
-                <div class="flex justify-center mt-3">
-                  <div class="flex items-center gap-1 sm:gap-2 max-w-full">
-                    <img 
-                      src="<%= getSpecialPackageImage(product.name) %>" 
-                      alt="<%= product.name %>"
-                      class="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 
-                            object-contain drop-shadow-lg flex-shrink-0"
-                    />
-                    <p class="text-white font-bold 
-                              text-xs sm:text-sm md:text-base 
-                              leading-snug line-clamp-2 break-words 
-                              max-w-[120px] sm:max-w-[140px] md:max-w-[160px]">
-                      <%= product.name %>
-                    </p>
-                  </div>
-                </div>
-
-                <!-- Price -->
-                <div class="mt-3 text-center">
-                  <p class="price-mmk text-blue-400 font-bold 
-                            text-sm sm:text-base md:text-xl">
-                    <%= new Intl.NumberFormat('en-US').format(product.price_mmk) %> MMK
-                  </p>
-
-                  <p class="price-thb text-blue-400 font-bold hidden 
-                            text-xs sm:text-sm md:text-base">
-                    ฿<%= new Intl.NumberFormat('en-US').format(product.price_thb) %>
-                  </p>
-                </div>
-              </div>
-            <% }) %>
-          </div>
-
-        </div>
-        <% } %>
-
-
 
         <!-- Selected Package Display -->
         <div id="selectedPackage" class="hidden bg-blue-500/20 border border-blue-500/30 rounded-lg p-4 mb-6">

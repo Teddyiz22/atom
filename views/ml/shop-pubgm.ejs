@@ -243,84 +243,111 @@
 
 
         <%
-          const oneTimeKeywords = [
-            "First Purchase Pack",
-            "Upgradable Firearm Materials Pack",
-            "Mythic Emblem Pack"
-          ];
+          const shopCategories = (typeof categories !== 'undefined' && Array.isArray(categories)) ? categories : [];
+          const gameDefaultImage = '/images/pubgm.png';
+          const productsByCategory = new Map();
+          const uncategorizedProducts = [];
 
-          const packageKeywords = [
-            "Prime",
-            "Elite Pass",
-            "Pack",
-            "Package",
-            "Prime Plus"
-          ];
-
-          const oneTimeItems = [];
-          const packageItems = [];
-          const ucItems = [];
-
-          (products || []).forEach(product => {
-            const name = product.name || '';
-            if (oneTimeKeywords.some(k => name.includes(k))) {
-              oneTimeItems.push(product);
-            } else if (packageKeywords.some(k => name.includes(k))) {
-              packageItems.push(product);
+          (products || []).forEach(function(product) {
+            const cid = product.category_id;
+            if (cid) {
+              const key = String(cid);
+              if (!productsByCategory.has(key)) productsByCategory.set(key, []);
+              productsByCategory.get(key).push(product);
             } else {
-              ucItems.push(product);
+              uncategorizedProducts.push(product);
             }
           });
+
+          function resolveShopImage(product, category) {
+            if (product && product.image_path) return product.image_path;
+            if (category && category.icon_path) return category.icon_path;
+            return gameDefaultImage;
+          }
+
+          function renderPackageCard(product, category, accent) {
+            const img = resolveShopImage(product, category);
+            const isPass = accent === 'pass';
+            const isOneTime = accent === 'onetime';
+            let cardClass = 'package-card relative bg-white/5 hover:bg-white/10 border border-white/20 rounded-xl p-4 cursor-pointer transition-all duration-300 hover:scale-105 hover:border-theme-400/60';
+            if (isPass) {
+              cardClass = 'package-card relative bg-gradient-to-br from-purple-900/40 to-blue-900/40 hover:from-purple-900/60 hover:to-blue-900/60 border border-purple-500/30 rounded-xl p-4 cursor-pointer transition-all duration-300 hover:scale-105';
+            } else if (isOneTime) {
+              cardClass = 'package-card relative bg-gradient-to-br from-yellow-900/40 to-orange-900/40 hover:from-yellow-900/60 hover:to-orange-900/60 border border-yellow-500/30 rounded-xl p-4 cursor-pointer transition-all duration-300 hover:scale-105 hover:border-yellow-400/60';
+            }
+            if (product.is_featured) cardClass += ' ring-2 ring-yellow-400 shadow-lg shadow-yellow-400/20';
+            return { img, cardClass };
+          }
         %>
 
-          <%
-          const exactPackageImages = {
-            "weekly deal pack 1": "/images/dealpack1.jpg",
-            "weekly deal pack 2": "/images/dealpack2.jpg",
-            "prime plus": "/images/primeplus.jpg",
-            "weekly mythic emblem value pack": "/images/emblem.jpg"
-
-          };
-
-          const keywordPackageImages = {
-            prime: "/images/prime.jpg",
-            elite: "/images/elite.png",
-            pass: "/images/packages/pass.png",
-            mythic: "/images/mythicemblem.jpg",
-            emblem: "/images/mythicemblem.jpg",
-            weekly: "/images/weekly.jpg",
-          };
-
-          function getPackageImage(name) {
-            const lower = name.toLowerCase();
-
-            if (exactPackageImages[lower]) {
-              return exactPackageImages[lower];
-            }
-
-            for (const key in keywordPackageImages) {
-              if (lower.includes(key)) {
-                return keywordPackageImages[key];
-              }
-            }
-
-            return "/images/pubgm.png";
-          }
-          %>
-
-
-        <!-- UC Items -->
-        <% if (ucItems.length > 0) { %>
+        <% shopCategories.forEach(function(category) {
+          const items = productsByCategory.get(String(category.id)) || [];
+          if (!items.length) return;
+          const slug = String(category.slug || '').toLowerCase();
+          const accent = slug.includes('one-time') ? 'onetime' : (slug.includes('pass') ? 'pass' : 'default');
+          const gridClass = accent === 'onetime'
+            ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'
+            : 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4';
+        %>
         <div class="mb-8">
           <h3 class="text-lg md:text-xl font-bold text-white mb-4 flex items-center">
-            <div class="flex justify-between items-center mb-2">
-                <img src="/images/uc.png" alt="UC Item" class="w-12 h-auto rounded-lg">UC Packages
+            <img src="<%= category.icon_path || gameDefaultImage %>" alt="<%= category.name %>" class="w-10 h-10 sm:w-12 sm:h-12 object-contain rounded-lg mr-2">
+            <%= category.name %>
+          </h3>
+          <div class="<%= gridClass %>">
+            <% items.forEach(function(product) {
+              const rendered = renderPackageCard(product, category, accent);
+            %>
+            <div
+              class="<%= rendered.cardClass %>"
+              data-product-id="<%= String(product.id || '') %>"
+              data-product-name="<%= String(product.name || '') %>"
+              data-price-mmk="<%= product.price_mmk %>"
+              data-price-thb="<%= product.price_thb %>"
+              onclick="selectPackageEl(this)"
+            >
+              <% if (product.is_featured) { %>
+              <div class="absolute top-2 left-2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-black text-xs px-2 py-1 rounded-full font-bold shadow-lg z-10">
+                ⭐ FEATURED</div>
+              <% } %>
+              <div class="flex justify-center mt-3">
+                <div class="flex items-center gap-2 sm:gap-3 max-w-full">
+                  <img
+                    src="<%= rendered.img %>"
+                    alt="<%= product.name %>"
+                    class="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 object-contain rounded-lg flex-shrink-0 drop-shadow-lg"
+                  />
+                  <p class="text-white font-bold text-sm sm:text-base md:text-lg leading-snug line-clamp-2 max-w-[90px] sm:max-w-[120px] md:max-w-[160px]">
+                    <%= product.name %>
+                  </p>
+                </div>
               </div>
+              <div class="mt-3 text-center">
+                <p class="price-mmk text-blue-400 font-bold text-sm sm:text-base md:text-xl">
+                  <%= new Intl.NumberFormat('en-US').format(product.price_mmk) %> MMK
+                </p>
+                <p class="price-thb text-blue-400 font-bold hidden text-xs sm:text-sm md:text-base">
+                  ฿<%= new Intl.NumberFormat('en-US').format(product.price_thb) %>
+                </p>
+              </div>
+            </div>
+            <% }) %>
+          </div>
+        </div>
+        <% }) %>
+
+        <% if (uncategorizedProducts.length > 0) { %>
+        <div class="mb-8">
+          <h3 class="text-lg md:text-xl font-bold text-white mb-4 flex items-center">
+            <img src="<%= gameDefaultImage %>" alt="Other" class="w-10 h-10 object-contain rounded-lg mr-2">
+            Other Packages
           </h3>
           <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            <% ucItems.forEach(function(product) { %>
+            <% uncategorizedProducts.forEach(function(product) {
+              const rendered = renderPackageCard(product, null, 'default');
+            %>
             <div
-              class="package-card relative bg-white/5 hover:bg-white/10 border border-white/20 rounded-xl p-4 cursor-pointer transition-all duration-300 hover:scale-105 hover:border-theme-400/60 <%= product.is_featured ? 'ring-2 ring-yellow-400 shadow-lg shadow-yellow-400/20' : '' %>"
+              class="<%= rendered.cardClass %>"
               data-product-id="<%= String(product.id || '') %>"
               data-product-name="<%= String(product.name || '') %>"
               data-price-mmk="<%= product.price_mmk %>"
@@ -332,242 +359,18 @@
                 ⭐ FEATURED</div>
               <% } %>
               <div class="flex justify-center mt-3">
-                <div class="flex items-center gap-2 sm:gap-3">
-                  <img 
-                    src="/images/uc.png" 
-                    alt="twilight_pass_img" 
-                    class="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 
-                          object-contain rounded-lg flex-shrink-0"
-                  />
-                  <p class="text-white font-bold 
-                             text-sm sm:text-base md:text-lg 
-                            leading-snug 
-                            line-clamp-2 
-                            max-w-[90px] sm:max-w-[120px] md:max-w-[160px]">
-                    <%= product.name %>
-                  </p>
-                </div>
-              </div>
-
-              <div class="mt-3 text-center">
-                <p class="price-mmk text-blue-400 font-bold 
-                          text-sm sm:text-base md:text-xl">
-                  <%= new Intl.NumberFormat('en-US').format(product.price_mmk) %> MMK
-                </p>
-
-                <p class="price-thb text-blue-400 font-bold hidden 
-                          text-xs sm:text-sm md:text-base">
-                  ฿<%= new Intl.NumberFormat('en-US').format(product.price_thb) %>
-                </p>
-              </div>
-
-            </div>
-            <% }) %>
-          </div>
-        </div>
-        <% } %>
-
-          <%
-            // Group packages dynamically
-            const groups = {
-              prime: [],
-              primePlus: [],
-              weekly: [],
-              elite: []
-            };
-
-            packageItems.forEach(p => {
-              const name = p.name.toLowerCase();
-              if (name.includes('prime plus')) groups.primePlus.push(p);
-              else if (name.includes('prime')) groups.prime.push(p);
-              else if (name.includes('weekly')) groups.weekly.push(p);
-              else if (name.includes('elite')) groups.elite.push(p);
-            });
-
-            const leftColumn = [...groups.prime, ...groups.weekly];
-            const rightColumn = [...groups.primePlus, ...groups.elite];
-            const maxLen = Math.max(leftColumn.length, rightColumn.length);
-          %>
-        <!-- Heading -->
-      <h3 class="text-sm sm:text-lg font-bold text-white mb-4 flex items-center flex-wrap">
-        <span class="text-lg sm:text-2xl mr-2">✨</span>
-        Pass Package
-      </h3>
-
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-
-        <% for (let i = 0; i < maxLen; i++) { %>
-
-          <% const productLeft = leftColumn[i]; %>
-          <% if (productLeft) { 
-              let displayNameLeft;
-              const matchLeft = productLeft.name.match(/^(.*?)(\s*\(.*\))$/);
-              displayNameLeft = matchLeft 
-                ? { line1: matchLeft[1], line2: matchLeft[2] } 
-                : { line1: productLeft.name, line2: "" };
-          %>
-            <div class="package-card relative bg-gradient-to-br from-purple-900/40 to-blue-900/40 
-                        hover:from-purple-900/60 hover:to-blue-900/60 
-                        border border-purple-500/30 rounded-xl p-4 cursor-pointer 
-                        transition-all duration-300 hover:scale-105 
-                        <%= productLeft.is_featured ? 'ring-2 ring-yellow-400 shadow-lg shadow-yellow-400/20' : '' %>"
-              data-product-id="<%= String(productLeft.id || '') %>"
-              data-product-name="<%= String(productLeft.name || '') %>"
-              data-price-mmk="<%= productLeft.price_mmk %>"
-              data-price-thb="<%= productLeft.price_thb %>"
-              onclick="selectPackageEl(this)"
-            >
-              <% if (productLeft.is_featured) { %>
-                <div class="absolute top-2 left-2 bg-gradient-to-r from-yellow-400 to-yellow-600 
-                            text-black text-xs px-2 py-1 rounded-full font-bold shadow-lg z-10">
-                  ⭐ FEATURED
-                </div>
-              <% } %>
-
-              <div class="flex justify-center mt-3">
-                <div class="flex items-center gap-2 max-w-full">
-                  <img src="<%= getPackageImage(productLeft.name) %>" 
-                      alt="<%= productLeft.name %>" 
-                      class="w-10 h-10 sm:w-12 sm:h-12 object-contain drop-shadow-lg"/>
-                  <p class="text-white font-bold text-[10px] sm:text-sm md:text-base lg:text-lg leading-snug text-center break-words max-w-[120px] sm:max-w-[140px] md:max-w-[160px]">
-                    <span class="block"><%= displayNameLeft.line1 %></span>
-                    <% if(displayNameLeft.line2) { %>
-                      <span class="block text-white-300"><%= displayNameLeft.line2 %></span>
-                    <% } %>
-                  </p>
-                </div>
-              </div>
-
-              <div class="mt-3 text-center">
-                <p class="price-mmk text-blue-400 font-bold text-sm sm:text-base md:text-lg">
-                  <%= new Intl.NumberFormat('en-US').format(productLeft.price_mmk) %> MMK
-                </p>
-                <p class="price-thb text-blue-400 font-bold text-sm sm:text-base md:text-lg hidden">
-                  ฿<%= new Intl.NumberFormat('en-US').format(productLeft.price_thb) %>
-                </p>
-              </div>
-            </div>
-          <% } else { %><div></div><% } %>
-
-
-          <% const productRight = rightColumn[i]; %>
-          <% if (productRight) { 
-              let displayNameRight;
-              const matchRight = productRight.name.match(/^(.*?)(\s*\(.*\))$/);
-              displayNameRight = matchRight 
-                ? { line1: matchRight[1], line2: matchRight[2] } 
-                : { line1: productRight.name, line2: "" };
-          %>
-            <div class="package-card relative bg-gradient-to-br from-purple-900/40 to-blue-900/40 
-                        hover:from-purple-900/60 hover:to-blue-900/60 
-                        border border-purple-500/30 rounded-xl p-4 cursor-pointer 
-                        transition-all duration-300 hover:scale-105 
-                        <%= productRight.is_featured ? 'ring-2 ring-yellow-400 shadow-lg shadow-yellow-400/20' : '' %>"
-              data-product-id="<%= String(productRight.id || '') %>"
-              data-product-name="<%= String(productRight.name || '') %>"
-              data-price-mmk="<%= productRight.price_mmk %>"
-              data-price-thb="<%= productRight.price_thb %>"
-              onclick="selectPackageEl(this)"
-            >
-              <% if (productRight.is_featured) { %>
-                <div class="absolute top-2 left-2 bg-gradient-to-r from-yellow-400 to-yellow-600 
-                            text-black text-xs px-2 py-1 rounded-full font-bold shadow-lg z-10">
-                  ⭐ FEATURED
-                </div>
-              <% } %>
-
-              <div class="flex justify-center mt-3">
-                <div class="flex items-center gap-2 max-w-full">
-                  <img src="<%= getPackageImage(productRight.name) %>" 
-                      alt="<%= productRight.name %>" 
-                      class="w-10 h-10 sm:w-12 sm:h-12 object-contain drop-shadow-lg"/>
-                  <p class="text-white font-bold text-[10px] sm:text-sm md:text-base lg:text-lg leading-snug text-center break-words max-w-[120px] sm:max-w-[140px] md:max-w-[160px]">
-                    <span class="block"><%= displayNameRight.line1 %></span>
-                    <% if(displayNameRight.line2) { %>
-                      <span class="block text-white-300"><%= displayNameRight.line2 %></span>
-                    <% } %>
-                  </p>
-                </div>
-              </div>
-
-              <div class="mt-3 text-center">
-                <p class="price-mmk text-blue-400 font-bold text-sm sm:text-base md:text-lg">
-                  <%= new Intl.NumberFormat('en-US').format(productRight.price_mmk) %> MMK
-                </p>
-                <p class="price-thb text-blue-400 font-bold text-sm sm:text-base md:text-lg hidden">
-                  ฿<%= new Intl.NumberFormat('en-US').format(productRight.price_thb) %>
-                </p>
-              </div>
-            </div>
-          <% } else { %><div></div><% } %>
-
-        <% } %>
-      </div>
-
-
-        <%
-          const oneTimePackageImages = {
-            "first purchase pack": "/images/first-purchase-pack.jpg",
-            "upgradable firearm materials pack": "/images/firearm-materials.jpg",
-            "mythic emblem pack": "/images/mythicemblem.jpg"
-          };
-
-          function getOneTimePackageImage(name) {
-            const lower = name.toLowerCase();
-
-            if (oneTimePackageImages[lower]) {
-              return oneTimePackageImages[lower];
-            }
-
-            return "/images/pubgm.png"; 
-          }
-          %>
-
-        <!-- One Time Package -->
-        <% if (oneTimeItems.length > 0) { %>
-        <div class="mb-8">
-          <h3 class="text-lg md:text-xl font-bold text-white mb-4 flex items-center">
-            <span class="text-2xl mr-2">✨</span>
-            One Time Package
-          </h3>
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <% oneTimeItems.forEach(function(product) { %>
-            <div
-              class="package-card relative bg-gradient-to-br from-yellow-900/40 to-orange-900/40 hover:from-yellow-900/60 hover:to-orange-900/60 border border-yellow-500/30 rounded-xl p-4 cursor-pointer transition-all duration-300 hover:scale-105 hover:border-yellow-400/60 <%= product.is_featured ? 'ring-2 ring-yellow-400 shadow-lg shadow-yellow-400/20' : '' %>"
-              data-product-id="<%= String(product.id || '') %>"
-              data-product-name="<%= String(product.name || '') %>"
-              data-price-mmk="<%= product.price_mmk %>"
-              data-price-thb="<%= product.price_thb %>"
-              onclick="selectPackageEl(this)"
-            >
-              <% if (product.is_featured) { %>
-              <div class="absolute top-2 left-2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-black text-xs px-2 py-1 rounded-full font-bold shadow-lg z-10">
-                ⭐ FEATURED</div>
-              <% } %>
-
-              <div class="flex justify-center mt-3">
-                <div class="flex items-center gap-1 sm:gap-2 max-w-full">
-                  <img 
-                    src="<%= getOneTimePackageImage(product.name) %>"
-                    alt="<%= product.name %>"
-                    class="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 
-                          object-contain drop-shadow-lg flex-shrink-0"
-                  />
-                  <p class="text-white font-bold 
-                            text-xs sm:text-sm md:text-base 
-                            leading-snug line-clamp-2 break-words max-w-[140px] sm:max-w-[180px]">
+                <div class="flex items-center gap-2 sm:gap-3 max-w-full">
+                  <img src="<%= rendered.img %>" alt="<%= product.name %>" class="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 object-contain rounded-lg flex-shrink-0">
+                  <p class="text-white font-bold text-sm sm:text-base md:text-lg leading-snug line-clamp-2 max-w-[120px] md:max-w-[160px]">
                     <%= product.name %>
                   </p>
                 </div>
               </div>
               <div class="mt-3 text-center">
-                <p class="price-mmk text-blue-400 font-bold 
-                          text-sm sm:text-base md:text-xl">
+                <p class="price-mmk text-blue-400 font-bold text-sm sm:text-base md:text-xl">
                   <%= new Intl.NumberFormat('en-US').format(product.price_mmk) %> MMK
                 </p>
-
-                <p class="price-thb text-blue-400 font-bold hidden 
-                          text-xs sm:text-sm md:text-base">
+                <p class="price-thb text-blue-400 font-bold hidden text-xs sm:text-sm md:text-base">
                   ฿<%= new Intl.NumberFormat('en-US').format(product.price_thb) %>
                 </p>
               </div>
@@ -576,8 +379,6 @@
           </div>
         </div>
         <% } %>
-
-
 
         <!-- Selected Package Display -->
         <div id="selectedPackage" class="hidden bg-blue-500/20 border border-blue-500/30 rounded-lg p-4 mb-6">

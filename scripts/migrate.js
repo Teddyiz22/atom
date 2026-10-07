@@ -13,7 +13,8 @@ const steps = [
   { name: 'Smile coin columns', script: 'migrateSmileCoinColumns.js' },
   { name: 'MCGG PH packages', script: 'seedMcggPhp.js' },
   { name: 'MCGG BR weekly pass fix', script: 'fixMcggBrWeeklyPass.js' },
-  { name: 'MCGG Custom (manual)', script: 'seedMcggCustom.js' }
+  { name: 'MCGG Custom (manual)', script: 'seedMcggCustom.js' },
+  { name: 'G2Bulk categories + images', script: 'migrateG2bulkCategories.js' }
 ];
 
 function runStep(step) {

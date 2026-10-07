@@ -2,6 +2,7 @@ const Product = require('../models/Product');
 const G2BulkItem = require('../models/G2BulkItem');
 const SmileSubItem = require('../models/SmileSubItem');
 const ProductType = require('../models/ProductType');
+const ProductCategory = require('../models/ProductCategory');
 const axios = require('axios');
 
 /**
@@ -638,9 +639,21 @@ const mlController = {
       }
 
       let products = [];
+      let categories = [];
       const isG2bulk = provider === 'g2bulk';
 
       if (isG2bulk) {
+        categories = (await ProductCategory.findAll({
+          where: { productTypeId: productType.id, isActive: true },
+          order: [['sort_order', 'ASC'], ['id', 'ASC']]
+        })).map((c) => ({
+          id: c.id,
+          name: c.name,
+          slug: c.slug,
+          sort_order: c.sortOrder,
+          icon_path: c.iconPath
+        }));
+
         const g2bulkItems = await G2BulkItem.findAll({
           where: { status: 'active' },
           include: [{
@@ -663,7 +676,9 @@ const mlController = {
             price_mmk: stored.price_mmk,
             price_thb: stored.price_thb,
             is_featured: stored.is_featured,
-            sort_order: stored.sort_order
+            sort_order: stored.sort_order,
+            category_id: stored.categoryId || null,
+            image_path: stored.image_path || null
           };
         }).filter(Boolean);
 
@@ -704,6 +719,7 @@ const mlController = {
         keywords: `${productType.name} diamonds, ${productType.name} top up, ATOM Game Shop`,
         user: req.session.user || null,
         products,
+        categories,
         productType,
         websiteUrl: process.env.WEBSITE_URL || 'http://localhost:3600',
         csrfToken: res.locals.csrfToken
