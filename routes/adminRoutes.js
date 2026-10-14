@@ -72,7 +72,23 @@ router.post(
   },
   adminController.saveG2BulkPrice
 );
-router.post('/product-management/g2bulk/:typeCode/categories/save', adminAuth, adminController.saveG2BulkCategory);
+router.post(
+  '/product-management/g2bulk/:typeCode/categories/save',
+  adminAuth,
+  (req, res, next) => {
+    adminController.uploadG2BulkCategoryIcon(req, res, (err) => {
+      if (err) {
+        const typeCode = String(req.params?.typeCode || '').trim();
+        return res.redirect(
+          `/admin/product-management/g2bulk/${encodeURIComponent(typeCode)}?error=` +
+            encodeURIComponent(err.message || 'Category icon upload failed.')
+        );
+      }
+      return next();
+    });
+  },
+  adminController.saveG2BulkCategory
+);
 router.post('/product-management/g2bulk/:typeCode/categories/reorder', adminAuth, adminController.reorderG2BulkCategory);
 router.post('/product-management/g2bulk/:typeCode/categories/toggle', adminAuth, adminController.toggleG2BulkCategory);
 router.post('/product-management/smile/:typeCode/sync-smile-coins', adminAuth, adminController.syncSmileCoinAmounts);

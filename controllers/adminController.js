@@ -43,6 +43,33 @@ const uploadG2BulkProductImage = multer({
   }
 }).single('image');
 
+const categoryIconStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const uploadDir = path.join(__dirname, '../public/uploads/categories');
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    const ext = path.extname(file.originalname || '').toLowerCase() || '.png';
+    cb(null, `category-${uniqueSuffix}${ext}`);
+  }
+});
+
+const uploadG2BulkCategoryIcon = multer({
+  storage: categoryIconStorage,
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype && file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed'), false);
+    }
+  }
+}).single('icon');
+
 function slugifyCategory(name) {
   return String(name || '')
     .toLowerCase()
@@ -2219,7 +2246,7 @@ const adminController = {
       const id = req.body.id ? Number(req.body.id) : null;
       const name = String(req.body.name || '').trim();
       const sortOrder = Number(req.body.sort_order);
-      const iconPath = String(req.body.icon_path || '').trim() || null;
+      const uploadedIconPath = req.file ? `/uploads/categories/${req.file.filename}` : null;
 
       if (!name) {
         return res.redirect(`${redirectBase}?error=` + encodeURIComponent('Category name is required.'));
@@ -2237,11 +2264,23 @@ const adminController = {
         if (!existing) {
           return res.redirect(`${redirectBase}?error=` + encodeURIComponent('Category not found.'));
         }
-        await existing.update({
+
+        const updates = {
           name,
-          sortOrder: Number.isFinite(sortOrder) ? sortOrder : existing.sortOrder,
-          iconPath: iconPath !== null ? iconPath : existing.iconPath
-        });
+          sortOrder: Number.isFinite(sortOrder) ? sortOrder : existing.sortOrder
+        };
+
+        if (uploadedIconPath) {
+          if (existing.iconPath && String(existing.iconPath).startsWith('/uploads/categories/')) {
+            const oldPath = path.join(__dirname, '../public', existing.iconPath);
+            if (fs.existsSync(oldPath)) {
+              try { fs.unlinkSync(oldPath); } catch (_) { /* ignore */ }
+            }
+          }
+          updates.iconPath = uploadedIconPath;
+        }
+
+        await existing.update(updates);
       } else {
         let slug = slugifyCategory(name) || `category-${Date.now()}`;
         const clash = await ProductCategory.findOne({
@@ -2257,7 +2296,7 @@ const adminController = {
           name,
           slug,
           sortOrder: Number.isFinite(sortOrder) ? sortOrder : (Number(maxSort) || 0) + 1,
-          iconPath,
+          iconPath: uploadedIconPath,
           isActive: true
         });
       }
@@ -3995,5 +4034,6 @@ const adminController = {
 };
 
 adminController.uploadG2BulkProductImage = uploadG2BulkProductImage;
+adminController.uploadG2BulkCategoryIcon = uploadG2BulkCategoryIcon;
 
 module.exports = adminController; 

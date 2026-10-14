@@ -6,9 +6,13 @@ const { logUserActivity } = require('../services/loggingService');
 const userController = {
   // GET /users/login
   showLogin: (req, res) => {
+    const oauthError = String(req.query.error || '').trim() === 'oauth_failed'
+      ? 'Google sign-in failed. Please try again or use email login.'
+      : null;
     res.render('users/login', {
       title: 'Login',
-      user: req.session.user || null
+      user: req.session.user || null,
+      errorToast: oauthError || undefined
     });
   },
 

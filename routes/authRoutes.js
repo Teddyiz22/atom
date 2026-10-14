@@ -9,24 +9,62 @@ router.get('/google',
 
 router.get('/google/callback',
   passport.authenticate('google', { failureRedirect: '/users/login?error=oauth_failed' }),
-  (req, res) => {
-    // Successful authentication
-    console.log('✅ Google OAuth successful for:', req.user.email);
+  async (req, res) => {
+    try {
+      console.log('✅ Google OAuth successful for:', req.user?.email);
 
-    // Store user in session (same as regular login)
-    req.session.user = {
-      id: req.user.id,
-      name: req.user.name,
-      email: req.user.email,
-      role: req.user.role,
-      profilePicture: req.user.profilePicture
-    };
+      if (!req.user) {
+        return res.redirect('/users/login?error=oauth_failed');
+      }
 
-    // Redirect to dashboard or intended page
-    const redirectUrl = req.session.returnTo || '/';
-    delete req.session.returnTo;
+      // Update last login (same as email/password login)
+      try {
+        await req.user.update({ last_login: new Date() });
+      } catch (e) {
+        console.error('Failed to update last_login after Google auth:', e.message);
+      }
 
-    res.redirect(redirectUrl + '?login=success');
+      const userPayload = typeof req.user.toJSON === 'function'
+        ? req.user.toJSON()
+        : {
+            id: req.user.id,
+            name: req.user.name,
+            email: req.user.email,
+            role: req.user.role,
+            profilePicture: req.user.profilePicture,
+            email_verified: req.user.email_verified,
+            status: req.user.status
+          };
+
+      const redirectUrl = req.session.returnTo || '/shop';
+      delete req.session.returnTo;
+      const oldSessionId = req.sessionID;
+
+      req.session.regenerate((err) => {
+        if (err) {
+          console.error('Session regenerate error after Google auth:', err);
+          // Fallback: still set user on current session
+          req.session.user = userPayload;
+          req.session.loginSuccess = true;
+          req.session.successMessage = `Welcome, ${userPayload.name}! You have successfully signed in with Google.`;
+          return res.redirect(redirectUrl);
+        }
+
+        console.log('🔄 Session regenerated on Google login:', {
+          oldSessionId,
+          newSessionId: req.sessionID,
+          userId: userPayload.id
+        });
+
+        req.session.user = userPayload;
+        req.session.loginSuccess = true;
+        req.session.successMessage = `Welcome, ${userPayload.name}! You have successfully signed in with Google.`;
+        return res.redirect(redirectUrl);
+      });
+    } catch (error) {
+      console.error('Google OAuth callback error:', error);
+      return res.redirect('/users/login?error=oauth_failed');
+    }
   }
 );
 
@@ -45,4 +83,4 @@ router.get('/logout', (req, res) => {
   });
 });
 
-module.exports = router; 
+module.exports = router;

@@ -123,16 +123,31 @@
                 <tr>
                   <td class="text-center font-mono text-gray-300"><%= cat.sortOrder %></td>
                   <td>
-                    <form method="POST" action="/admin/product-management/g2bulk/<%= productType.typeCode %>/categories/save" class="flex flex-wrap items-center gap-2 m-0">
+                    <form method="POST" action="/admin/product-management/g2bulk/<%= productType.typeCode %>/categories/save" enctype="multipart/form-data" class="flex flex-wrap items-center gap-3 m-0">
                       <input type="hidden" name="id" value="<%= cat.id %>">
                       <input type="hidden" name="sort_order" value="<%= cat.sortOrder %>">
                       <input type="text" name="name" value="<%= cat.name %>" class="bg-white/5 border border-white/10 rounded px-2 py-1 text-white min-w-[160px]" required>
-                      <input type="text" name="icon_path" value="<%= cat.iconPath || '' %>" placeholder="Icon path (optional)" class="bg-white/5 border border-white/10 rounded px-2 py-1 text-white text-xs min-w-[180px]">
+                      <div class="flex items-center gap-2">
+                        <label for="cat_icon_<%= cat.id %>" class="inline-block cursor-pointer" title="Click to change icon">
+                          <img
+                            id="cat_preview_<%= cat.id %>"
+                            src="<%= cat.iconPath || '' %>"
+                            alt=""
+                            class="h-9 w-9 object-contain rounded border border-white/10 bg-white/5 <%= cat.iconPath ? '' : 'hidden' %>"
+                          >
+                          <span id="cat_preview_empty_<%= cat.id %>" class="text-xs text-gray-500 <%= cat.iconPath ? 'hidden' : '' %>">No icon</span>
+                        </label>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          name="icon"
+                          id="cat_icon_<%= cat.id %>"
+                          class="text-xs text-gray-300 max-w-[140px]"
+                          onchange="previewCategoryIcon('<%= cat.id %>', this)"
+                        >
+                      </div>
                       <button type="submit" class="inline-flex items-center h-8 px-3 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold">Save</button>
                     </form>
-                    <% if (cat.iconPath) { %>
-                      <div class="mt-1"><img src="<%= cat.iconPath %>" alt="" class="h-8 w-8 object-contain rounded"></div>
-                    <% } %>
                   </td>
                   <td class="text-center">
                     <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold <%= cat.isActive ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-red-500/20 text-red-300 border border-red-500/30' %>">
@@ -168,14 +183,27 @@
         </table>
       </div>
 
-      <form method="POST" action="/admin/product-management/g2bulk/<%= productType.typeCode %>/categories/save" class="flex flex-wrap items-end gap-3">
+      <form method="POST" action="/admin/product-management/g2bulk/<%= productType.typeCode %>/categories/save" enctype="multipart/form-data" class="flex flex-wrap items-end gap-3">
         <div>
           <label class="block text-xs text-gray-400 mb-1">New category name</label>
           <input type="text" name="name" required class="bg-white/5 border border-white/10 rounded px-3 py-2 text-white min-w-[200px]" placeholder="e.g. Special Offers">
         </div>
         <div>
-          <label class="block text-xs text-gray-400 mb-1">Icon path (optional)</label>
-          <input type="text" name="icon_path" class="bg-white/5 border border-white/10 rounded px-3 py-2 text-white min-w-[200px]" placeholder="/images/uc.png">
+          <label class="block text-xs text-gray-400 mb-1">Icon (optional)</label>
+          <div class="flex items-center gap-2">
+            <label for="cat_icon_new" class="inline-block cursor-pointer" title="Click to choose icon">
+              <img id="cat_preview_new" src="" alt="" class="h-9 w-9 object-contain rounded border border-white/10 bg-white/5 hidden">
+              <span id="cat_preview_empty_new" class="text-xs text-gray-500">No icon</span>
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              name="icon"
+              id="cat_icon_new"
+              class="text-xs text-gray-300 max-w-[160px]"
+              onchange="previewCategoryIcon('new', this)"
+            >
+          </div>
         </div>
         <button type="submit" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-teal-600 hover:bg-teal-500 text-sm font-semibold text-white">
           <i class="fas fa-plus text-xs"></i> Add Category
@@ -389,6 +417,22 @@
       const file = input && input.files && input.files[0];
       const img = document.getElementById('preview_' + g2bulkId);
       const empty = document.getElementById('preview_empty_' + g2bulkId);
+      if (!file || !img) return;
+      if (!file.type || !file.type.startsWith('image/')) return;
+
+      const url = URL.createObjectURL(file);
+      img.onload = function () {
+        try { URL.revokeObjectURL(url); } catch (_) {}
+      };
+      img.src = url;
+      img.classList.remove('hidden');
+      if (empty) empty.classList.add('hidden');
+    }
+
+    function previewCategoryIcon(catKey, input) {
+      const file = input && input.files && input.files[0];
+      const img = document.getElementById('cat_preview_' + catKey);
+      const empty = document.getElementById('cat_preview_empty_' + catKey);
       if (!file || !img) return;
       if (!file.type || !file.type.startsWith('image/')) return;
 
